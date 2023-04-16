@@ -1,4 +1,5 @@
-﻿using Aurora.Interfaces;
+﻿using Aurora.Data.Interfaces;
+using Aurora.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Aurora.Api.Routers;
@@ -13,10 +14,10 @@ public static class UserRouterGroups
         return group.WithOpenApi();
     }
 
-    private static async Task<IResult> GetUsers([FromServices] IClusterClient clusterClient)
+    private static async Task<IResult> GetUsers([FromServices] IDataService<UserRecord, string> userService)
     {
-        var client = clusterClient.GetGrain<IUserServiceGrain>("");
-        return TypedResults.Ok(await client.GetUsersAsync());
+        var users = await userService.GetAllAsync();
+        return TypedResults.Ok(users);
     }
 
     private static async Task<IResult> GetUser([FromServices] IClusterClient clusterClient, string userId)
@@ -38,7 +39,6 @@ public static class UserRouterGroups
 
         return TypedResults.Ok(userRecord);
     }
-
 
 
     [Serializable]
