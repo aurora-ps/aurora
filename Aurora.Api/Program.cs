@@ -33,6 +33,7 @@ SetupRoutes(app);
 void SetupRoutes(WebApplication webApplication)
 {
     webApplication.MapGroup("").ServerRoutes();
+    webApplication.MapGroup("").OrganizationRoutes();
 }
 
 app.Run();
@@ -41,7 +42,7 @@ void ConfigureOrleansForLocal(ISiloBuilder siloBuilder)
 {
     siloBuilder.UseLocalhostClustering(11121, 30001);
     siloBuilder.AddMemoryGrainStorageAsDefault();
-    siloBuilder.AddMemoryGrainStorage("chaplainStorage");
+    siloBuilder.AddMemoryGrainStorage("auroraStorage");
 
     siloBuilder.UseDashboard();
     siloBuilder.ConfigureLogging(logging => logging.AddConsole().SetMinimumLevel(LogLevel.Warning));
