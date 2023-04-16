@@ -7,9 +7,16 @@ public static class UserRouterGroups
 {
     public static RouteGroupBuilder UserRoutes(this RouteGroupBuilder group)
     {
-        group.MapGet("/user", GetUser);
+        group.MapGet("/user", GetUsers);
+        group.MapGet("/user/{userId}", GetUser);
         group.MapPut("/user", AddUser);
         return group.WithOpenApi();
+    }
+
+    private static async Task<IResult> GetUsers([FromServices] IClusterClient clusterClient)
+    {
+        var client = clusterClient.GetGrain<IUserServiceGrain>("");
+        return TypedResults.Ok(await client.GetUsersAsync());
     }
 
     private static async Task<IResult> GetUser([FromServices] IClusterClient clusterClient, string userId)
@@ -31,6 +38,8 @@ public static class UserRouterGroups
 
         return TypedResults.Ok(userRecord);
     }
+
+
 
     [Serializable]
     private record AddUserDto(string UserName, string Email);

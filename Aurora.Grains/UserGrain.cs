@@ -32,7 +32,7 @@ public class UserGrain : Grain, IUserGrain
         return Task.FromResult(string.IsNullOrEmpty(_state.State.Id) ? null : _state.State);
     }
 
-    public Task<UserRecord?> AddAsync(string name, string email)
+    public async Task<UserRecord?> AddAsync(string name, string email)
     {
         _state.State = new UserRecord
         {
@@ -41,7 +41,15 @@ public class UserGrain : Grain, IUserGrain
             Email = email
         };
 
-        _state.WriteStateAsync();
-        return GetDetailsAsync();
+        await _state.WriteStateAsync();
+
+        var userService = GrainFactory.GetGrain<IUserServiceGrain>("");
+        await userService.AddOrUpdateUserAsync(_state.State.Id, _state.State);
+        return await GetDetailsAsync();
+    }
+
+    public async Task<bool> ExistsAsync(string userId)
+    {
+        return (await GetDetailsAsync() != null);
     }
 }
