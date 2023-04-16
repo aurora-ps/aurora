@@ -1,0 +1,48 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.6.33606.364
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Aurora.Interfaces", "Aurora.Interfaces\Aurora.Interfaces.csproj", "{1BE15178-4628-450A-8E98-C1D9A9760E82}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "1 - Interfaces", "1 - Interfaces", "{CA50200E-9D25-4245-8602-DE227FE69FDB}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "2 - Grains", "2 - Grains", "{E84B0C39-307E-4ACE-A5B7-3C720A93E6F4}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "3 - Clients", "3 - Clients", "{F77EF4EC-ACC9-4208-9349-D509F5186630}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Aurora.Grains", "Aurora.Grains\Aurora.Grains.csproj", "{34098163-6BF3-4344-9993-F6E0E985B186}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Aurora.Api", "Aurora.Api\Aurora.Api.csproj", "{D32EDA1F-2228-45C7-8FE7-4DAFE962D1FB}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{1BE15178-4628-450A-8E98-C1D9A9760E82}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1BE15178-4628-450A-8E98-C1D9A9760E82}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1BE15178-4628-450A-8E98-C1D9A9760E82}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1BE15178-4628-450A-8E98-C1D9A9760E82}.Release|Any CPU.Build.0 = Release|Any CPU
+		{34098163-6BF3-4344-9993-F6E0E985B186}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{34098163-6BF3-4344-9993-F6E0E985B186}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{34098163-6BF3-4344-9993-F6E0E985B186}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{34098163-6BF3-4344-9993-F6E0E985B186}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D32EDA1F-2228-45C7-8FE7-4DAFE962D1FB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D32EDA1F-2228-45C7-8FE7-4DAFE962D1FB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D32EDA1F-2228-45C7-8FE7-4DAFE962D1FB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D32EDA1F-2228-45C7-8FE7-4DAFE962D1FB}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{1BE15178-4628-450A-8E98-C1D9A9760E82} = {CA50200E-9D25-4245-8602-DE227FE69FDB}
+		{34098163-6BF3-4344-9993-F6E0E985B186} = {E84B0C39-307E-4ACE-A5B7-3C720A93E6F4}
+		{D32EDA1F-2228-45C7-8FE7-4DAFE962D1FB} = {F77EF4EC-ACC9-4208-9349-D509F5186630}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {90FED93A-058F-481E-B6B4-2DB488A9FBFE}
+	EndGlobalSection
+EndGlobal
