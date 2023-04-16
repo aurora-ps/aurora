@@ -1,6 +1,7 @@
 ﻿namespace Aurora.Interfaces;
 
-[GenerateSerializer, Immutable]
+[GenerateSerializer]
+[Immutable]
 public sealed record OrganizationRecord : OrganizationRecordBase
 {
 }

@@ -1,29 +1,27 @@
 ﻿using Aurora.Interfaces;
 
-namespace Aurora.Api.Startup
+namespace Aurora.Api.Startup;
+
+public class BootstrapStartupTask : IBootstrapStartupTask
 {
-    public class BootstrapStartupTask : IBootstrapStartupTask
+    private readonly IGrainFactory _factory;
+    private readonly ILogger _logger;
+
+    public BootstrapStartupTask(ILoggerFactory loggerFactory, IGrainFactory factory)
     {
-        private readonly IGrainFactory _factory;
-        private readonly ILogger _logger;
+        _factory = factory;
+        _logger = loggerFactory.CreateLogger<BootstrapStartupTask>();
+    }
 
-        public BootstrapStartupTask(ILoggerFactory loggerFactory, IGrainFactory factory)
+    public async Task Execute(CancellationToken cancellationToken)
+    {
+        _logger.LogInformation("BootstrapStartupTask.Execute called.");
+
+        var grain = _factory.GetGrain<IServerGrain>("");
+        if (!await grain.IsInitialized())
         {
-            _factory = factory;
-            _logger = loggerFactory.CreateLogger<BootstrapStartupTask>();
         }
 
-        public async Task Execute(CancellationToken cancellationToken)
-        {
-            _logger.LogInformation("BootstrapStartupTask.Execute called.");
-
-            var grain = _factory.GetGrain<IServerGrain>("");
-            if (!await grain.IsInitialized())
-            {
-              
-            }
-            
-            await Task.CompletedTask;
-        }
+        await Task.CompletedTask;
     }
 }

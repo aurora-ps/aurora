@@ -1,6 +1,7 @@
 ﻿namespace Aurora.Interfaces;
 
-[GenerateSerializer, Immutable]
+[GenerateSerializer]
+[Immutable]
 public sealed record ServerState
 {
     [Id(0)] public bool IsInitialized { get; set; }

@@ -34,6 +34,7 @@ void SetupRoutes(WebApplication webApplication)
 {
     webApplication.MapGroup("").ServerRoutes();
     webApplication.MapGroup("").OrganizationRoutes();
+    webApplication.MapGroup("").UserRoutes();
 }
 
 app.Run();

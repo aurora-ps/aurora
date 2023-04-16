@@ -1,6 +1,7 @@
 ﻿namespace Aurora.Interfaces;
 
-[GenerateSerializer, Immutable]
+[GenerateSerializer]
+[Immutable]
 public abstract record OrganizationRecordBase
 {
     [Id(0)] public string Id { get; set; } = null!;

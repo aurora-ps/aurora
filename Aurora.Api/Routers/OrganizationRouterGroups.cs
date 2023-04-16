@@ -11,19 +11,22 @@ public static class OrganizationRouterGroups
     {
         group.MapGet($"/{UrlFragment}", GetOrganization);
         group.MapPut($"/{UrlFragment}", AddOrganization);
-        return group;
+        return group.WithOpenApi();
     }
 
-    private static Task AddOrganization([FromServices] IClusterClient clusterClient, [FromQuery] string organizationName)
+    private static async Task<IResult> AddOrganization([FromServices] IClusterClient clusterClient,
+        [FromQuery] string organizationName)
     {
         var grain = clusterClient.GetGrain<IOrganizationGrain>(Guid.NewGuid().ToString());
-        return grain.AddAsync(organizationName);
+        var addResult = await grain.AddAsync(organizationName);
+        return addResult is null ? TypedResults.NotFound() : TypedResults.Ok(addResult);
     }
 
-    private static async Task<OrganizationRecord?> GetOrganization([FromServices] IClusterClient clusterClient,
+    private static async Task<IResult> GetOrganization([FromServices] IClusterClient clusterClient,
         string organizationId)
     {
         var grain = clusterClient.GetGrain<IOrganizationGrain>(organizationId);
-        return await grain.GetDetailsAsync();
+        var record = await grain.GetDetailsAsync();
+        return record is null ? TypedResults.NotFound() : TypedResults.Ok(record);
     }
 }
