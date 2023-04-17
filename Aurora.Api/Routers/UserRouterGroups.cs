@@ -10,7 +10,7 @@ public static class UserRouterGroups
     {
         group.MapGet("/user", GetUsers);
         group.MapGet("/user/{userId}", GetUser);
-        group.MapPut("/user", AddUser);
+        group.MapPost("/user", AddUser);
         return group.WithOpenApi();
     }
 

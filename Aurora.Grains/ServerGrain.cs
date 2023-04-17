@@ -5,32 +5,28 @@ using Orleans.Runtime;
 
 namespace Aurora.Grains;
 
-[Reentrant]
 public class ServerGrain : Grain, IServerGrain
 {
-    private readonly ILogger<ServerGrain> _logger;
-    private readonly IPersistentState<ServerState> _state;
+    private readonly IPersistentState<Dictionary<string, OrganizationRecord>> _organizationState;
 
-    public ServerGrain([PersistentState("server", "auroraStorage")] IPersistentState<ServerState> state,
+    private readonly ILogger<ServerGrain> _logger;
+
+    public ServerGrain([PersistentState("server", "auroraStorage")] IPersistentState<Dictionary<string, OrganizationRecord>> organizationState,
         ILoggerFactory factory)
     {
-        _state = state;
+        _organizationState = organizationState;
         _logger = factory.CreateLogger<ServerGrain>();
     }
 
-    public Task<bool> IsInitialized()
+    async Task IServerGrain.AddOrganizationToServer(OrganizationRecord organization)
     {
-        return Task.FromResult(_state.State.IsInitialized);
+        _organizationState.State.Add(organization.Id, organization);
+
+        await _organizationState.WriteStateAsync();
     }
 
-    public Task<ServerState> GetDetails()
+    public Task<IList<OrganizationRecord>> GetOrganizations()
     {
-        return Task.FromResult(_state.State);
-    }
-
-    public Task AddOrganization(OrganizationRecord organization)
-    {
-        _state.State.Organizations.Add(organization);
-        return _state.WriteStateAsync();
+        return Task.FromResult<IList<OrganizationRecord>>(_organizationState.State.Values.ToList());
     }
 }

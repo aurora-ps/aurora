@@ -9,7 +9,9 @@ public static class OrganizationRouterGroups
 
     public static RouteGroupBuilder OrganizationRoutes(this RouteGroupBuilder group)
     {
-        group.MapGet($"/{UrlFragment}", GetOrganization);
+
+        group.MapGet($"/{UrlFragment}", GetOrganizations);
+        group.MapGet($"/{UrlFragment}/{{organizationId}}", GetOrganization);
         group.MapPut($"/{UrlFragment}", AddOrganization);
         return group.WithOpenApi();
     }
@@ -28,5 +30,11 @@ public static class OrganizationRouterGroups
         var grain = clusterClient.GetGrain<IOrganizationGrain>(organizationId);
         var record = await grain.GetDetailsAsync();
         return record is null ? TypedResults.NotFound() : TypedResults.Ok(record);
+    }
+
+    private static async Task<IResult> GetOrganizations([FromServices] IClusterClient clusterClient)
+    {
+        var grain = clusterClient.GetGrain<IServerGrain>("");
+        return TypedResults.Ok(await grain.GetOrganizations());
     }
 }

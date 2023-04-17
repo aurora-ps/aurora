@@ -17,11 +17,8 @@ public class BootstrapStartupTask : IBootstrapStartupTask
     {
         _logger.LogInformation("BootstrapStartupTask.Execute called.");
 
-        var grain = _factory.GetGrain<IServerGrain>("");
-        if (!await grain.IsInitialized())
-        {
-        }
-
+        var grain = _factory.GetGrain<IOrganizationGrain>("test");
+        await grain.AddAsync("Test Organization");
         await Task.CompletedTask;
     }
 }

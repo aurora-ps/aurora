@@ -5,11 +5,10 @@ using Orleans.Concurrency;
 
 namespace Aurora.Grains;
 
-[Reentrant]
 public class UserGrain : Grain, IUserGrain
 {
-    private readonly IDataService<UserRecord, string> _userDataService;
     private readonly ILogger<UserGrain> _logger;
+    private readonly IDataService<UserRecord, string> _userDataService;
     private UserRecord _state = new();
 
     public UserGrain(
@@ -18,21 +17,6 @@ public class UserGrain : Grain, IUserGrain
     {
         _userDataService = userDataService;
         _logger = factory.CreateLogger<UserGrain>();
-    }
-
-    public override async Task OnActivateAsync(CancellationToken cancellationToken)
-    {
-        // Check to see if there's a Data record for this.
-        if (!string.IsNullOrEmpty(this.GetPrimaryKeyString()))
-        {
-            var record = await _userDataService.GetAsync(this.GetPrimaryKeyString());
-            if (record != null)
-            {
-                _state = record;
-            }
-        }
-
-        await base.OnActivateAsync(cancellationToken);
     }
 
     [ReadOnly]
@@ -55,14 +39,26 @@ public class UserGrain : Grain, IUserGrain
             Name = name,
             Email = email
         };
-        
-        await this._userDataService.AddOrUpdateAsync(_state.Id, _state);
+
+        await _userDataService.AddOrUpdateAsync(_state.Id, _state);
 
         return await GetDetailsAsync();
     }
 
     public async Task<bool> ExistsAsync(string userId)
     {
-        return (await GetDetailsAsync() != null);
+        return await GetDetailsAsync() != null;
+    }
+
+    public override async Task OnActivateAsync(CancellationToken cancellationToken)
+    {
+        // Check to see if there's a Data record for this.
+        if (!string.IsNullOrEmpty(this.GetPrimaryKeyString()))
+        {
+            var record = await _userDataService.GetAsync(this.GetPrimaryKeyString());
+            if (record != null) _state = record;
+        }
+
+        await base.OnActivateAsync(cancellationToken);
     }
 }

@@ -2,9 +2,7 @@
 
 public interface IServerGrain : IGrainWithStringKey
 {
-    Task<bool> IsInitialized();
+    Task AddOrganizationToServer(OrganizationRecord organization);
 
-    Task<ServerState> GetDetails();
-
-    Task AddOrganization(OrganizationRecord organization);
+    Task<IList<OrganizationRecord>> GetOrganizations();
 }

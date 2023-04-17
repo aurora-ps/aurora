@@ -14,9 +14,8 @@ public static class ServerRouterGroups
     }
 
 
-    private static async Task<IResult> GetServer([FromServices] IClusterClient clusterClient)
+    private static Task<IResult> GetServer([FromServices] IClusterClient clusterClient)
     {
-        var grain = clusterClient.GetGrain<IServerGrain>("");
-        return TypedResults.Ok(await grain.GetDetails());
+        return Task.FromResult<IResult>(TypedResults.Ok());
     }
 }

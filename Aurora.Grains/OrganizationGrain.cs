@@ -5,7 +5,6 @@ using Orleans.Runtime;
 
 namespace Aurora.Grains;
 
-[Reentrant]
 public class OrganizationGrain : Grain, IOrganizationGrain
 {
     private readonly ILogger<OrganizationGrain> _logger;
@@ -50,6 +49,6 @@ public class OrganizationGrain : Grain, IOrganizationGrain
     private Task AddToServer(OrganizationRecord organization)
     {
         var serverGrain = GrainFactory.GetGrain<IServerGrain>("");
-        return serverGrain.AddOrganization(organization);
+        return serverGrain.AddOrganizationToServer(organization);
     }
 }
