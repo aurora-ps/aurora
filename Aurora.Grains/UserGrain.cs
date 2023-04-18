@@ -40,7 +40,7 @@ public class UserGrain : Grain, IUserGrain
             Email = email
         };
 
-        await _userDataService.AddOrUpdateAsync(_state.Id, _state);
+        await _userDataService.AddAsync(_state);
 
         return await GetDetailsAsync();
     }

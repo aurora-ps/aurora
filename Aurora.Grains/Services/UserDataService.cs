@@ -8,21 +8,25 @@ namespace Aurora.Grains.Services;
 /// </summary>
 public sealed class UserDataService : IDataService<UserRecord, string>
 {
-    private static readonly Dictionary<string, UserRecord> _users = new();
+    private static readonly Dictionary<string, UserRecord> Users = new();
 
-    public Task AddOrUpdateAsync(string id, UserRecord data)
+    public Task<UserRecord> AddAsync(UserRecord data)
     {
-        return Task.Run(() => _users[id] = data);
+        return Task.Run(() =>
+        {
+            Users[data.Id] = data;
+            return data;
+        });
     }
 
-    public Task<List<UserRecord>> GetAllAsync()
+    public Task<IList<UserRecord>> GetAllAsync()
     {
-        return Task.FromResult(_users.Values.ToList());
+        return Task.FromResult((IList<UserRecord>)Users.Values.ToList());
     }
 
-    public Task<UserRecord?> GetAsync(string TKey)
+    public Task<UserRecord?> GetAsync(string key)
     {
-        _users.TryGetValue(TKey, out var user);
+        Users.TryGetValue(key, out var user);
         return Task.FromResult(user);
     }
 }

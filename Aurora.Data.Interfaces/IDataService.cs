@@ -3,9 +3,9 @@
 public interface IDataService<T, TKey>
 
 {
-    Task AddOrUpdateAsync(TKey id, T data);
+    Task<T> AddAsync(T data);
 
-    Task<List<T>> GetAllAsync();
+    Task<IList<T>> GetAllAsync();
 
-    Task<T?> GetAsync(string TKey);
+    Task<T?> GetAsync(string key);
 }
