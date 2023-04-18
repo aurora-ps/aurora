@@ -1,4 +1,5 @@
-﻿using Aurora.Interfaces;
+﻿using Aurora.Grains.Services;
+using Aurora.Interfaces;
 using Microsoft.Extensions.Logging;
 using Orleans.Concurrency;
 
@@ -23,22 +24,6 @@ public class OrganizationManagementGrain : Grain, IOrganizationManagementGrain
         var organizationGrain = GrainFactory.GetGrain<IOrganizationGrain>(Guid.NewGuid().ToString());
         var organization = await organizationGrain.CreateAsync(name);
         return organization;
-    }
-
-    async Task<bool> IOrganizationManagementGrain.AddToCollectionAsync(OrganizationRecord record)
-    {
-        _logger.LogTrace("Adding organization {OrganizationName} to data service if it hasn't been already", record.Name);
-        try
-        {
-            if (await _organizationDataService.GetAsync(record.Id) is null)
-                await _organizationDataService.AddAsync(record);
-            return true;
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine(e);
-            return false;
-        }
     }
 
     [ReadOnly]

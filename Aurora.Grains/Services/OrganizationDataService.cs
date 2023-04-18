@@ -1,12 +1,8 @@
 ﻿using System.Collections.Concurrent;
-using Aurora.Data.Interfaces;
 using Aurora.Interfaces;
+using Orleans.Runtime;
 
-namespace Aurora.Grains;
-
-public interface IOrganizationDataService : IDataService<OrganizationRecord, string>
-{
-}
+namespace Aurora.Grains.Services;
 
 public class OrganizationDataService : IOrganizationDataService
 {

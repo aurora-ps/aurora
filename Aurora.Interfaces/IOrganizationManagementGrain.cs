@@ -7,6 +7,4 @@ public interface IOrganizationManagementGrain : IGrainWithStringKey
     Task<OrganizationRecord?> GetOrganizationAsync(string id);
 
     Task<OrganizationRecord?> AddAsync(string name);
-
-    Task<bool> AddToCollectionAsync(OrganizationRecord record);
 }
