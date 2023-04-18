@@ -1,6 +1,7 @@
 using Aurora.Api.Routers;
 using Aurora.Api.Startup;
 using Aurora.Data.Interfaces;
+using Aurora.Grains;
 using Aurora.Grains.Services;
 using Aurora.Interfaces;
 
@@ -12,6 +13,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddScoped<IDataService<UserRecord, string>, UserDataService>();
+builder.Services.AddScoped<IOrganizationDataService, OrganizationDataService>();
 
 builder.Host.UseOrleans((context, siloBuilder) =>
 {

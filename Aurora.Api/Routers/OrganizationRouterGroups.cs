@@ -9,7 +9,6 @@ public static class OrganizationRouterGroups
 
     public static RouteGroupBuilder OrganizationRoutes(this RouteGroupBuilder group)
     {
-
         group.MapGet($"/{UrlFragment}", GetOrganizations);
         group.MapGet($"/{UrlFragment}/{{organizationId}}", GetOrganization);
         group.MapPut($"/{UrlFragment}", AddOrganization);
@@ -19,7 +18,7 @@ public static class OrganizationRouterGroups
     private static async Task<IResult> AddOrganization([FromServices] IClusterClient clusterClient,
         [FromQuery] string organizationName)
     {
-        var grain = clusterClient.GetGrain<IOrganizationGrain>(Guid.NewGuid().ToString());
+        var grain = clusterClient.GetGrain<IOrganizationManagementGrain>("");
         var addResult = await grain.AddAsync(organizationName);
         return addResult is null ? TypedResults.NotFound() : TypedResults.Ok(addResult);
     }
@@ -27,14 +26,14 @@ public static class OrganizationRouterGroups
     private static async Task<IResult> GetOrganization([FromServices] IClusterClient clusterClient,
         string organizationId)
     {
-        var grain = clusterClient.GetGrain<IOrganizationGrain>(organizationId);
-        var record = await grain.GetDetailsAsync();
+        var grain = clusterClient.GetGrain<IOrganizationManagementGrain>("");
+        var record = await grain.GetOrganizationAsync(organizationId);
         return record is null ? TypedResults.NotFound() : TypedResults.Ok(record);
     }
 
     private static async Task<IResult> GetOrganizations([FromServices] IClusterClient clusterClient)
     {
-        var grain = clusterClient.GetGrain<IServerGrain>("");
-        return TypedResults.Ok(await grain.GetOrganizations());
+        var grain = clusterClient.GetGrain<IOrganizationManagementGrain>("");
+        return TypedResults.Ok(await grain.GetOrganizationsAsync());
     }
 }

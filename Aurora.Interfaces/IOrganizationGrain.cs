@@ -2,9 +2,9 @@
 
 public interface IOrganizationGrain : IGrainWithStringKey
 {
-    Task<bool> IsInitialized();
-
     Task<OrganizationRecord?> GetDetailsAsync();
 
-    Task<OrganizationRecord?> AddAsync(string name);
+    Task<OrganizationRecord?> CreateAsync(string name);
+
+    Task SetDetailsAsync(OrganizationRecord organization);
 }

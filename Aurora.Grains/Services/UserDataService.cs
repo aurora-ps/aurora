@@ -4,7 +4,7 @@ using Aurora.Interfaces;
 namespace Aurora.Grains.Services;
 
 /// <summary>
-/// Simple in-memory data service for testing.
+///     Simple in-memory data service for testing.
 /// </summary>
 public sealed class UserDataService : IDataService<UserRecord, string>
 {

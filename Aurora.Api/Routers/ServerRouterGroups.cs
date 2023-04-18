@@ -1,5 +1,4 @@
-﻿using Aurora.Interfaces;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 
 namespace Aurora.Api.Routers;
 

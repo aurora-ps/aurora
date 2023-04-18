@@ -1,54 +1,49 @@
 ﻿using Aurora.Interfaces;
 using Microsoft.Extensions.Logging;
 using Orleans.Concurrency;
-using Orleans.Runtime;
 
 namespace Aurora.Grains;
 
+[Reentrant]
 public class OrganizationGrain : Grain, IOrganizationGrain
 {
+    private readonly IOrganizationDataService _organizationDataService;
     private readonly ILogger<OrganizationGrain> _logger;
-    private readonly IPersistentState<OrganizationRecord> _state;
+    private OrganizationRecord? _organization = null;
 
     public OrganizationGrain(
-        [PersistentState("organization", "auroraStorage")]
-        IPersistentState<OrganizationRecord> state,
+        IOrganizationDataService organizationDataService,
         ILoggerFactory factory)
     {
-        _state = state;
+        _organizationDataService = organizationDataService;
         _logger = factory.CreateLogger<OrganizationGrain>();
     }
 
     [ReadOnly]
-    public Task<bool> IsInitialized()
+    Task<OrganizationRecord?> IOrganizationGrain.GetDetailsAsync()
     {
-        return Task.FromResult(string.IsNullOrEmpty(_state.State?.Id));
+        return Task.FromResult(_organization);
     }
 
-    [ReadOnly]
-    public Task<OrganizationRecord?> GetDetailsAsync()
+    async Task<OrganizationRecord?> IOrganizationGrain.CreateAsync(string name)
     {
-        return Task.FromResult(string.IsNullOrEmpty(_state.State.Id) ? null : _state.State);
-    }
 
-    public Task<OrganizationRecord?> AddAsync(string name)
-    {
-        _state.State = new OrganizationRecord
+        var _organization = new OrganizationRecord
         {
             Id = this.GetPrimaryKeyString(),
             Name = name
         };
 
-        _state.WriteStateAsync();
+        if (_organizationDataService.AddOrganization(_organization))
+        {
+            return _organization;
+        }
 
-        AddToServer(_state.State);
-
-        return GetDetailsAsync();
+        return null;
     }
 
-    private Task AddToServer(OrganizationRecord organization)
+    public Task SetDetailsAsync(OrganizationRecord organization)
     {
-        var serverGrain = GrainFactory.GetGrain<IServerGrain>("");
-        return serverGrain.AddOrganizationToServer(organization);
+        return Task.Run(() => _organization = organization);
     }
 }
