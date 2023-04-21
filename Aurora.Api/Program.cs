@@ -1,5 +1,4 @@
 using Aurora.Api.Routers;
-using Aurora.Api.Startup;
 using Aurora.Data.Interfaces;
 using Aurora.Grains.Services;
 using Aurora.Interfaces;
@@ -14,12 +13,13 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<IDataService<UserRecord, string>, UserDataService>();
 builder.Services.AddScoped<IOrganizationDataService, OrganizationDataService>();
 
-builder.Host.UseOrleans((context, siloBuilder) =>
+builder.Host.UseOrleansClient((context, clientBuilder) =>
 {
+    
     if (context.HostingEnvironment.IsDevelopment())
-        ConfigureOrleansForLocal(siloBuilder);
+        ConfigureOrleansForLocal(clientBuilder);
     else
-        ConfigureOrleansForLocal(siloBuilder);
+        ConfigureOrleansForLocal(clientBuilder);
 });
 
 var app = builder.Build();
@@ -44,14 +44,7 @@ void SetupRoutes(WebApplication webApplication)
 
 app.Run();
 
-void ConfigureOrleansForLocal(ISiloBuilder siloBuilder)
+void ConfigureOrleansForLocal(IClientBuilder clientBuilder)
 {
-    siloBuilder.UseLocalhostClustering(11121, 30001);
-    siloBuilder.AddMemoryGrainStorageAsDefault();
-    siloBuilder.AddMemoryGrainStorage("auroraStorage");
-
-    siloBuilder.UseDashboard();
-    siloBuilder.ConfigureLogging(logging => logging.AddConsole().SetMinimumLevel(LogLevel.Warning));
-
-    siloBuilder.AddStartupTask<BootstrapStartupTask>();
+    clientBuilder.UseLocalhostClustering(gatewayPort:30000);
 }

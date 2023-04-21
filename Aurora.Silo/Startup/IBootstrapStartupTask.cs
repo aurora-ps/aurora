@@ -1,6 +1,6 @@
 ﻿using Orleans.Runtime;
 
-namespace Aurora.Api.Startup;
+namespace Aurora.Silo.Startup;
 
 public interface IBootstrapStartupTask : IStartupTask
 {

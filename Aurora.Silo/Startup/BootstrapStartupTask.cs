@@ -1,6 +1,6 @@
 ﻿using Aurora.Interfaces;
 
-namespace Aurora.Api.Startup;
+namespace Aurora.Silo.Startup;
 
 public class BootstrapStartupTask : IBootstrapStartupTask
 {
