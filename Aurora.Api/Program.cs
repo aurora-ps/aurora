@@ -1,5 +1,6 @@
 using System.Text;
 using Aurora.Api.Data;
+using Aurora.Api.Extensions;
 using Aurora.Api.Routers;
 using Aurora.Data.Interfaces;
 using Aurora.Grains.Services;
@@ -15,6 +16,55 @@ var builder = WebApplication.CreateBuilder(args);
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 
 ConfigureDatabase(builder);
+
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
+
+builder.Services.AddScoped<IDataService<UserRecord, string>, UserDataDataService>();
+builder.Services.AddScoped<IOrganizationDataService, OrganizationDataService>();
+builder.Services.AddScoped<IUserDataService, UserDataDataService>();
+
+if (builder.Environment.IsDevelopment())
+{
+    builder.Host.UseOrleans((context, siloBuilder) =>
+    {
+        siloBuilder.AddOrleansSilo(11111, 30000, false);
+    });
+}
+else
+{
+    //TODO: Add production configuration
+    builder.Host.UseOrleans((context, siloBuilder) =>
+    {
+        siloBuilder.AddOrleansSilo(11111, 30000, false);
+    });
+}
+
+var app = builder.Build();
+
+// Configure the HTTP request pipeline.
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
+}
+
+app.UseAuthentication();
+app.UseAuthorization();
+
+app.UseHttpsRedirection();
+
+SetupRoutes(app);
+
+void SetupRoutes(WebApplication webApplication)
+{
+    webApplication.MapGroup("").ServerRoutes();
+    webApplication.MapGroup("").OrganizationRoutes();
+    webApplication.MapGroup("").UserRoutes();
+    webApplication.MapGroup("").AuthRoutes();
+}
+
+app.Run();
 
 void ConfigureDatabase(WebApplicationBuilder builder)
 {
@@ -52,50 +102,4 @@ void ConfigureDatabase(WebApplicationBuilder builder)
         });
 
     builder.Services.AddAuthorization();
-}
-
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
-
-builder.Services.AddScoped<IDataService<UserRecord, string>, UserDataService>();
-builder.Services.AddScoped<IOrganizationDataService, OrganizationDataService>();
-
-builder.Host.UseOrleansClient((context, clientBuilder) =>
-{
-    if (context.HostingEnvironment.IsDevelopment())
-        ConfigureOrleansForLocal(clientBuilder);
-    else
-        ConfigureOrleansForLocal(clientBuilder);
-});
-
-var app = builder.Build();
-
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
-
-app.UseAuthentication();
-app.UseAuthorization();
-
-app.UseHttpsRedirection();
-
-SetupRoutes(app);
-
-void SetupRoutes(WebApplication webApplication)
-{
-    webApplication.MapGroup("").ServerRoutes();
-    webApplication.MapGroup("").OrganizationRoutes();
-    webApplication.MapGroup("").UserRoutes();
-    webApplication.MapGroup("").AuthRoutes();
-}
-
-
-app.Run();
-
-void ConfigureOrleansForLocal(IClientBuilder clientBuilder)
-{
-    clientBuilder.UseLocalhostClustering(30000);
 }

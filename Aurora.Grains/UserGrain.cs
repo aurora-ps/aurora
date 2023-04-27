@@ -1,4 +1,5 @@
 ﻿using Aurora.Data.Interfaces;
+using Aurora.Grains.Services;
 using Aurora.Interfaces;
 using Microsoft.Extensions.Logging;
 using Orleans.Concurrency;
@@ -8,14 +9,14 @@ namespace Aurora.Grains;
 public class UserGrain : Grain, IUserGrain
 {
     private readonly ILogger<UserGrain> _logger;
-    private readonly IDataService<UserRecord, string> _userDataService;
+    private readonly IUserDataService _userDataDataService;
     private UserRecord _state = new();
 
     public UserGrain(
-        IDataService<UserRecord, string> userDataService,
+        IUserDataService userDataDataService,
         ILoggerFactory factory)
     {
-        _userDataService = userDataService;
+        _userDataDataService = userDataDataService;
         _logger = factory.CreateLogger<UserGrain>();
     }
 
@@ -40,7 +41,7 @@ public class UserGrain : Grain, IUserGrain
             Email = email
         };
 
-        await _userDataService.AddAsync(_state);
+        await _userDataDataService.AddAsync(_state);
 
         return await GetDetailsAsync();
     }
@@ -55,7 +56,7 @@ public class UserGrain : Grain, IUserGrain
         // Check to see if there's a Data record for this.
         if (!string.IsNullOrEmpty(this.GetPrimaryKeyString()))
         {
-            var record = await _userDataService.GetAsync(this.GetPrimaryKeyString());
+            var record = await _userDataDataService.GetAsync(this.GetPrimaryKeyString());
             if (record != null) _state = record;
         }
 

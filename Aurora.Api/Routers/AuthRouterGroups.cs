@@ -91,25 +91,27 @@ public static class AuthRouterGroups
         return TypedResults.Ok("User Created");
     }
 
-    private record RegisterModel
+    private class RegisterModel
     {
         [Required(ErrorMessage = "User Name is required")]
-        public string? UserName { get; }
+        public string? UserName { get; set; }
 
         [EmailAddress]
         [Required(ErrorMessage = "Email is required")]
-        public string? Email { get; }
+        public string? Email { get; set; }
 
         [Required(ErrorMessage = "Password is required")]
-        public string? Password { get; }
+        public string? Password { get; set; }
     }
 
-    private record LoginModel
+    private class LoginModel
     {
         [Required(ErrorMessage = "User Name is required")]
-        public string? UserName { get; }
+        [FromBody]
+        public string? UserName { get; set; }
 
         [Required(ErrorMessage = "Password is required")]
-        public string? Password { get; }
+        [FromBody]
+        public string? Password { get; set; }
     }
 }

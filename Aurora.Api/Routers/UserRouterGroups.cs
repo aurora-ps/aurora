@@ -1,4 +1,5 @@
-﻿using Aurora.Data.Interfaces;
+﻿using System.ComponentModel.DataAnnotations;
+using Aurora.Data.Interfaces;
 using Aurora.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
@@ -14,8 +15,9 @@ public static class UserRouterGroups
         return group.WithOpenApi();
     }
 
-    private static async Task<IResult> GetUsers([FromServices] IDataService<UserRecord, string> userService)
+    private static async Task<IResult> GetUsers([FromServices] IClusterClient clusterClient)
     {
+        var userService = clusterClient.GetGrain<IUserServiceGrain>("");
         var users = await userService.GetAllAsync();
         return TypedResults.Ok(users);
     }
@@ -42,5 +44,12 @@ public static class UserRouterGroups
 
 
     [Serializable]
-    private record AddUserDto(string UserName, string Email);
+    private class AddUserDto
+    {
+        [Required]
+        public string UserName { get; set; }
+
+        [Required]
+        public string Email { get; set; }
+    }
 }

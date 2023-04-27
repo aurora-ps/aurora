@@ -29,7 +29,7 @@ IHost CreateSilo(int port, bool useDashboard = false)
     
     builder.ConfigureServices(services =>
     {
-        services.AddScoped<IDataService<UserRecord, string>, UserDataService>();
+        services.AddScoped<IDataService<UserRecord, string>, UserDataDataService>();
         services.AddScoped<IOrganizationDataService, OrganizationDataService>();
     });
 
