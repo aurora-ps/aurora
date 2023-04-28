@@ -2,9 +2,8 @@
 
 namespace Aurora.Api.Endpoints.User;
 
-public class GetUserResponse
+public class GetUserResponse : BaseResponse
 {
-    public bool Success { get; set; }
 
     public static GetUserResponse CreateSuccess(UserRecord user)
     {
@@ -18,4 +17,9 @@ public class GetUserResponse
     }
 
     public UserRecord User { get; set; }
+}
+
+public abstract class BaseResponse
+{
+    public bool Success { get; set; }
 }

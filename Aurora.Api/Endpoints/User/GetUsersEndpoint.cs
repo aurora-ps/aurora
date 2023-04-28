@@ -1,5 +1,4 @@
-﻿using Aurora.Interfaces;
-using Microsoft.AspNetCore.Mvc;
+﻿using MediatR;
 
 namespace Aurora.Api.Endpoints.User;
 
@@ -7,10 +6,12 @@ public class GetUsersEndpoint : UserRouteBase
 {
     public const string Route = $"/{UrlFragment}";
 
-    public static async Task<IResult> GetUsers([FromServices] IClusterClient clusterClient)
+    public static async Task<IResult> GetUsers(IMediator mediator)
     {
-        var userService = clusterClient.GetGrain<IUserServiceGrain>("");
-        var users = await userService.GetAllAsync();
-        return TypedResults.Ok(users);
+        var results = await mediator.Send(new GetUsersQuery());
+        if(!results.Success)
+            return Results.NotFound();
+
+        return TypedResults.Ok(results.Users);
     }
 }
