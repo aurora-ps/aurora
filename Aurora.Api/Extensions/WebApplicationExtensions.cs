@@ -1,4 +1,5 @@
-﻿using Aurora.Api.Routers;
+﻿using Aurora.Api.Endpoints.User;
+using Aurora.Api.Routers;
 
 namespace Aurora.Api.Extensions;
 
@@ -8,7 +9,7 @@ public static class WebApplicationExtensions
     {
         app.MapGroup("").ServerRoutes();
         app.MapGroup("").OrganizationRoutes();
-        app.MapGroup("").UserRoutes();
+        app.MapGroup("").ConfigureUserEndpoints();
         app.MapGroup("").AuthRoutes();
     }
 }

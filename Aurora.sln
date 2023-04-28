@@ -21,7 +21,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Aurora.Silo", "Aurora.Silo\
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "3 - Silo", "3 - Silo", "{F1994BC8-10AB-477C-B9DA-825F5156C427}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Aurora.Frontend", "Aurora.Frontend\Aurora.Frontend.csproj", "{EC21A630-9CE7-4230-B3CB-0F552EE7F08C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Aurora.Frontend", "Aurora.Frontend\Aurora.Frontend.csproj", "{EC21A630-9CE7-4230-B3CB-0F552EE7F08C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

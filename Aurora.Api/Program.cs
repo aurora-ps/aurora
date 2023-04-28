@@ -1,3 +1,4 @@
+using Aurora.Api.Endpoints.User;
 using Aurora.Api.Extensions;
 using Aurora.Api.Routers.Models;
 using Aurora.Grains.Services;
@@ -12,6 +13,8 @@ builder.ConfigureDatabase();
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(GetUserHandler).Assembly));
 
 builder.Services.AddScoped<IOrganizationDataService, OrganizationDataService>();
 builder.Services.AddScoped<IUserDataService, UserDataDataService>();
