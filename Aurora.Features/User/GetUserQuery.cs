@@ -1,10 +1,8 @@
 ﻿using MediatR;
-using Microsoft.AspNetCore.Mvc;
 
-namespace Aurora.Api.Endpoints.User;
+namespace Aurora.Features.User;
 
 public class GetUserQuery : IRequest<GetUserResponse>
 {
-    [FromRoute]
     public string UserId { get; set; }
 }

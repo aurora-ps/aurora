@@ -1,18 +1,17 @@
-﻿namespace Aurora.Api.Extensions
+﻿namespace Aurora.Api.Extensions;
+
+public static class OrleansExtensions
 {
-    public static class OrleansExtensions
+    public static void AddOrleansSilo(this ISiloBuilder siloBuilder, int port, int gatewayPort,
+        bool useDashboard = false)
     {
-        public static void AddOrleansSilo(this ISiloBuilder siloBuilder, int port, int gatewayPort, bool useDashboard = false)
-        {
-            siloBuilder.UseLocalhostClustering(siloPort: port, gatewayPort: gatewayPort);
-            siloBuilder.AddMemoryGrainStorageAsDefault();
-            siloBuilder.AddMemoryGrainStorage("auroraStorage");
+        siloBuilder.UseLocalhostClustering(port, gatewayPort);
+        siloBuilder.AddMemoryGrainStorageAsDefault();
+        siloBuilder.AddMemoryGrainStorage("auroraStorage");
 
-            if (useDashboard)
-                siloBuilder.UseDashboard();
+        if (useDashboard)
+            siloBuilder.UseDashboard();
 
-            siloBuilder.ConfigureLogging(logging => logging.AddConsole().SetMinimumLevel(LogLevel.Warning));
-
-        }
+        siloBuilder.ConfigureLogging(logging => logging.AddConsole().SetMinimumLevel(LogLevel.Warning));
     }
 }

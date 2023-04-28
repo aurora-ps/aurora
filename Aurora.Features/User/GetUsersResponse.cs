@@ -1,6 +1,6 @@
 ﻿using Aurora.Interfaces;
 
-namespace Aurora.Api.Endpoints.User;
+namespace Aurora.Features.User;
 
 public class GetUsersResponse
 {
@@ -9,7 +9,7 @@ public class GetUsersResponse
 
     public static GetUsersResponse CreateSuccess(IList<UserRecord> users)
     {
-        return new()
+        return new GetUsersResponse
         {
             Success = true,
             Users = users

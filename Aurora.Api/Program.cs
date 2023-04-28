@@ -1,6 +1,6 @@
-using Aurora.Api.Endpoints.User;
 using Aurora.Api.Extensions;
 using Aurora.Api.Routers.Models;
+using Aurora.Features.User;
 using Aurora.Grains.Services;
 using FluentValidation;
 
@@ -14,7 +14,7 @@ builder.ConfigureDatabase();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(GetUserHandler).Assembly));
+builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(GetUserQueryHandler).Assembly));
 
 builder.Services.AddScoped<IOrganizationDataService, OrganizationDataService>();
 builder.Services.AddScoped<IUserDataService, UserDataDataService>();
@@ -22,20 +22,10 @@ builder.Services.AddScoped<IUserDataService, UserDataDataService>();
 builder.Services.AddValidatorsFromAssemblyContaining<AddUserModelValidator>();
 
 if (builder.Environment.IsDevelopment())
-{
-    builder.Host.UseOrleans((context, siloBuilder) =>
-    {
-        siloBuilder.AddOrleansSilo(11111, 30000, false);
-    });
-}
+    builder.Host.UseOrleans((context, siloBuilder) => { siloBuilder.AddOrleansSilo(11111, 30000); });
 else
-{
     //TODO: Add production configuration
-    builder.Host.UseOrleans((context, siloBuilder) =>
-    {
-        siloBuilder.AddOrleansSilo(11111, 30000, false);
-    });
-}
+    builder.Host.UseOrleans((context, siloBuilder) => { siloBuilder.AddOrleansSilo(11111, 30000); });
 
 var app = builder.Build();
 

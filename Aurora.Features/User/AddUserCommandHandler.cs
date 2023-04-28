@@ -1,7 +1,7 @@
 ﻿using Aurora.Interfaces;
 using MediatR;
 
-namespace Aurora.Api.Endpoints.User;
+namespace Aurora.Features.User;
 
 public class AddUserCommandHandler : IRequestHandler<AddUserCommand, AddUserResponse>
 {

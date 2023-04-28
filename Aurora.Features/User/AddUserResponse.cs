@@ -1,18 +1,19 @@
 ﻿using Aurora.Interfaces;
 
-namespace Aurora.Api.Endpoints.User;
+namespace Aurora.Features.User;
 
 public class AddUserResponse : BaseResponse
 {
+    public UserRecord? User { get; set; }
+
     public static AddUserResponse CreateSuccess(UserRecord userRecord)
     {
-        return new()
+        return new AddUserResponse
         {
             Success = true,
             User = userRecord
         };
     }
-    public UserRecord? User { get; set; }
 
     public static AddUserResponse CreateFailure()
     {

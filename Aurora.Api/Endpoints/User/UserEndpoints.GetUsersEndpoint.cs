@@ -1,4 +1,5 @@
-﻿using MediatR;
+﻿using Aurora.Features.User;
+using MediatR;
 
 namespace Aurora.Api.Endpoints.User;
 
@@ -9,7 +10,7 @@ public class GetUsersEndpoint : UserRouteBase
     public static async Task<IResult> GetUsers(IMediator mediator)
     {
         var results = await mediator.Send(new GetUsersQuery());
-        if(!results.Success)
+        if (!results.Success)
             return Results.NotFound();
 
         return TypedResults.Ok(results.Users);

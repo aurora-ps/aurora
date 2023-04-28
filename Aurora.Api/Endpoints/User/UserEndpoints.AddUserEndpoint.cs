@@ -1,6 +1,6 @@
-﻿using MediatR;
+﻿using Aurora.Features.User;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using Orleans;
 
 namespace Aurora.Api.Endpoints.User;
 
@@ -12,7 +12,7 @@ public class AddUserEndpoint : UserRouteBase
         [FromBody] AddUserCommand user)
     {
         var results = await mediator.Send(user);
-        if(!results.Success)
+        if (!results.Success)
             return Results.NotFound();
 
         return Results.Ok(results.User);

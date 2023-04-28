@@ -12,14 +12,14 @@ public static class WebApplicationBuilderExtensions
 {
     public static void ConfigureDatabase(this WebApplicationBuilder builder)
     {
-            
         var configuration = builder.Configuration;
 
         var connectionString = configuration.GetConnectionString("Aurora");
         builder.Services.AddDbContext<ApplicationDbContext>(options =>
             options.UseSqlServer(connectionString));
 
-        builder.Services.AddIdentity<AuroraUser, AuroraIdentityRole>(options => options.SignIn.RequireConfirmedAccount = true)
+        builder.Services
+            .AddIdentity<AuroraUser, AuroraIdentityRole>(options => options.SignIn.RequireConfirmedAccount = true)
             .AddEntityFrameworkStores<ApplicationDbContext>()
             .AddDefaultTokenProviders();
 

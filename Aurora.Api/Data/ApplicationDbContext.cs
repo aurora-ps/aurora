@@ -1,5 +1,4 @@
-﻿using Aurora.Api.Data.Models;
-using Aurora.Interfaces.Models;
+﻿using Aurora.Interfaces.Models;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 

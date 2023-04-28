@@ -23,13 +23,13 @@ public class OrganizationGrain : Grain, IOrganizationGrain
     [ReadOnly]
     Task<OrganizationRecord?> IOrganizationGrain.GetDetailsAsync()
     {
-        this._logger.LogTrace("Getting organization details for {OrganizationId}", this.GetPrimaryKeyString());
+        _logger.LogTrace("Getting organization details for {OrganizationId}", this.GetPrimaryKeyString());
         return Task.FromResult(_organization);
     }
 
     async Task<OrganizationRecord?> IOrganizationGrain.CreateAsync(string name)
     {
-        this._logger.LogTrace("Creating organization {OrganizationName}", name);
+        _logger.LogTrace("Creating organization {OrganizationName}", name);
         var organization = new OrganizationRecord
         {
             Id = this.GetPrimaryKeyString(),
@@ -42,7 +42,7 @@ public class OrganizationGrain : Grain, IOrganizationGrain
 
     public Task SetDetailsAsync(OrganizationRecord organization)
     {
-        this._logger.LogTrace("Setting organization details for {OrganizationId}", organization.Id);
+        _logger.LogTrace("Setting organization details for {OrganizationId}", organization.Id);
         return Task.Run(() => _organization = organization);
     }
 }

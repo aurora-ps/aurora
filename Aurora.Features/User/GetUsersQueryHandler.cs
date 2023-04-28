@@ -1,13 +1,13 @@
 ﻿using Aurora.Interfaces;
 using MediatR;
 
-namespace Aurora.Api.Endpoints.User;
+namespace Aurora.Features.User;
 
-public class GetUserQueryHandler : IRequestHandler<GetUsersQuery, GetUsersResponse>
+public class GetUsersQueryHandler : IRequestHandler<GetUsersQuery, GetUsersResponse>
 {
     private readonly IClusterClient _clusterClient;
 
-    public GetUserQueryHandler(IClusterClient clusterClient)
+    public GetUsersQueryHandler(IClusterClient clusterClient)
     {
         _clusterClient = clusterClient;
     }

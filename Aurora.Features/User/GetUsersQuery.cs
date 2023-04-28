@@ -1,6 +1,6 @@
 ﻿using MediatR;
 
-namespace Aurora.Api.Endpoints.User;
+namespace Aurora.Features.User;
 
 public class GetUsersQuery : IRequest<GetUsersResponse>
 {

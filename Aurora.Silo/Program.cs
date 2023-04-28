@@ -13,11 +13,11 @@ IHost CreateSilo(int port, bool useDashboard = false)
 {
     void ConfigureOrleansForLocal(ISiloBuilder siloBuilder)
     {
-        siloBuilder.UseLocalhostClustering(siloPort: port, gatewayPort:30000);
+        siloBuilder.UseLocalhostClustering(port, 30000);
         siloBuilder.AddMemoryGrainStorageAsDefault();
         siloBuilder.AddMemoryGrainStorage("auroraStorage");
 
-        if(useDashboard)
+        if (useDashboard)
             siloBuilder.UseDashboard();
 
         siloBuilder.ConfigureLogging(logging => logging.AddConsole().SetMinimumLevel(LogLevel.Warning));
@@ -26,7 +26,7 @@ IHost CreateSilo(int port, bool useDashboard = false)
     }
 
     var builder = new HostBuilder();
-    
+
     builder.ConfigureServices(services =>
     {
         services.AddScoped<IDataService<UserRecord, string>, UserDataDataService>();

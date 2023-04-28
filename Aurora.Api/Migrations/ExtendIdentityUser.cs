@@ -1,40 +1,39 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+﻿#nullable disable
 
-#nullable disable
+using Microsoft.EntityFrameworkCore.Migrations;
 
-namespace Aurora.Api.Migrations
+namespace Aurora.Api.Migrations;
+
+/// <inheritdoc />
+public partial class ExtendIdentityUser : Migration
 {
     /// <inheritdoc />
-    public partial class ExtendIdentityUser : Migration
+    protected override void Up(MigrationBuilder migrationBuilder)
     {
-        /// <inheritdoc />
-        protected override void Up(MigrationBuilder migrationBuilder)
-        {
-            migrationBuilder.AddColumn<string>(
-                name: "FirstName",
-                table: "AspNetUsers",
-                type: "nvarchar(100)",
-                maxLength: 100,
-                nullable: true);
+        migrationBuilder.AddColumn<string>(
+            "FirstName",
+            "AspNetUsers",
+            "nvarchar(100)",
+            maxLength: 100,
+            nullable: true);
 
-            migrationBuilder.AddColumn<string>(
-                name: "LastName",
-                table: "AspNetUsers",
-                type: "nvarchar(100)",
-                maxLength: 100,
-                nullable: true);
-        }
+        migrationBuilder.AddColumn<string>(
+            "LastName",
+            "AspNetUsers",
+            "nvarchar(100)",
+            maxLength: 100,
+            nullable: true);
+    }
 
-        /// <inheritdoc />
-        protected override void Down(MigrationBuilder migrationBuilder)
-        {
-            migrationBuilder.DropColumn(
-                name: "FirstName",
-                table: "AspNetUsers");
+    /// <inheritdoc />
+    protected override void Down(MigrationBuilder migrationBuilder)
+    {
+        migrationBuilder.DropColumn(
+            "FirstName",
+            "AspNetUsers");
 
-            migrationBuilder.DropColumn(
-                name: "LastName",
-                table: "AspNetUsers");
-        }
+        migrationBuilder.DropColumn(
+            "LastName",
+            "AspNetUsers");
     }
 }

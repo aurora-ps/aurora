@@ -23,6 +23,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "3 - Silo", "3 - Silo", "{F1
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Aurora.Frontend", "Aurora.Frontend\Aurora.Frontend.csproj", "{EC21A630-9CE7-4230-B3CB-0F552EE7F08C}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "3.5 - Handlers", "3.5 - Handlers", "{1DCC64CC-D7DD-430A-A007-2562D53F194E}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Aurora.Features", "Aurora.Features\Aurora.Features.csproj", "{0CACF168-A77D-4311-9517-63C564527DF7}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -53,6 +57,10 @@ Global
 		{EC21A630-9CE7-4230-B3CB-0F552EE7F08C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EC21A630-9CE7-4230-B3CB-0F552EE7F08C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EC21A630-9CE7-4230-B3CB-0F552EE7F08C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0CACF168-A77D-4311-9517-63C564527DF7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0CACF168-A77D-4311-9517-63C564527DF7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0CACF168-A77D-4311-9517-63C564527DF7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0CACF168-A77D-4311-9517-63C564527DF7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -64,6 +72,7 @@ Global
 		{7CC69AD6-FFC3-4C9E-8FF1-6A7D34B060DE} = {CA50200E-9D25-4245-8602-DE227FE69FDB}
 		{D53E8A14-BE9E-427F-BD48-F010FCA1A9CE} = {F1994BC8-10AB-477C-B9DA-825F5156C427}
 		{EC21A630-9CE7-4230-B3CB-0F552EE7F08C} = {F77EF4EC-ACC9-4208-9349-D509F5186630}
+		{0CACF168-A77D-4311-9517-63C564527DF7} = {1DCC64CC-D7DD-430A-A007-2562D53F194E}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {90FED93A-058F-481E-B6B4-2DB488A9FBFE}

@@ -1,7 +1,6 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-using Aurora.Api.Data.Models;
 using Aurora.Api.Routers.Models;
 using Aurora.Interfaces;
 using Aurora.Interfaces.Models;
@@ -36,7 +35,7 @@ public static class AuthRouterGroups
     {
         var validationResult = await loginValidator.ValidateAsync(login);
 
-        if(!validationResult.IsValid)
+        if (!validationResult.IsValid)
             return TypedResults.BadRequest(validationResult.Errors);
 
         var user = await userManager.FindByNameAsync(login.UserName);
@@ -65,7 +64,7 @@ public static class AuthRouterGroups
         IValidator<RegisterModel> registerValidator,
         RegisterModel register)
     {
-        if(!(await registerValidator.ValidateAsync(register)).IsValid)
+        if (!(await registerValidator.ValidateAsync(register)).IsValid)
             return TypedResults.BadRequest();
 
         var userExists = await userManager.FindByNameAsync(register.UserName);

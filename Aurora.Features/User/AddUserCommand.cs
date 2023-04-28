@@ -1,9 +1,9 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using MediatR;
 
-namespace Aurora.Api.Routers.Models;
+namespace Aurora.Features.User;
 
-[Serializable]
-public class AddUserModel
+public class AddUserCommand : IRequest<AddUserResponse>
 {
     [Required] public string UserName { get; set; }
 

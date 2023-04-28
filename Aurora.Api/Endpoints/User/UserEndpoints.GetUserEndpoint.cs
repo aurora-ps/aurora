@@ -1,4 +1,5 @@
-﻿using MediatR;
+﻿using Aurora.Features.User;
+using MediatR;
 
 namespace Aurora.Api.Endpoints.User;
 
@@ -10,7 +11,7 @@ public class GetUserEndpoint : UserRouteBase
     {
         var userQuery = new GetUserQuery { UserId = userId };
         var user = await mediatr.Send(userQuery);
-        
+
         if (user is null || !user.Success)
             return TypedResults.NotFound();
 

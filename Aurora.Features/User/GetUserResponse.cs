@@ -1,9 +1,10 @@
 ﻿using Aurora.Interfaces;
 
-namespace Aurora.Api.Endpoints.User;
+namespace Aurora.Features.User;
 
 public class GetUserResponse : BaseResponse
 {
+    public UserRecord User { get; set; }
 
     public static GetUserResponse CreateSuccess(UserRecord user)
     {
@@ -15,8 +16,6 @@ public class GetUserResponse : BaseResponse
 
         return response;
     }
-
-    public UserRecord User { get; set; }
 }
 
 public abstract class BaseResponse
