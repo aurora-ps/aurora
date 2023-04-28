@@ -2,6 +2,7 @@
 using System.Security.Claims;
 using System.Text;
 using Aurora.Api.Routers.Models;
+using Aurora.Interfaces;
 using FluentValidation;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
@@ -58,6 +59,7 @@ public static class AuthRouterGroups
     }
 
     private static async Task<IResult> Register(UserManager<IdentityUser> userManager,
+        IClusterClient clusterClient,
         IValidator<RegisterModel> registerValidator,
         RegisterModel register)
     {
@@ -68,17 +70,21 @@ public static class AuthRouterGroups
         if (userExists is not null)
             return TypedResults.Conflict();
 
-        var user = new IdentityUser
+        var identityUser = new IdentityUser
         {
             UserName = register.UserName,
             Email = register.Email,
             SecurityStamp = Guid.NewGuid().ToString()
         };
-        var result = await userManager.CreateAsync(user, register.Password);
+        var result = await userManager.CreateAsync(identityUser, register.Password);
         if (!result.Succeeded)
             return TypedResults.Unauthorized();
 
-        return TypedResults.Ok("User Created");
+        identityUser = await userManager.FindByNameAsync(register.UserName);
+
+        var user = clusterClient.GetGrain<IUserGrain>(identityUser.Id);
+
+        return TypedResults.Ok(await user?.GetDetailsAsync());
     }
 
     private static JwtSecurityToken GetToken(IConfiguration appConfig, List<Claim> authClaims)
