@@ -1,6 +1,7 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using Aurora.Interfaces;
 using Aurora.Interfaces.Models;
 using FluentValidation;
 using MediatR;
@@ -17,12 +18,15 @@ public class AuthenticateUserCommandHandler : IRequestHandler<AuthenticateUserCo
     private readonly IConfiguration _appConfig;
     private readonly IValidator<AuthenticateUserCommand> _authenticateUserValidator;
     private readonly UserManager<AuroraUser> _userManager;
+    private readonly IClusterClient _clusterClient;
 
     public AuthenticateUserCommandHandler(UserManager<AuroraUser> userManager,
+        IClusterClient clusterClient,
         IConfiguration appConfig,
         IValidator<AuthenticateUserCommand> authenticateUserValidator)
     {
         _userManager = userManager;
+        _clusterClient = clusterClient;
         _appConfig = appConfig;
         _authenticateUserValidator = authenticateUserValidator;
     }
@@ -38,6 +42,7 @@ public class AuthenticateUserCommandHandler : IRequestHandler<AuthenticateUserCo
         var user = await _userManager.FindByNameAsync(command.UserName);
         if (user != null && await _userManager.CheckPasswordAsync(user, command.Password))
         {
+            var userGrain = await GetUserDetails(user);
             var roles = await _userManager.GetRolesAsync(user);
 
             var authClaims = new List<Claim>
@@ -50,10 +55,17 @@ public class AuthenticateUserCommandHandler : IRequestHandler<AuthenticateUserCo
 
             var token = GetToken(_appConfig, authClaims);
 
-            return AuthenticateUserCommandResult.CreateSuccess(user, token);
+            return AuthenticateUserCommandResult.CreateSuccess(userGrain, token);
         }
 
         return AuthenticateUserCommandResult.Unauthorized();
+    }
+
+    private async Task<UserRecord?> GetUserDetails(AuroraUser user)
+    {
+        var userGrain = _clusterClient.GetGrain<IUserGrain>(user.Id);
+
+        return await userGrain.GetDetailsAsync();
     }
 
     private static JwtSecurityToken GetToken(IConfiguration appConfig, List<Claim> authClaims)

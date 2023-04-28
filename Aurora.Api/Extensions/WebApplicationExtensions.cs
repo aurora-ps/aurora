@@ -1,4 +1,5 @@
 ﻿using Aurora.Api.Endpoints;
+using Aurora.Api.Endpoints.Authentication;
 using Aurora.Api.Routers;
 
 namespace Aurora.Api.Extensions;

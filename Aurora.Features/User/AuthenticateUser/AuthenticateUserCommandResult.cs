@@ -1,4 +1,5 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
+using Aurora.Interfaces;
 using Aurora.Interfaces.Models;
 using FluentValidation.Results;
 
@@ -19,11 +20,11 @@ public class AuthenticateUserCommandResult
 
     public bool Success { get; set; }
 
-    public AuroraUser User { get; set; }
+    public UserRecord User { get; set; }
 
     public string Token { get; set; }
 
-    public static AuthenticateUserCommandResult CreateSuccess(AuroraUser user, JwtSecurityToken token)
+    public static AuthenticateUserCommandResult CreateSuccess(UserRecord user, JwtSecurityToken token)
     {
         return new AuthenticateUserCommandResult
         {
