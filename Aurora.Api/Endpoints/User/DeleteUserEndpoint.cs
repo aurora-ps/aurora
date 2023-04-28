@@ -10,7 +10,7 @@ public class DeleteUserEndpoint : UserRouteBase
     public static async Task<IResult> DeleteUser(IMediator mediator, [AsParameters] DeleteUserCommand command)
     {
         var result = await mediator.Send(command);
-        
+
         switch (result.Status)
         {
             case DeleteUserResponse.DeleteUserStatusEnum.Deleted:

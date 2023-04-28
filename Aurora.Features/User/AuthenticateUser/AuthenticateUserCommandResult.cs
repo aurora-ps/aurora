@@ -1,12 +1,19 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
 using Aurora.Interfaces;
-using Aurora.Interfaces.Models;
 using FluentValidation.Results;
 
 namespace Aurora.Features.User.AuthenticateUser;
 
 public class AuthenticateUserCommandResult
 {
+    public IList<string> Errors { get; set; }
+
+    public bool Success { get; set; }
+
+    public UserRecord User { get; set; }
+
+    public string Token { get; set; }
+
     public static AuthenticateUserCommandResult BadRequest(IList<ValidationFailure> validationResultErrors)
     {
         return new AuthenticateUserCommandResult
@@ -15,14 +22,6 @@ public class AuthenticateUserCommandResult
             Errors = validationResultErrors.Select(x => x.ErrorMessage).ToList()
         };
     }
-
-    public IList<string> Errors { get; set; }
-
-    public bool Success { get; set; }
-
-    public UserRecord User { get; set; }
-
-    public string Token { get; set; }
 
     public static AuthenticateUserCommandResult CreateSuccess(UserRecord user, JwtSecurityToken token)
     {

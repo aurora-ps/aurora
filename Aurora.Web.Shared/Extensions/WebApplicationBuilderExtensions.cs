@@ -1,12 +1,19 @@
 ﻿using System.Text;
-using Aurora.Api.Data;
+using Aurora.Features.User.AuthenticateUser;
+using Aurora.Features.User.GetUser;
+using Aurora.Grains.Services;
+using Aurora.Infrasatructure.Data;
 using Aurora.Interfaces.Models;
+using FluentValidation;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 
-namespace Aurora.Api.Extensions;
+namespace Aurora.Web.Shared.Extensions;
 
 public static class WebApplicationBuilderExtensions
 {
@@ -47,5 +54,15 @@ public static class WebApplicationBuilderExtensions
             });
 
         builder.Services.AddAuthorization();
+    }
+
+    public static void SetupDependencies(this WebApplicationBuilder builder)
+    {
+        builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(GetUserQueryHandler).Assembly));
+
+        builder.Services.AddScoped<IOrganizationDataService, OrganizationDataService>();
+        builder.Services.AddScoped<IUserDataService, UserDataDataService>();
+
+        builder.Services.AddValidatorsFromAssemblyContaining<AuthenticateUserCommandValidator>();
     }
 }

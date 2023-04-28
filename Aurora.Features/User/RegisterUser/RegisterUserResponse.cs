@@ -5,12 +5,20 @@ namespace Aurora.Features.User.RegisterUser;
 
 public class RegisterUserResponse
 {
+    public enum RegisterUserResponseEnum
+    {
+        Conflict,
+        Created,
+        Unauthorized,
+        Error
+    }
+
     private RegisterUserResponse(bool success, RegisterUserResponseEnum responseType)
     {
         IsSuccess = success;
         ResponseType = responseType;
     }
-    
+
     public List<string>? Errors { get; set; }
 
     public bool IsSuccess { get; set; }
@@ -41,13 +49,5 @@ public class RegisterUserResponse
         {
             User = user
         };
-    }
-
-    public enum RegisterUserResponseEnum
-    {
-        Conflict,
-        Created,
-        Unauthorized,
-        Error
     }
 }

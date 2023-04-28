@@ -6,8 +6,8 @@ namespace Aurora.Features.User.GetUser;
 
 public class GetUserQueryHandler : IRequestHandler<GetUserQuery, GetUserResponse>
 {
-    private readonly IValidator<GetUserQuery> _validator;
     private readonly IClusterClient _clusterClient;
+    private readonly IValidator<GetUserQuery> _validator;
 
     public GetUserQueryHandler(IValidator<GetUserQuery> validator, IClusterClient clusterClient)
     {

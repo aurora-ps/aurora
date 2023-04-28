@@ -1,4 +1,4 @@
-﻿namespace Aurora.Api.Endpoints.User;
+﻿namespace Aurora.Api.Endpoints;
 
 public class EndpointRouteBase
 {

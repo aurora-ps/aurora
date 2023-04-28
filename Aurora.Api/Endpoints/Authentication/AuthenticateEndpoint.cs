@@ -7,7 +7,8 @@ public class AuthenticateEndpoint : AuthenticationRouteBase
 {
     public const string Route = $"/{UrlFragment}/login";
 
-    public static async Task<IResult> Authenticate(HttpContext httpContext, IMediator mediator, AuthenticateUserCommand command)
+    public static async Task<IResult> Authenticate(HttpContext httpContext, IMediator mediator,
+        AuthenticateUserCommand command)
     {
         var result = await mediator.Send(command);
         if (result is null || !result.Success)

@@ -1,7 +1,5 @@
-﻿using Aurora.Features.User;
-using Aurora.Features.User.GetUser;
+﻿using Aurora.Features.User.GetUser;
 using MediatR;
-using Microsoft.AspNetCore.Mvc;
 
 namespace Aurora.Api.Endpoints.User;
 

@@ -1,4 +1,4 @@
-﻿namespace Aurora.Api.Data.Models;
+﻿namespace Aurora.Interfaces.Models;
 
 public static class UserRoles
 {

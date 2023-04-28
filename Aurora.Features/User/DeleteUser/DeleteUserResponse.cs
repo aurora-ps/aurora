@@ -2,6 +2,14 @@
 
 public class DeleteUserResponse
 {
+    public enum DeleteUserStatusEnum
+    {
+        NotFound,
+        Deleted,
+        Error,
+        Unauthorized
+    }
+
     private DeleteUserResponse(bool success, DeleteUserStatusEnum status)
     {
         Success = success;
@@ -12,17 +20,18 @@ public class DeleteUserResponse
 
     public DeleteUserStatusEnum Status { get; set; }
 
-    public static DeleteUserResponse CreateSuccess() => new(true, DeleteUserStatusEnum.Deleted);
-
-    public static DeleteUserResponse CreateFailure() => new(false, DeleteUserStatusEnum.Error);
-
-    public static DeleteUserResponse CreateNotFound() => new(false, DeleteUserStatusEnum.NotFound);
-
-    public enum DeleteUserStatusEnum
+    public static DeleteUserResponse CreateSuccess()
     {
-        NotFound,
-        Deleted,
-        Error,
-        Unauthorized
+        return new DeleteUserResponse(true, DeleteUserStatusEnum.Deleted);
+    }
+
+    public static DeleteUserResponse CreateFailure()
+    {
+        return new DeleteUserResponse(false, DeleteUserStatusEnum.Error);
+    }
+
+    public static DeleteUserResponse CreateNotFound()
+    {
+        return new DeleteUserResponse(false, DeleteUserStatusEnum.NotFound);
     }
 }

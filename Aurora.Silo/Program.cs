@@ -13,7 +13,7 @@ IHost CreateSilo(int port, bool useDashboard = false)
 {
     void ConfigureOrleansForLocal(ISiloBuilder siloBuilder)
     {
-        siloBuilder.UseLocalhostClustering(port, 30000);
+        siloBuilder.UseLocalhostClustering(port);
         siloBuilder.AddMemoryGrainStorageAsDefault();
         siloBuilder.AddMemoryGrainStorage("auroraStorage");
 

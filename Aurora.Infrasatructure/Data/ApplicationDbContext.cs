@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
-namespace Aurora.Api.Data;
+namespace Aurora.Infrasatructure.Data;
 
 public class ApplicationDbContext : IdentityDbContext<AuroraUser, AuroraIdentityRole, string>
 {

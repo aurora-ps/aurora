@@ -18,22 +18,3 @@ public class LogoutUserCommandHandler : IRequestHandler<LogoutUserCommand, Logou
         return Task.FromResult(LogoutUserResponse.CreateSuccess());
     }
 }
-
-public class LogoutUserCommand : IRequest<LogoutUserResponse>
-{
-}
-
-public class LogoutUserResponse
-{
-    private LogoutUserResponse(bool success)
-    {
-        Success = success;
-    }
-
-    public bool Success { get; set; }
-
-    public static LogoutUserResponse CreateSuccess()
-    {
-        return new LogoutUserResponse(true);
-    }
-}

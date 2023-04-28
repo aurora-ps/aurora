@@ -1,4 +1,6 @@
-﻿namespace Aurora.Api.Extensions;
+﻿using Microsoft.Extensions.Logging;
+
+namespace Aurora.Web.Shared.Extensions;
 
 public static class OrleansExtensions
 {

@@ -28,7 +28,7 @@ public class UserGrain : Grain, IUserGrain
     public async Task<UserRecord?> GetDetailsAsync()
     {
         // If not initialized, try to load from the data store.
-        if(!await IsInitialized())
+        if (!await IsInitialized())
             await UpdateFromDataStore();
 
         return string.IsNullOrEmpty(_state.Id) ? null : _state;
@@ -42,6 +42,7 @@ public class UserGrain : Grain, IUserGrain
             _state = new UserRecord();
             return true;
         }
+
         return false;
     }
 
@@ -62,10 +63,7 @@ public class UserGrain : Grain, IUserGrain
     public override async Task OnActivateAsync(CancellationToken cancellationToken)
     {
         // Check to see if there's a Data record for this.
-        if (!string.IsNullOrEmpty(this.GetPrimaryKeyString()))
-        {
-            await UpdateFromDataStore();
-        }
+        if (!string.IsNullOrEmpty(this.GetPrimaryKeyString())) await UpdateFromDataStore();
 
         await base.OnActivateAsync(cancellationToken);
     }

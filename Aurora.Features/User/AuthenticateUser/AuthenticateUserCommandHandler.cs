@@ -17,8 +17,8 @@ public class AuthenticateUserCommandHandler : IRequestHandler<AuthenticateUserCo
 {
     private readonly IConfiguration _appConfig;
     private readonly IValidator<AuthenticateUserCommand> _authenticateUserValidator;
-    private readonly UserManager<AuroraUser> _userManager;
     private readonly IClusterClient _clusterClient;
+    private readonly UserManager<AuroraUser> _userManager;
 
     public AuthenticateUserCommandHandler(UserManager<AuroraUser> userManager,
         IClusterClient clusterClient,

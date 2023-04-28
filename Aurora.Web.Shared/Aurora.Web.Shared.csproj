@@ -1,12 +1,10 @@
-﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
 		<TargetFramework>net7.0</TargetFramework>
-		<Nullable>enable</Nullable>
 		<ImplicitUsings>enable</ImplicitUsings>
-		<UserSecretsId>8da3599b-669f-462b-93d1-1799a3b58831</UserSecretsId>
+		<Nullable>enable</Nullable>
 	</PropertyGroup>
-
 	<!--ASP.NET Core Packages-->
 	<ItemGroup>
 		<PackageReference Include="FluentValidation" Version="11.5.2" />
@@ -15,15 +13,7 @@
 		<PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="7.0.5" />
 		<PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="7.0.5" />
 		<PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="7.0.5" />
-		<PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="7.0.5">
-			<PrivateAssets>all</PrivateAssets>
-			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-		</PackageReference>
 		<PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="7.0.5" />
-		<PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="7.0.5">
-			<PrivateAssets>all</PrivateAssets>
-			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-		</PackageReference>
 		<PackageReference Include="Microsoft.Extensions.Identity.Core" Version="7.0.5" />
 		<PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
 	</ItemGroup>
@@ -44,9 +34,6 @@
 		<ProjectReference Include="..\Aurora.Features\Aurora.Features.csproj" />
 		<ProjectReference Include="..\Aurora.Grains\Aurora.Grains.csproj" />
 		<ProjectReference Include="..\Aurora.Infrasatructure\Aurora.Infrasatructure.csproj" />
-		<ProjectReference Include="..\Aurora.Web.Shared\Aurora.Web.Shared.csproj" />
 	</ItemGroup>
-	<ItemGroup>
-	  <Folder Include="Handlers\" />
-	</ItemGroup>
+
 </Project>
