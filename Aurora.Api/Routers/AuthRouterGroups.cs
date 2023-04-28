@@ -1,8 +1,10 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using Aurora.Api.Data.Models;
 using Aurora.Api.Routers.Models;
 using Aurora.Interfaces;
+using Aurora.Interfaces.Models;
 using FluentValidation;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
@@ -21,13 +23,13 @@ public static class AuthRouterGroups
         return group.WithOpenApi();
     }
 
-    private static async Task<IResult> Logout(SignInManager<IdentityUser> signInManager)
+    private static async Task<IResult> Logout(SignInManager<AuroraUser> signInManager)
     {
         await signInManager.SignOutAsync();
         return TypedResults.Ok();
     }
 
-    private static async Task<IResult> Login(UserManager<IdentityUser> userManager,
+    private static async Task<IResult> Login(UserManager<AuroraUser> userManager,
         IConfiguration appConfig,
         IValidator<LoginModel> loginValidator,
         LoginModel login)
@@ -58,7 +60,7 @@ public static class AuthRouterGroups
         return TypedResults.Unauthorized();
     }
 
-    private static async Task<IResult> Register(UserManager<IdentityUser> userManager,
+    private static async Task<IResult> Register(UserManager<AuroraUser> userManager,
         IClusterClient clusterClient,
         IValidator<RegisterModel> registerValidator,
         RegisterModel register)
@@ -70,7 +72,7 @@ public static class AuthRouterGroups
         if (userExists is not null)
             return TypedResults.Conflict();
 
-        var identityUser = new IdentityUser
+        var identityUser = new AuroraUser
         {
             UserName = register.UserName,
             Email = register.Email,

@@ -1,5 +1,7 @@
-﻿using Aurora.Api.Routers.Models;
+﻿using Aurora.Api.Data.Models;
+using Aurora.Api.Routers.Models;
 using Aurora.Interfaces;
+using Aurora.Interfaces.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
@@ -35,7 +37,7 @@ public static class UserRouterGroups
         return TypedResults.Ok(user);
     }
 
-    private static async Task<IResult> DeleteUser(IClusterClient clusterClient, UserManager<IdentityUser> userManager, string userId)
+    private static async Task<IResult> DeleteUser(IClusterClient clusterClient, UserManager<AuroraUser> userManager, string userId)
     {
         var grain = clusterClient.GetGrain<IUserGrain>(userId);
         var user = await grain.GetDetailsAsync();

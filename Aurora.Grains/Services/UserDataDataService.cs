@@ -1,4 +1,5 @@
 ﻿using Aurora.Interfaces;
+using Aurora.Interfaces.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -9,9 +10,9 @@ namespace Aurora.Grains.Services;
 /// </summary>
 public sealed class UserDataDataService : IUserDataService
 {
-    private readonly UserManager<IdentityUser> _userManager;
+    private readonly UserManager<AuroraUser> _userManager;
 
-    public UserDataDataService(UserManager<IdentityUser> userManager)
+    public UserDataDataService(UserManager<AuroraUser> userManager)
     {
         this._userManager = userManager;
     }
@@ -20,7 +21,7 @@ public sealed class UserDataDataService : IUserDataService
     {
         if(_userManager.Users.Any(u => u.Id == data.Id)) throw new InvalidOperationException("User already exists.");
 
-        var user = new IdentityUser
+        var user = new AuroraUser
         {
             Id = data.Id,
             UserName = data.Name,
