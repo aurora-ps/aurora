@@ -36,14 +36,23 @@ public sealed class UserDataDataService : IUserDataService
 
     public async Task<IList<UserRecord>> GetAllAsync()
     {
-        var results = await _userManager.Users.Select(u => new UserRecord
-        {
-            Id = u.Id,
-            Name = u.UserName,
-            Email = u.Email
-        }).ToListAsync();
 
-        return results;
+        try
+        {
+            var results = await _userManager.Users.Select(u => new UserRecord
+            {
+                Id = u.Id,
+                Name = u.UserName,
+                Email = u.Email
+            }).ToListAsync();
+
+            return results;
+        }
+        catch (Exception ex)
+        {
+
+            throw;
+        }
     }
 
     public async Task<UserRecord?> GetAsync(string key)
