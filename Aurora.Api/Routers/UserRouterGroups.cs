@@ -1,5 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-using Aurora.Data.Interfaces;
+﻿using Aurora.Api.Routers.Models;
 using Aurora.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
@@ -7,11 +6,13 @@ namespace Aurora.Api.Routers;
 
 public static class UserRouterGroups
 {
+    private const string UrlFragment = "user";
+
     public static RouteGroupBuilder UserRoutes(this RouteGroupBuilder group)
     {
-        group.MapGet("/user", GetUsers);
-        group.MapGet("/user/{userId}", GetUser);
-        group.MapPost("/user", AddUser);
+        group.MapGet($"/{UrlFragment}", GetUsers);
+        group.MapGet($"/{UrlFragment}/{{userId}}", GetUser);
+        group.MapPost($"/{UrlFragment}", AddUser);
         return group.WithOpenApi();
     }
 
@@ -32,7 +33,7 @@ public static class UserRouterGroups
         return TypedResults.Ok(user);
     }
 
-    private static async Task<IResult> AddUser([FromServices] IClusterClient clusterClient, [FromBody] AddUserDto user)
+    private static async Task<IResult> AddUser([FromServices] IClusterClient clusterClient, [FromBody] AddUserModel user)
     {
         var grain = clusterClient.GetGrain<IUserGrain>(Guid.NewGuid().ToString());
         var userRecord = await grain.AddAsync(user.UserName, user.Email);
@@ -40,16 +41,5 @@ public static class UserRouterGroups
             return TypedResults.NotFound();
 
         return TypedResults.Ok(userRecord);
-    }
-
-
-    [Serializable]
-    private class AddUserDto
-    {
-        [Required]
-        public string UserName { get; set; }
-
-        [Required]
-        public string Email { get; set; }
     }
 }

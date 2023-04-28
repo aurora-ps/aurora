@@ -1,35 +1,40 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.IdentityModel.Tokens.Jwt;
+﻿using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using Aurora.Api.Routers.Models;
+using FluentValidation;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 
 namespace Aurora.Api.Routers;
 
 public static class AuthRouterGroups
 {
+    private const string UrlFragment = "auth";
+
     public static RouteGroupBuilder AuthRoutes(this RouteGroupBuilder group)
     {
-        group.MapPost("/auth/login", Login);
-        group.MapPost("/auth/register", Register);
-        group.MapPost("/auth/logout", Logout);
+        group.MapPost($"/{UrlFragment}/login", Login);
+        group.MapPost($"/{UrlFragment}/register", Register);
+        group.MapPost($"/{UrlFragment}/logout", Logout);
         return group.WithOpenApi();
     }
 
-    private static async Task<IResult> Logout([FromServices] SignInManager<IdentityUser> signInManager)
+    private static async Task<IResult> Logout(SignInManager<IdentityUser> signInManager)
     {
         await signInManager.SignOutAsync();
         return TypedResults.Ok();
     }
 
-    private static async Task<IResult> Login([FromServices] UserManager<IdentityUser> userManager,
-        [FromServices] IConfiguration appConfig,
-        [FromBody] LoginModel login)
+    private static async Task<IResult> Login(UserManager<IdentityUser> userManager,
+        IConfiguration appConfig,
+        IValidator<LoginModel> loginValidator,
+        LoginModel login)
     {
-        if (string.IsNullOrEmpty(login?.UserName) || string.IsNullOrEmpty(login?.Password))
-            return TypedResults.BadRequest();
+        var validationResult = await loginValidator.ValidateAsync(login);
+
+        if(!validationResult.IsValid)
+            return TypedResults.BadRequest(validationResult.Errors);
 
         var user = await userManager.FindByNameAsync(login.UserName);
         if (user != null && await userManager.CheckPasswordAsync(user, login.Password))
@@ -52,27 +57,12 @@ public static class AuthRouterGroups
         return TypedResults.Unauthorized();
     }
 
-    private static JwtSecurityToken GetToken(IConfiguration appConfig, List<Claim> authClaims)
+    private static async Task<IResult> Register(UserManager<IdentityUser> userManager,
+        IValidator<RegisterModel> registerValidator,
+        RegisterModel register)
     {
-        var authSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(appConfig["JWT:Secret"] ??
-                                                                             throw new ApplicationException(
-                                                                                 "JWT Secret not properly configured")));
-
-        var token = new JwtSecurityToken(
-            appConfig["JWT:ValidIssuer"],
-            appConfig["JWT:ValidAudience"],
-            expires: DateTime.Now.AddHours(3),
-            claims: authClaims,
-            signingCredentials: new SigningCredentials(authSigningKey, SecurityAlgorithms.HmacSha256)
-        );
-
-        return token;
-    }
-
-    private static async Task<IResult> Register([FromServices] UserManager<IdentityUser> userManager,
-        [FromBody] RegisterModel register)
-    {
-        if (string.IsNullOrEmpty(register?.UserName)) return TypedResults.BadRequest();
+        if(!(await registerValidator.ValidateAsync(register)).IsValid)
+            return TypedResults.BadRequest();
 
         var userExists = await userManager.FindByNameAsync(register.UserName);
         if (userExists is not null)
@@ -91,27 +81,20 @@ public static class AuthRouterGroups
         return TypedResults.Ok("User Created");
     }
 
-    private class RegisterModel
+    private static JwtSecurityToken GetToken(IConfiguration appConfig, List<Claim> authClaims)
     {
-        [Required(ErrorMessage = "User Name is required")]
-        public string? UserName { get; set; }
+        var authSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(appConfig["JWT:Secret"] ??
+                                                                             throw new ApplicationException(
+                                                                                 "JWT Secret not properly configured")));
 
-        [EmailAddress]
-        [Required(ErrorMessage = "Email is required")]
-        public string? Email { get; set; }
+        var token = new JwtSecurityToken(
+            appConfig["JWT:ValidIssuer"],
+            appConfig["JWT:ValidAudience"],
+            expires: DateTime.Now.AddHours(3),
+            claims: authClaims,
+            signingCredentials: new SigningCredentials(authSigningKey, SecurityAlgorithms.HmacSha256)
+        );
 
-        [Required(ErrorMessage = "Password is required")]
-        public string? Password { get; set; }
-    }
-
-    private class LoginModel
-    {
-        [Required(ErrorMessage = "User Name is required")]
-        [FromBody]
-        public string? UserName { get; set; }
-
-        [Required(ErrorMessage = "Password is required")]
-        [FromBody]
-        public string? Password { get; set; }
+        return token;
     }
 }
