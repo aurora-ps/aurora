@@ -16,9 +16,9 @@ public static class AuthRouterGroups
 
     public static RouteGroupBuilder AuthRoutes(this RouteGroupBuilder group)
     {
-        group.MapPost($"/{UrlFragment}/login", Login);
+        //group.MapPost($"/{UrlFragment}/login", Login);
         group.MapPost($"/{UrlFragment}/register", Register);
-        group.MapPost($"/{UrlFragment}/logout", Logout);
+        //group.MapPost($"/{UrlFragment}/logout", Logout);
         return group.WithOpenApi();
     }
 

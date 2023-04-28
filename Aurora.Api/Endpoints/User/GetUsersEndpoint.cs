@@ -1,4 +1,4 @@
-﻿using Aurora.Features.User;
+﻿using Aurora.Features.User.GetUsers;
 using MediatR;
 
 namespace Aurora.Api.Endpoints.User;

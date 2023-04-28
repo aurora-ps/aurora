@@ -1,6 +1,7 @@
 using Aurora.Api.Extensions;
 using Aurora.Api.Routers.Models;
-using Aurora.Features.User;
+using Aurora.Features.User.AuthenticateUser;
+using Aurora.Features.User.GetUser;
 using Aurora.Grains.Services;
 using FluentValidation;
 
@@ -20,6 +21,7 @@ builder.Services.AddScoped<IOrganizationDataService, OrganizationDataService>();
 builder.Services.AddScoped<IUserDataService, UserDataDataService>();
 
 builder.Services.AddValidatorsFromAssemblyContaining<AddUserModelValidator>();
+builder.Services.AddValidatorsFromAssemblyContaining<AuthenticateUserCommandValidator>();
 
 if (builder.Environment.IsDevelopment())
     builder.Host.UseOrleans((context, siloBuilder) => { siloBuilder.AddOrleansSilo(11111, 30000); });

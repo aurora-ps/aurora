@@ -1,4 +1,4 @@
-﻿using Aurora.Features.User;
+﻿using Aurora.Features.User.AddUser;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 

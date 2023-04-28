@@ -1,6 +1,6 @@
 ﻿using Aurora.Interfaces;
 
-namespace Aurora.Features.User;
+namespace Aurora.Features.User.AddUser;
 
 public class AddUserResponse : BaseResponse
 {

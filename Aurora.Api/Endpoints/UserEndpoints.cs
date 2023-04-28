@@ -1,4 +1,6 @@
-﻿namespace Aurora.Api.Endpoints.User;
+﻿using Aurora.Api.Endpoints.User;
+
+namespace Aurora.Api.Endpoints;
 
 public static class UserEndpoints
 {
