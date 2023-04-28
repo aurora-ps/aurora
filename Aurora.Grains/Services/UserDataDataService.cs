@@ -69,4 +69,12 @@ public sealed class UserDataDataService : IUserDataService
             Email = user.Email
         };
     }
+
+    public async Task DeleteAsync(string key)
+    {
+        var user = await _userManager.FindByIdAsync(key);
+        if (user == null) return;
+
+        var result = await _userManager.DeleteAsync(user);
+    }
 }
