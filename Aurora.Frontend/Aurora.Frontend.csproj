@@ -7,6 +7,10 @@
 		<UserSecretsId>8da3599b-669f-462b-93d1-1799a3b58831</UserSecretsId>
 	</PropertyGroup>
 
+	<ItemGroup>
+	  <PackageReference Include="MudBlazor" Version="6.2.2" />
+	</ItemGroup>
+
   <ItemGroup>
     <ProjectReference Include="..\Aurora.Web.Shared\Aurora.Web.Shared.csproj" />
   </ItemGroup>

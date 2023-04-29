@@ -3,25 +3,34 @@
 @using Aurora.Interfaces
 @using MediatR
 
-@inject IMediator mediator;
+@inject IMediator mediator
 
-<h4>Customers</h4>
-<hr />
-<table cellpadding="0" cellspacing="0" class="table">
-    <tr>
-        <th>Id</th>
-        <th>Username</th>
-        <th>Email</th>
-    </tr>
-    @foreach (var user in Model)
-    {
-        <tr>
-            <td>@user.Id</td>
-            <td>@user.Name</td>
-            <td>@user.Email</td>
-        </tr>
-    }
-</table>
+<PageTitle>Users</PageTitle>
+
+<MudText Typo="Typo.h3" GutterBottom="true">Users</MudText>
+@if (!Model.Any())
+{
+    <MudProgressCircular Color="Color.Default" Indeterminate="true" />
+}
+else
+{
+    <MudTable Items="Model" Hover="true" SortLabel="Sort By" Elevation="0">
+        <HeaderContent>
+            <MudTh><MudTableSortLabel InitialDirection="SortDirection.Ascending" SortBy="new Func<UserRecord, object>(x=>x.Id)">Date</MudTableSortLabel></MudTh>
+            <MudTh><MudTableSortLabel SortBy="new Func<UserRecord, object>(x=>x.Name)">Username</MudTableSortLabel></MudTh>
+            <MudTh><MudTableSortLabel SortBy="new Func<UserRecord, object>(x=>x.Email)">Email</MudTableSortLabel></MudTh>
+        </HeaderContent>
+        <RowTemplate>
+            <MudTd DataLabel="Date">@context.Id</MudTd>
+            <MudTd DataLabel="Temp. (C)">@context.Name</MudTd>
+            <MudTd DataLabel="Temp. (F)">@context.Email</MudTd>
+        </RowTemplate>
+        <PagerContent>
+            <MudTablePager PageSizeOptions="new int[]{50, 100}" />
+        </PagerContent>
+    </MudTable>
+}
+
 
 @code {
     private IList<UserRecord> Model { get; set; } = new List<UserRecord>();
