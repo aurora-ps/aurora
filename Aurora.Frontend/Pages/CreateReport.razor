@@ -1,8 +1,8 @@
 ﻿@page "/CreateReport"
 @using MediatR.NotificationPublishers
 <MudForm @ref="_form" @bind-IsValid="@_success" @bind-Errors="@_errors" ReadOnly="false">
-    <MudCard>
-        <MudCardContent>
+    <MudGrid>
+        <MudItem xs="12">
             <MudText Typo="Typo.h5" GutterBottom="true">Create Report</MudText>
             <MudGrid>
                 <MudItem sm="12" md="6">
@@ -34,10 +34,8 @@
                     <MudNumericField Immediate="false" Label="Miles Driven" Format="N1" T="double?" @bind-Value="_report.Miles" />
                 </MudItem>
             </MudGrid>
-        </MudCardContent>
-    </MudCard>
-    <MudCard>
-        <MudCardContent>
+        </MudItem>
+        <MudItem xs="12">
             <MudText Typo="Typo.h5" GutterBottom="false">Location</MudText>
             <MudGrid>
                 <MudItem sm="12" md="6">
@@ -53,43 +51,71 @@
                     <MudTextField Label="Zip" @bind-Value="_report.Location.Zip" Required="false" />
                 </MudItem>
             </MudGrid>
-        </MudCardContent>
-    </MudCard>
-    <MudCard>
-        <MudCardContent>
+        </MudItem>
+        <MudItem xs="12">
             <MudGrid>
                 <MudItem xs="8"><MudText Typo="Typo.h5" GutterBottom="false">People</MudText></MudItem>
-                <MudItem xs="4"><MudButton Variant="Variant.Filled" Color="Color.Primary" @onclick="AddPerson">Add Person</MudButton></MudItem>
+                <MudItem xs="4" Class="d-flex justify-end"><MudButton Variant="Variant.Filled" Color="Color.Primary" @onclick="AddPerson">Add Person</MudButton></MudItem>
             </MudGrid>
-            @foreach (var person in _report.People)
-            {
-                <MudCard>
-                    <MudText Typo="Typo.h6" GutterBottom="false">@person.FullName</MudText>
-                    <MudGrid>
-                        <MudItem sm="12" md="6">
-                            <MudSelect @bind-Value="person.Type" Variant="Variant.Filled" Label="Type" AnchorOrigin="Origin.BottomCenter" RequiredError="Type must be selected">
-                                @foreach (PersonType personType in Enum.GetValues(typeof(PersonType)))
+            <MudList>
+                @foreach (var person in _report.People)
+                {
+                    <MudListItem>
+                        <MudCard Outlined="true">
+                            <MudGrid>
+                                <MudItem sm="12" md="6" lg="4">
+                                    <MudSelect @bind-Value="person.Type" Variant="Variant.Filled" Label="Type" AnchorOrigin="Origin.BottomCenter" RequiredError="Type must be selected">
+                                        @foreach (PersonType personType in Enum.GetValues(typeof(PersonType)))
+                                        {
+                                            <MudSelectItem Value="personType">@personType</MudSelectItem>
+                                        }
+                                    </MudSelect>
+                                </MudItem>
+                                <MudItem sm="12" md="6" lg="4">
+                                    @if (person.Type == PersonType.Victim)
+                                    {
+                                        <MudDatePicker Label="Date of Birth" @bind-Date="person.DateOfBirth" Editable="true" Required="false" />
+                                    }
+                                </MudItem>
+                                <MudItem sm="12">
+                                    <MudGrid>
+                                        <MudItem sm="12" md="6" lg="4">
+                                            <MudTextField Label="First Name" @bind-Value="person.FirstName" Required="true" />
+                                        </MudItem>
+                                        <MudItem sm="12" md="6" lg="4">
+                                            <MudTextField Label="Last Name" @bind-Value="person.LastName" Required="true" />
+                                        </MudItem>
+                                    </MudGrid>
+                                </MudItem>
+                                @if (person.AllowPhoneNumber())
                                 {
-                                    <MudSelectItem Value="personType">@personType</MudSelectItem>
+                                    <MudItem sm="12">
+                                        @foreach (PhoneNumber phoneNumber in person.PhoneNumbers)
+                                        {
+                                            <MudGrid>
+                                                <MudItem sm="12" md="6" lg="4">
+                                                    <MudTextField Label="Number" @bind-Value="phoneNumber.Number" Required="true" />
+                                                </MudItem>
+                                                <MudItem sm="12" md="6" lg="4">
+                                                    <MudSelect @bind-Value="phoneNumber.Type" Variant="Variant.Filled" Label="Type" AnchorOrigin="Origin.BottomCenter" RequiredError="Type must be selected">
+                                                        @foreach (PhoneNumberTypeEnum phoneNumberType in Enum.GetValues(typeof(PhoneNumberTypeEnum)))
+                                                        {
+                                                            <MudSelectItem Value="phoneNumberType">@phoneNumberType</MudSelectItem>
+                                                        }
+                                                    </MudSelect>
+                                                </MudItem>
+                                            </MudGrid>
+                                        }
+                                    </MudItem>
                                 }
-                            </MudSelect>
-                        </MudItem>
-                        <MudItem sm="12" md="6">
-                            @if (person.Type == PersonType.Victim)
-                            {
-                                <MudDatePicker Label="Date of Birth" @bind-Date="person.DateOfBirth" Editable="true" Required="false" />
-                            }
-                        </MudItem>
-                        <MudItem sm="12" md="6">
-                            <MudTextField Label="First Name" @bind-Value="person.FirstName" Required="true" />
-                        </MudItem>
-                        <MudItem sm="12" md="6">
-                            <MudTextField Label="Last Name" @bind-Value="person.LastName" Required="true" />
-                        </MudItem>
-                    </MudGrid>
-                </MudCard>
-            }
-        </MudCardContent></MudCard>
+
+                            </MudGrid>
+                        </MudCard>
+                    </MudListItem>
+                }
+            </MudList>
+        </MudItem>
+    </MudGrid>
 </MudForm>
 
 <MudCard class="pa-4">
@@ -111,7 +137,7 @@
     {
         public Report()
         {
-            Location = new Location {LocationType = LocationType.Incident};
+            Location = new Location { LocationType = LocationType.Incident };
         }
 
         public DateTime? Date { get; set; } = DateTime.Now;
@@ -140,6 +166,20 @@
         Default
     }
 
+    public class PhoneNumber
+    {
+        public string Number { get; set; }
+        public PhoneNumberTypeEnum Type { get; set; }
+
+    }
+
+    public enum PhoneNumberTypeEnum
+    {
+        Home,
+        Work,
+        Mobile
+    }
+
     public class ReportPerson : Person
     {
 
@@ -148,6 +188,8 @@
         public IList<Location> Locations { get; set; } = new List<Location>();
 
         public PersonType Type { get; set; }
+
+        public bool AllowPhoneNumber() => this.Type != PersonType.Victim;
     }
 
     public enum PersonType
@@ -168,9 +210,11 @@
 
         public string LastName { get; set; }
 
-        public string FullName => $"{FirstName} {LastName}";
+        public string FullName => $"{FirstName} {LastName}".Trim();
 
         public override string ToString() => FullName;
+
+        public IList<PhoneNumber> PhoneNumbers { get; set; } = new List<PhoneNumber>();
     }
 
     readonly List<Agency> _agencies = new()
@@ -246,7 +290,11 @@
     {
         var newPerson = new ReportPerson()
         {
-            Type = this._report.People.Count == 0 ? PersonType.Victim : PersonType.Other
+            Type = this._report.People.Count == 0 ? PersonType.Victim : PersonType.Other,
+            PhoneNumbers = new List<PhoneNumber>
+    {
+                new PhoneNumber()
+            }
         };
 
         this._report.People.Add(newPerson);
