@@ -64,6 +64,7 @@ public static class WebApplicationBuilderExtensions
 
         builder.Services.AddScoped<IOrganizationDataService, OrganizationDataService>();
         builder.Services.AddScoped<IUserDataService, UserDataDataService>();
+        builder.Services.AddScoped<IReportDataService, ReportDataService>();
 
         builder.Services.AddValidatorsFromAssemblyContaining<AuthenticateUserCommandValidator>();
     }

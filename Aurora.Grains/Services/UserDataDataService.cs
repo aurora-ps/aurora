@@ -1,9 +1,40 @@
-﻿using Aurora.Interfaces;
+﻿using Aurora.Infrastructure.Data;
+using Aurora.Interfaces;
 using Aurora.Interfaces.Models;
+using Aurora.Interfaces.Models.Reporting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 namespace Aurora.Grains.Services;
+
+public class ReportDataService : IReportDataService
+{
+    private readonly ReportDbContext _reportContext;
+
+    public ReportDataService(ReportDbContext reportContext)
+    {
+        _reportContext = reportContext;
+    }
+    public Task<Report> AddAsync(Report data)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<IList<Report>> GetAllAsync()
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<Report?> GetAsync(string key)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<bool> ExistsAsync(string key)
+    {
+        return _reportContext.Reports.AnyAsync(r => r.Id == key);
+    }
+}
 
 /// <summary>
 ///     Simple in-memory data service for testing.
@@ -65,6 +96,12 @@ public sealed class UserDataDataService : IUserDataService
             Name = user.UserName,
             Email = user.Email
         };
+    }
+
+    public async Task<bool> ExistsAsync(string key)
+    {
+        var user = await _userManager.FindByIdAsync(key);
+        return user != null;
     }
 
     public async Task<UserRecord?> GetByUserNameAsync(string userName)

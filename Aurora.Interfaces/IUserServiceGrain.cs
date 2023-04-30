@@ -8,3 +8,8 @@ public interface IUserServiceGrain : IGrainWithStringKey
 
     Task<IList<UserRecord>> GetAllAsync();
 }
+
+public interface IReportServiceGrain : IGrainWithStringKey
+{
+    Task<bool> ReportExistsAsync(string reportId);
+}

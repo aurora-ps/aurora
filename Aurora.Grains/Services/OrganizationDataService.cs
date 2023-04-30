@@ -29,4 +29,9 @@ public class OrganizationDataService : IOrganizationDataService
             return organization;
         });
     }
+
+    public Task<bool> ExistsAsync(string key)
+    {
+        return Task.FromResult(Organizations.ContainsKey(key));
+    }
 }

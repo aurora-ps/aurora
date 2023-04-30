@@ -4,6 +4,23 @@ using Microsoft.Extensions.Logging;
 
 namespace Aurora.Grains;
 
+public class ReportServiceGrain : Grain, IReportServiceGrain
+{
+    private readonly ILogger<ReportServiceGrain> _logger;
+    private readonly IReportDataService _reportDataService;
+
+    public ReportServiceGrain(IReportDataService reportDataService, ILogger<ReportServiceGrain> logger)
+    {
+        _reportDataService = reportDataService;
+        _logger = logger;
+    }
+
+    public async Task<bool> ReportExistsAsync(string reportId)
+    {
+        return await _reportDataService.ExistsAsync(reportId);
+    }
+}
+
 public class UserServiceGrain : Grain, IUserServiceGrain
 {
     private readonly ILogger<UserServiceGrain> _logger;

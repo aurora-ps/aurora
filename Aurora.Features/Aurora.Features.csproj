@@ -18,8 +18,4 @@
     <ProjectReference Include="..\Aurora.Interfaces\Aurora.Interfaces.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Report\GetIncidentTypes\" />
-  </ItemGroup>
-
 </Project>

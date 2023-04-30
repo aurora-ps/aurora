@@ -13,7 +13,12 @@ public class ApplicationDbContext : IdentityDbContext<AuroraUser, AuroraIdentity
     }
 }
 
-public class ReportDbContext : DbContext
+public interface IReportDbContext
+{
+    DbSet<Report> Reports { get; set; }
+}
+
+public class ReportDbContext : DbContext, IReportDbContext
 {
     public ReportDbContext(DbContextOptions<ReportDbContext> options)
         : base(options)
