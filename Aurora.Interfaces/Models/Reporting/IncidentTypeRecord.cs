@@ -6,7 +6,7 @@ public sealed record IncidentTypeRecord
 {
     [Id(0)] public string Name { get; init; }
 
-    [Id(1)] public int Id { get; set; }
+    [Id(1)] public string Id { get; set; }
     [Id(2)] public bool CollectTime { get; set; } = false;
     [Id(3)] public bool RequiresTime { get; set; } = false;
     [Id(4)] public bool CollectLocation { get; set; } = false;

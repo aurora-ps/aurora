@@ -10,10 +10,10 @@ namespace Aurora.Interfaces.Models.Reporting
     {
         public Report()
         {
-            Location = new Location { LocationType = LocationType.Incident };
+            Location = new Location { LocationType = LocationTypeEnum.Incident };
         }
 
-        public DateTime? Date { get; set; } = DateTime.Now;
+        public DateTime? Date { get; set; } = DateTime.Now.Date;
         public TimeSpan? Time { get; set; }
         public Agency Agency { get; set; }
         public IncidentType IncidentType { get; set; }

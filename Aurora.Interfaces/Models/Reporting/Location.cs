@@ -6,5 +6,5 @@ public class Location
     public string City { get; set; }
     public string State { get; set; }
     public string Zip { get; set; }
-    public LocationType LocationType { get; set; } = LocationType.Default;
+    public LocationTypeEnum LocationType { get; set; } = LocationTypeEnum.Default;
 }
