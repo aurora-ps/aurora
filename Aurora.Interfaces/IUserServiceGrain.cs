@@ -1,4 +1,6 @@
-﻿namespace Aurora.Interfaces;
+﻿using Aurora.Interfaces.Models.Reporting;
+
+namespace Aurora.Interfaces;
 
 public interface IUserServiceGrain : IGrainWithStringKey
 {
@@ -11,5 +13,12 @@ public interface IUserServiceGrain : IGrainWithStringKey
 
 public interface IReportServiceGrain : IGrainWithStringKey
 {
+    Task<IList<ReportRecord>> GetAllAsync();
     Task<bool> ReportExistsAsync(string reportId);
+}
+
+public interface IReportGrain : IGrainWithStringKey
+{
+    Task<ReportRecord?> GetAsync(string reportId);
+    Task<ReportRecord?> AddOrUpdateAsync(ReportRecord data);
 }

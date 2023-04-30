@@ -30,6 +30,21 @@ namespace Aurora.Features.Report.SaveReport
 
         private async Task<SaveReportCommandResult> CreateReport(SaveReportCommand command)
         {
+            var reportGrain = _clusterClient.GetGrain<IReportGrain>(command.Id);
+            var reportRecord = new ReportRecord
+            {
+                Id = command.Id,
+                Agency = command.Agency,
+                Date = command.Date,
+                IncidentType = command.IncidentType,
+                Location = command.Location,
+                Miles = command.Miles,
+                Narrative = command.Narrative,
+                People = command.People,
+                Time = command.Time
+            };
+
+            await reportGrain.AddOrUpdateAsync(reportRecord);
             return SaveReportCommandResult.Success(command);
         }
 

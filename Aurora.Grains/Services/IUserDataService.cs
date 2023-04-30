@@ -12,4 +12,5 @@ public interface IUserDataService : IDataService<UserRecord, string>
 
 public interface IReportDataService : IDataService<Report, string>
 {
+    Task<Report> AddOrUpdateAsync(Report record);
 }
