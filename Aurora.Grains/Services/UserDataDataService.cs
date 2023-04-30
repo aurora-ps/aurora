@@ -1,69 +1,9 @@
-﻿using Aurora.Infrastructure.Data;
-using Aurora.Interfaces;
+﻿using Aurora.Interfaces;
 using Aurora.Interfaces.Models;
-using Aurora.Interfaces.Models.Reporting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 namespace Aurora.Grains.Services;
-
-public class ReportDataService : IReportDataService
-{
-    private readonly ReportDbContext _reportContext;
-
-    public ReportDataService(ReportDbContext reportContext)
-    {
-        _reportContext = reportContext;
-    }
-    public Task<Report> AddAsync(Report data)
-    {
-        throw new NotImplementedException();
-    }
-
-    public Task<IList<Report>> GetAllAsync()
-    {
-        throw new NotImplementedException();
-    }
-
-    public Task<Report?> GetAsync(string key)
-    {
-        throw new NotImplementedException();
-    }
-
-    public Task<bool> ExistsAsync(string key)
-    {
-        return _reportContext.Reports.AnyAsync(r => r.Id == key);
-    }
-
-    public async Task<Report> AddOrUpdateAsync(Report record)
-    {
-        var existing = await _reportContext.Reports.SingleOrDefaultAsync(r => r.Id == record.Id);
-        if (existing == null)
-        {
-            _reportContext.Reports.Add(record);
-        }
-        else
-        {
-            existing.Agency = record.Agency;
-            existing.AgencyId = record.AgencyId;
-            existing.Date = record.Date;
-            existing.IncidentType = record.IncidentType;
-            existing.IncidentTypeId = record.IncidentTypeId;
-            existing.Location = record.Location;
-            existing.Miles = record.Miles;
-            existing.People = record.People;
-            existing.Narrative = record.Narrative;
-            existing.Time = record.Time;
-
-            _reportContext.Reports.Update(existing);
-        }
-
-        await _reportContext.SaveChangesAsync();
-
-        // TODO Automapper and map values
-        return record;
-    }
-}
 
 /// <summary>
 ///     Simple in-memory data service for testing.

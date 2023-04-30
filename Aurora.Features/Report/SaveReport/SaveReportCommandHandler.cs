@@ -34,6 +34,7 @@ namespace Aurora.Features.Report.SaveReport
             var reportRecord = new ReportRecord
             {
                 Id = command.Id,
+                UserId = command.UserId,
                 Agency = command.Agency,
                 Date = command.Date,
                 IncidentType = command.IncidentType,
@@ -50,7 +51,28 @@ namespace Aurora.Features.Report.SaveReport
 
         private async Task<SaveReportCommandResult> UpdateReport(SaveReportCommand command)
         {
-            return SaveReportCommandResult.Success(command);
+            var reportGrain = _clusterClient.GetGrain<IReportGrain>(command.Id);
+            if (await reportGrain.IsPersistedAsync())
+            {
+                var reportRecord = new ReportRecord
+                {
+                    Id = command.Id,
+                    UserId = command.UserId,
+                    Agency = command.Agency,
+                    Date = command.Date,
+                    IncidentType = command.IncidentType,
+                    Location = command.Location,
+                    Miles = command.Miles,
+                    Narrative = command.Narrative,
+                    People = command.People,
+                    Time = command.Time
+                };
+
+                await reportGrain.AddOrUpdateAsync(reportRecord);
+                return SaveReportCommandResult.Success(command);
+            }
+
+            return new SaveReportCommandResult(false);
         }
 
         private async Task<bool> ReportExists(string? reportId)
@@ -61,39 +83,5 @@ namespace Aurora.Features.Report.SaveReport
             var reportService = _clusterClient.GetGrain<IReportServiceGrain>("");
             return await reportService.ReportExistsAsync(reportId);
         }
-    }
-
-    public class SaveReportCommand : IRequest<SaveReportCommandResult>, IReportRecord
-    {
-        public string Id { get; init; }
-        public DateTime? Date { get; init; }
-        public TimeSpan? Time { get; init; }
-        public AgencyRecord Agency { get; init; }
-        public IncidentTypeRecord IncidentType { get; init; }
-        public double? Miles { get; init; }
-        public LocationRecord Location { get; init; }
-        public string Narrative { get; init; }
-        public IList<ReportPersonRecord> People { get; init; }
-    }
-
-    public class SaveReportCommandValidator
-    {
-    }
-
-    public class SaveReportCommandResult
-    {
-        public SaveReportCommandResult(bool isSuccess)
-        {
-            IsSuccess = isSuccess;
-        }
-
-        public static SaveReportCommandResult Success(SaveReportCommand command)
-        {
-            return new SaveReportCommandResult(true) { ReportRecord = command };
-        }
-
-        public bool IsSuccess { get; set; } = false;
-
-        public SaveReportCommand ReportRecord { get; set; }
     }
 }
