@@ -4,6 +4,7 @@ using Aurora.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Aurora.Infrastructure.Migrations
 {
     [DbContext(typeof(ReportDbContext))]
-    partial class ReportDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230430110258_AddIncidentTypesManyToMany")]
+    partial class AddIncidentTypesManyToMany
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -99,18 +102,6 @@ namespace Aurora.Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Agencies");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = "87D773C9-9420-4B42-857D-3DB4783476BC",
-                            Name = "Durham - CRT"
-                        },
-                        new
-                        {
-                            Id = "BAD172CE-D1D5-4AD0-809C-9BD04D6D22AC",
-                            Name = "Person - CRT"
-                        });
                 });
 
             modelBuilder.Entity("Aurora.Interfaces.Models.Reporting.AgencyIncidentType", b =>
@@ -126,58 +117,6 @@ namespace Aurora.Infrastructure.Migrations
                     b.HasIndex("IncidentTypeId");
 
                     b.ToTable("AgencyIncidentType");
-
-                    b.HasData(
-                        new
-                        {
-                            AgencyId = "87D773C9-9420-4B42-857D-3DB4783476BC",
-                            IncidentTypeId = "EB4F4F16-7B39-448D-9215-B578335F08DE"
-                        },
-                        new
-                        {
-                            AgencyId = "87D773C9-9420-4B42-857D-3DB4783476BC",
-                            IncidentTypeId = "AB0F1C6E-E6E5-489D-A88E-8010AB8A358A"
-                        },
-                        new
-                        {
-                            AgencyId = "87D773C9-9420-4B42-857D-3DB4783476BC",
-                            IncidentTypeId = "5D035B97-5CB0-4FA9-978E-7B34A250426E"
-                        },
-                        new
-                        {
-                            AgencyId = "87D773C9-9420-4B42-857D-3DB4783476BC",
-                            IncidentTypeId = "105B5539-879E-4F8C-B6F1-2C493CF81FAB"
-                        },
-                        new
-                        {
-                            AgencyId = "87D773C9-9420-4B42-857D-3DB4783476BC",
-                            IncidentTypeId = "A7A975E0-5952-434E-9D87-F8B049D84016"
-                        },
-                        new
-                        {
-                            AgencyId = "BAD172CE-D1D5-4AD0-809C-9BD04D6D22AC",
-                            IncidentTypeId = "EB4F4F16-7B39-448D-9215-B578335F08DE"
-                        },
-                        new
-                        {
-                            AgencyId = "BAD172CE-D1D5-4AD0-809C-9BD04D6D22AC",
-                            IncidentTypeId = "AB0F1C6E-E6E5-489D-A88E-8010AB8A358A"
-                        },
-                        new
-                        {
-                            AgencyId = "BAD172CE-D1D5-4AD0-809C-9BD04D6D22AC",
-                            IncidentTypeId = "5D035B97-5CB0-4FA9-978E-7B34A250426E"
-                        },
-                        new
-                        {
-                            AgencyId = "BAD172CE-D1D5-4AD0-809C-9BD04D6D22AC",
-                            IncidentTypeId = "105B5539-879E-4F8C-B6F1-2C493CF81FAB"
-                        },
-                        new
-                        {
-                            AgencyId = "BAD172CE-D1D5-4AD0-809C-9BD04D6D22AC",
-                            IncidentTypeId = "A7A975E0-5952-434E-9D87-F8B049D84016"
-                        });
                 });
 
             modelBuilder.Entity("Aurora.Interfaces.Models.Reporting.IncidentType", b =>
@@ -209,53 +148,6 @@ namespace Aurora.Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("IncidentTypes");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = "EB4F4F16-7B39-448D-9215-B578335F08DE",
-                            CollectLocation = true,
-                            CollectPerson = true,
-                            CollectTime = true,
-                            Name = "Death Call",
-                            RequiresTime = true
-                        },
-                        new
-                        {
-                            Id = "AB0F1C6E-E6E5-489D-A88E-8010AB8A358A",
-                            CollectLocation = false,
-                            CollectPerson = false,
-                            CollectTime = false,
-                            Name = "Administration",
-                            RequiresTime = false
-                        },
-                        new
-                        {
-                            Id = "5D035B97-5CB0-4FA9-978E-7B34A250426E",
-                            CollectLocation = true,
-                            CollectPerson = false,
-                            CollectTime = true,
-                            Name = "Training",
-                            RequiresTime = true
-                        },
-                        new
-                        {
-                            Id = "105B5539-879E-4F8C-B6F1-2C493CF81FAB",
-                            CollectLocation = false,
-                            CollectPerson = false,
-                            CollectTime = true,
-                            Name = "Other",
-                            RequiresTime = false
-                        },
-                        new
-                        {
-                            Id = "A7A975E0-5952-434E-9D87-F8B049D84016",
-                            CollectLocation = true,
-                            CollectPerson = false,
-                            CollectTime = true,
-                            Name = "Crisis Call",
-                            RequiresTime = true
-                        });
                 });
 
             modelBuilder.Entity("Aurora.Interfaces.Models.Reporting.Report", b =>

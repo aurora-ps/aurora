@@ -5,6 +5,17 @@ using System.Text;
 
 namespace Aurora.Interfaces.Models.Reporting;
 
+public class AgencyIncidentType
+{
+    public string AgencyId { get; set; }
+
+    public string IncidentTypeId { get; set; }
+
+    public Agency Agency { get; set; }
+
+    public IncidentType IncidentType { get; set; }
+}
+
 public class Agency
 {
     public Agency(string id, string name)
@@ -36,5 +47,5 @@ public class Agency
         return Name;
     }
 
-    public ICollection<IncidentType> IncidentTypes { get; set; } = new List<IncidentType>();
+    public ICollection<AgencyIncidentType> IncidentTypes { get; set; } = new List<AgencyIncidentType>();
 }

@@ -1,42 +1,38 @@
-﻿using Aurora.Interfaces.Models.Reporting;
+﻿using Aurora.Infrastructure.Data;
+using Aurora.Interfaces.Models.Reporting;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 
 namespace Aurora.Features.Agency.GetAgencies
 {
     public class GetAgenciesQueryHandler : IRequestHandler<GetAgenciesQuery, GetAgenciesResponse>
     {
+        private readonly ReportDbContext _context;
+
+        public GetAgenciesQueryHandler(ReportDbContext context)
+        {
+            _context = context;
+        }
         public async Task<GetAgenciesResponse> Handle(GetAgenciesQuery request, CancellationToken cancellationToken)
         {
-            var agencies = new List<Interfaces.Models.Reporting.Agency>()
+            try
             {
-                new ("DurhamCRT", "Durham - CRT"){IncidentTypes = GetAllIncidentTypes()},
-                new ("PersonCRT", "Person - CRT"){IncidentTypes = GetAllIncidentTypes()},
-            };
+                var agencies = await _context.Agencies
+                        .Include(a => a.IncidentTypes)
+                        .Include("IncidentTypes.IncidentType")
+                        .ToListAsync(cancellationToken);
 
-            var response = new GetAgenciesResponse()
+                var response = new GetAgenciesResponse()
+                {
+                    Agencies = agencies
+                };
+                return response;
+            }
+            catch (Exception ex)
             {
-                Agencies = agencies
-            };
-            return response;
-        }
 
-        private IList<IncidentType> GetAllIncidentTypes()
-        {
-            return new List<IncidentType>()
-            {
-                new()
-                {
-                    Id = "DeathCall", Name = "Death Call", CollectTime = true, RequiresTime = true, CollectLocation = true,
-                    CollectPerson = true
-                },
-                new() { Id = "Administration", Name = "Administration" },
-                new() { Id = "Training", Name = "Training", CollectTime = true, RequiresTime = true, CollectLocation = true },
-                new() { Id = "Other", Name = "Other", CollectTime = true },
-                new()
-                {
-                    Id = "CrisisCall", Name = "Crisis Call", CollectTime = true, RequiresTime = true, CollectLocation = true
-                },
-            };
+                throw;
+            }
         }
     }
 

@@ -15,6 +15,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Aurora.Grains\Aurora.Grains.csproj" />
     <ProjectReference Include="..\Aurora.Interfaces\Aurora.Interfaces.csproj" />
   </ItemGroup>
 

@@ -168,7 +168,7 @@
     MudForm _form;
 
     Report _report = new();
-    List<Agency> _agencies;
+    List<Agency> _agencies = new List<Agency>();
     List<IncidentType> _incidentTypes = new List<IncidentType>();
 
     protected override async Task OnInitializedAsync()
@@ -195,7 +195,7 @@
     private void HandleAgencyValueChanged(Report report, Agency value)
     {
         report.Agency = value;
-        _incidentTypes = value.IncidentTypes.OrderBy(_ => _.Name).ToList();
+        _incidentTypes = value.IncidentTypes.Select(_ => _.IncidentType).OrderBy(_ => _.Name).ToList();
     }
 
     private void HandleIncidentTypeChanged(Report report, IncidentType value)
