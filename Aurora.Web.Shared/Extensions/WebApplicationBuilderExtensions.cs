@@ -2,7 +2,7 @@
 using Aurora.Features.User.AuthenticateUser;
 using Aurora.Features.User.GetUser;
 using Aurora.Grains.Services;
-using Aurora.Infrasatructure.Data;
+using Aurora.Infrastructure.Data;
 using Aurora.Interfaces.Models;
 using FluentValidation;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -24,6 +24,8 @@ public static class WebApplicationBuilderExtensions
         var connectionString = configuration.GetConnectionString("Aurora");
         builder.Services.AddDbContext<ApplicationDbContext>(options =>
             options.UseSqlServer(connectionString));
+        builder.Services.AddDbContextPool<ReportDbContext>(options =>options.UseSqlServer(connectionString, x => x.MigrationsAssembly("Aurora.Infrastructure")));
+
 
         builder.Services
             .AddIdentity<AuroraUser, AuroraIdentityRole>(options => options.SignIn.RequireConfirmedAccount = true)
