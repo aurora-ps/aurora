@@ -4,6 +4,6 @@
 [Immutable]
 public sealed record PhoneNumberRecord
 {
-    [Id(0)] public string Number { get; init; } = string.Empty;
-    [Id(1)] public PhoneNumberTypeEnum Type { get; init; }
+    [Id(0)] public string Number { get; set; } = string.Empty;
+    [Id(1)] public PhoneNumberTypeEnum Type { get; set; }
 }

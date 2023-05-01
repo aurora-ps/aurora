@@ -1,5 +1,6 @@
 ﻿namespace Aurora.Interfaces.Models.Reporting;
-public class Report
+
+public class Report : IReport
 {
     public Report()
     {
@@ -22,7 +23,7 @@ public class Report
 
     public string Narrative { get; set; }
 
-    public IList<ReportPerson> People { get; set; } = new List<ReportPerson>();
+    public virtual ICollection<ReportPerson> People { get; set; } = new List<ReportPerson>();
 
     public string AuroraUserId { get; set; }
 

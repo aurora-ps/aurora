@@ -2,13 +2,23 @@
 
 public interface IReportRecord
 {
-    string Id { get; init; }
-    DateTime? Date { get; init; }
-    TimeSpan? Time { get; init; }
-    AgencyRecord Agency { get; init; }
-    IncidentTypeRecord IncidentType { get; init; }
-    double? Miles { get; init; }
-    LocationRecord Location { get; init; }
-    string Narrative { get; init; }
-    IList<ReportPersonRecord> People { get; init; }
+    string Id { get; set; }
+
+    string UserId { get; set; }
+
+    DateTime? Date { get; set; }
+
+    TimeSpan? Time { get; set; }
+
+    AgencyRecord Agency { get; set; }
+
+    IncidentTypeRecord IncidentType { get; set; }
+
+    double? Miles { get; set; }
+
+    LocationRecord Location { get; set; }
+
+    string Narrative { get; set; }
+
+    IList<ReportPersonRecord> People { get; set; }
 }

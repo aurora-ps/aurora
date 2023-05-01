@@ -32,7 +32,17 @@ public class ReportGrain : Grain, IReportGrain
         await base.OnActivateAsync(cancellationToken);
     }
 
-    public async Task<ReportRecord?> GetAsync(string reportId)
+    public async Task<ReportRecord?> GetAsync()
+    {
+        if (!await IsPersistedAsync())
+        {
+            _state = await this.GetAsync(this.GetPrimaryKeyString());
+        }
+
+        return this._state;
+    }
+
+    private async Task<ReportRecord?> GetAsync(string reportId)
     {
         var report = await _reportDataService.GetAsync(reportId);
 

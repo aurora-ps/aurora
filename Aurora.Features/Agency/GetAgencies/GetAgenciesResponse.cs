@@ -1,6 +1,8 @@
-﻿namespace Aurora.Features.Agency.GetAgencies;
+﻿using Aurora.Interfaces.Models.Reporting;
+
+namespace Aurora.Features.Agency.GetAgencies;
 
 public class GetAgenciesResponse
 {
-    public IList<Interfaces.Models.Reporting.Agency> Agencies { get; set; } = new List<Interfaces.Models.Reporting.Agency>();
+    public List<AgencyRecord> Agencies { get; set; } = new ();
 }

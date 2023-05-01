@@ -2,6 +2,7 @@
 @inject MediatR.IMediator Mediator
 @using Aurora.Interfaces.Models.Reporting
 @using Aurora.Features.Agency.GetAgencies
+@using Aurora.Features.Report.GetReport
 @using Aurora.Features.Report.GetReports
 @using Aurora.Features.Report.SaveReport
 
@@ -13,15 +14,15 @@
                     <MudText Typo="Typo.h5" GutterBottom="true">Create Report</MudText>
                 </MudItem>
                 <MudItem xs="12" md="6">
-                    <MudSelect T="Agency" Value="_report.Agency" ValueChanged="value => HandleAgencyValueChanged(_report, value)" Variant="Variant.Filled" Label="Agency" AnchorOrigin="Origin.BottomCenter" Required="true" RequiredError="Agency must be selected" Disabled="!_agencies.Any()" >
+                    <MudSelect T="AgencyRecord" Value="_report.Agency" ValueChanged="value => HandleAgencyValueChanged(_report, value)" Variant="Variant.Filled" Label="Agency" AnchorOrigin="Origin.BottomCenter" Required="true" RequiredError="Agency must be selected" Disabled="!_agencies.Any()" >
                         @foreach (var agency in _agencies)
                         {
-                            <MudSelectItem Value="@agency" />
+                            <MudSelectItem Value="@agency"  />
                         }
                     </MudSelect>
                 </MudItem>
                 <MudItem xs="12" md="6">
-                    <MudSelect T="IncidentType" Value="_report.IncidentType" ValueChanged="value => HandleIncidentTypeChanged(_report, value)" Variant="Variant.Filled" Label="Incident Type" AnchorOrigin="Origin.BottomCenter" Required="true" RequiredError="Incient Type must be selected" Disabled="!_incidentTypes.Any()">
+                    <MudSelect T="IncidentTypeRecord" Value="_report.IncidentType" ValueChanged="value => HandleIncidentTypeChanged(_report, value)" Variant="Variant.Filled" Label="Incident Type" AnchorOrigin="Origin.BottomCenter" Required="true" RequiredError="Incient Type must be selected" Disabled="!_incidentTypes.Any()">
                         @foreach (var incidentType in _incidentTypes)
                         {
                             <MudSelectItem Value="@incidentType" />
@@ -75,7 +76,7 @@
                     <MudItem xs="4" Class="d-flex justify-end"><MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Person" Color="Color.Primary" @onclick="AddPerson">Add Person</MudButton></MudItem>
                     <MudItem xs="12">
                         <MudExpansionPanels MultiExpansion="true">
-                            @foreach (ReportPerson person in _report.People)
+                            @foreach (ReportPersonRecord person in _report.People)
                             {
                                 <MudExpansionPanel IsInitiallyExpanded="true">
                                     <TitleContent><MudIconButton Icon="@Icons.Material.Filled.Delete" OnClick="@(() => RemovePerson(person.Id))"></MudIconButton> @person.ToString()</TitleContent>
@@ -101,7 +102,7 @@
                                             <MudItem xs="12" md="6">
                                                 <MudTextField Label="Last Name" @bind-Value="person.LastName" Required="true" />
                                             </MudItem>
-                                            @if (person.AllowPhoneNumber())
+                                            @if (AllowPhoneNumber(person))
                                             {
                                                 <MudItem xs="12"><MudText Typo="Typo.h6" GutterBottom="false">Contact Information</MudText></MudItem>
                                                 //<MudItem xs="6" md="3"><MudButton Variant="Variant.Filled" Color="Color.Primary" @onclick="AddPerson">Add Phone</MudButton></MudItem>
@@ -119,7 +120,7 @@
                                                     </MudSelect>
                                                 </MudItem>
                                             }
-                                            @if (person.AllowAddress())
+                                            @if (AllowAddress(person))
                                             {
                                                 <MudItem xs="12" md="6">
                                                     <MudTextField Label="Address" @bind-Value="person.Location.Address" Required="true" />
@@ -171,9 +172,9 @@
     string[] _errors = { };
     MudForm _form;
 
-    Report _report = new();
-    List<Agency> _agencies = new List<Agency>();
-    List<IncidentType> _incidentTypes = new List<IncidentType>();
+    IReportRecord _report = new ReportRecord();
+    List<AgencyRecord> _agencies = new ();
+    List<IncidentTypeRecord> _incidentTypes = new ();
 
     protected override async Task OnInitializedAsync()
     {
@@ -182,36 +183,34 @@
 
         if (!string.IsNullOrEmpty(recordId))
         {
-            var records = await Mediator.Send(new GetReportsQuery());
-            var record = records.Reports.FirstOrDefault(_ => _.Id == recordId);
-
-            if(record != null)
+            var record = await Mediator.Send(new GetReportQuery(recordId));
+            if((record?.Success ?? false) && record.Report != null)
             {
-                _report = record.ToReport();
-                _incidentTypes = _agencies.FirstOrDefault(_ => _.Id == _report.Agency.Id)?.IncidentTypes.Select(_ => _.IncidentType).OrderBy(_ => _.Name).ToList() ?? new List<IncidentType>();
+                _report = record.Report;
+                _incidentTypes = _agencies.FirstOrDefault(_ => _.Id == _report.Agency.Id)?.IncidentTypes.Select(_ => _).OrderBy(_ => _.Name).ToList() ?? new List<IncidentTypeRecord>();
             }
         }
     }
 
     private void AddPerson()
     {
-        var newPerson = new ReportPerson()
+        var newPerson = new ReportPersonRecord()
         {
             Type = this._report.People.Count == 0 ? PersonType.Victim : PersonType.Other,
-            PhoneNumber = new PhoneNumber()
+            PhoneNumber = new PhoneNumberRecord()
         };
 
         this._report.People.Add(newPerson);
         StateHasChanged();
     }
 
-    private void HandleAgencyValueChanged(Report report, Agency value)
+    private void HandleAgencyValueChanged(IReportRecord report, AgencyRecord value)
     {
         report.Agency = value;
-        _incidentTypes = value.IncidentTypes.Select(_ => _.IncidentType).OrderBy(_ => _.Name).ToList();
+        _incidentTypes = value.IncidentTypes.Select(_ => _).OrderBy(_ => _.Name).ToList();
     }
 
-    private void HandleIncidentTypeChanged(Report report, IncidentType value)
+    private void HandleIncidentTypeChanged(IReportRecord report, IncidentTypeRecord value)
     {
         report.IncidentType = value;
         if (report.IncidentType.CollectPerson && !report.People.Any())
@@ -261,7 +260,7 @@
         {
             _saveState = SaveStateEnum.Saving;
 
-            var command = new SaveReportCommand()
+            var command = SaveReportCommand.Create(new ReportRecord
             {
                 UserId = "0317fa18-52f9-4334-8f11-de08edf63ae8",
                 Id = recordId ?? Guid.NewGuid().ToString(),
@@ -284,12 +283,13 @@
                     FirstName = _.FirstName,
                     LastName = _.LastName,
                     Type = _.Type,
+                    DateOfBirth = _.DateOfBirth,
                     PhoneNumber = _.PhoneNumber == null ? null : new PhoneNumberRecord
                     {
                         Number = _.PhoneNumber.Number,
                         Type = _.PhoneNumber.Type
                     },
-                    Location = _.Location == null ? null : new  LocationRecord
+                    Location = _.Location == null ? null : new LocationRecord
                     {
                         Address = _.Location.Address,
                         City = _.Location.City,
@@ -297,22 +297,50 @@
                         Zip = _.Location.Zip
                     }
                 }).ToList()
-            };
+            });
 
             var result = await Mediator.Send(command);
 
             if (result.IsSuccess)
             {
+                _report = await GetReport(result.ReportRecord.Id);
                 _saveState = SaveStateEnum.Saved;
                 _success = true;
                 _errors = new string[] { };
+                StateHasChanged();
             }
             else
             {
                 _saveState = SaveStateEnum.Unsaved;
                 _success = false;
+                StateHasChanged();
             }
         }
+    }
+
+    private async Task<ReportRecord> GetReport(string reportId)
+    {
+        var report = await Mediator.Send(new GetReportQuery(reportId));
+        if(report?.Success ?? false)
+        {
+            return report.Report;
+        }
+        else
+        {
+            return new ReportRecord();
+        }
+
+    }
+
+    private bool AllowPhoneNumber(ReportPersonRecord person)
+    {
+        bool allowPhoneNumber = person.Type != PersonType.Victim;
+        return allowPhoneNumber;
+    }
+
+    private bool AllowAddress(ReportPersonRecord person)
+    {
+        return person.Type != PersonType.Victim;
     }
 
 }

@@ -18,9 +18,22 @@ namespace Aurora.Features.Agency.GetAgencies
             try
             {
                 var agencies = await _context.Agencies
-                        .Include(a => a.IncidentTypes)
-                        .Include("IncidentTypes.IncidentType")
-                        .ToListAsync(cancellationToken);
+                    .Select(a => new AgencyRecord
+                    {
+                        Id = a.Id,
+                        Name = a.Name,
+                        IncidentTypes = a.IncidentTypes.Select(it => new IncidentTypeRecord
+                        {
+                            Id = it.IncidentType.Id,
+                            Name = it.IncidentType.Name,
+                            CollectLocation = it.IncidentType.CollectLocation,
+                            CollectPerson = it.IncidentType.CollectPerson,
+                            CollectTime = it.IncidentType.CollectTime,
+                            RequiresTime = it.IncidentType.RequiresTime,
+
+                        }).ToList()
+                    })
+                .ToListAsync(cancellationToken);
 
                 var response = new GetAgenciesResponse()
                 {

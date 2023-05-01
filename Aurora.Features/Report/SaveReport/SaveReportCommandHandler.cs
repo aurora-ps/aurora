@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Aurora.Interfaces;
+﻿using Aurora.Interfaces;
 using Aurora.Interfaces.Models.Reporting;
 using MediatR;
 
@@ -18,57 +13,37 @@ namespace Aurora.Features.Report.SaveReport
             _clusterClient = clusterClient;
         }
 
-        public async Task<SaveReportCommandResult> Handle(SaveReportCommand command, CancellationToken cancellationToken)
+        public async Task<SaveReportCommandResult> Handle(SaveReportCommand command,
+            CancellationToken cancellationToken)
         {
-            if (await this.ReportExists(command.Id))
+            var report = command.ReportRecord;
+            if (await this.ReportExists(report.Id))
             {
-                return await this.UpdateReport(command);
+                await this.UpdateReport(report);
             }
-
-            return await this.CreateReport(command);
+            else
+            {
+                await this.CreateReport(report);
+            }
+            
+            var reportGrain = _clusterClient.GetGrain<IReportGrain>(report.Id);
+            var updatedReport = await reportGrain.GetAsync();
+            return new SaveReportCommandResult(true){ReportRecord = updatedReport};
         }
 
-        private async Task<SaveReportCommandResult> CreateReport(SaveReportCommand command)
+        private async Task<SaveReportCommandResult> CreateReport(ReportRecord command)
         {
             var reportGrain = _clusterClient.GetGrain<IReportGrain>(command.Id);
-            var reportRecord = new ReportRecord
-            {
-                Id = command.Id,
-                UserId = command.UserId,
-                Agency = command.Agency,
-                Date = command.Date,
-                IncidentType = command.IncidentType,
-                Location = command.Location,
-                Miles = command.Miles,
-                Narrative = command.Narrative,
-                People = command.People,
-                Time = command.Time
-            };
-
-            await reportGrain.AddOrUpdateAsync(reportRecord);
+            await reportGrain.AddOrUpdateAsync(command);
             return SaveReportCommandResult.Success(command);
         }
 
-        private async Task<SaveReportCommandResult> UpdateReport(SaveReportCommand command)
+        private async Task<SaveReportCommandResult> UpdateReport(ReportRecord command)
         {
             var reportGrain = _clusterClient.GetGrain<IReportGrain>(command.Id);
             if (await reportGrain.IsPersistedAsync())
             {
-                var reportRecord = new ReportRecord
-                {
-                    Id = command.Id,
-                    UserId = command.UserId,
-                    Agency = command.Agency,
-                    Date = command.Date,
-                    IncidentType = command.IncidentType,
-                    Location = command.Location,
-                    Miles = command.Miles,
-                    Narrative = command.Narrative,
-                    People = command.People,
-                    Time = command.Time
-                };
-
-                await reportGrain.AddOrUpdateAsync(reportRecord);
+                await reportGrain.AddOrUpdateAsync(command);
                 return SaveReportCommandResult.Success(command);
             }
 

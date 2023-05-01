@@ -4,23 +4,23 @@
 [Immutable]
 public sealed record ReportRecord : IReportRecord
 {
-    [Id(0)] public string Id { get; init; } = Guid.NewGuid().ToString();
+    [Id(0)] public string Id { get; set; } = Guid.NewGuid().ToString();
     [Id(1)] public string UserId { get; set; }
 
-    [Id(2)] public DateTime? Date { get; init; }
-    [Id(3)] public TimeSpan? Time { get; init; }
-    [Id(4)] public AgencyRecord Agency { get; init; }
-    [Id(5)] public IncidentTypeRecord IncidentType { get; init; }
-    [Id(6)] public double? Miles { get; init; }
-    [Id(7)] public LocationRecord Location { get; init; }
-    [Id(8)] public string Narrative { get; init; }
-    [Id(9)] public IList<ReportPersonRecord> People { get; init; } = new List<ReportPersonRecord>();
+    [Id(2)] public DateTime? Date { get; set; }
+    [Id(3)] public TimeSpan? Time { get; set; }
+    [Id(4)] public AgencyRecord Agency { get; set; }
+    [Id(5)] public IncidentTypeRecord IncidentType { get; set; }
+    [Id(6)] public double? Miles { get; set; }
+    [Id(7)] public LocationRecord Location { get; set; }
+    [Id(8)] public string Narrative { get; set; }
+    [Id(9)] public IList<ReportPersonRecord> People { get; set; } = new List<ReportPersonRecord>();
 
     public string TimeDisplay => Time == null ? string.Empty : $"{Time.Value.Hours} : {Time.Value.Minutes}";
 }
 
 public static class ReportExtensions{
-    public static ReportRecord ToReportRecord(this Report report)
+    public static ReportRecord ToReportRecord(this IReport report)
     {
         return new ReportRecord
         {
@@ -83,7 +83,7 @@ public static class ReportExtensions{
         };
     }
 
-    public static Report ToReport(this ReportRecord reportRecord)
+    public static Report ToReport(this IReportRecord reportRecord)
     {
         var report = new Report
         {
