@@ -1,0 +1,49 @@
+﻿@page "/reports"
+@inject MediatR.IMediator Mediator
+@inject NavigationManager NavManager
+@using Aurora.Interfaces.Models.Reporting
+@using Aurora.Features.Report.GetReports
+@using System.Runtime.CompilerServices
+@using Microsoft.EntityFrameworkCore.Metadata.Internal
+
+<h1>Reports</h1>
+
+<MudDataGrid Items="@_reports" Filterable="true" SortMode="SortMode.Multiple" Groupable="false">
+    <Columns>
+        <PropertyColumn Property="x => x.Date" Format="MM/dd/yyyy"></PropertyColumn>
+        <PropertyColumn Property="x => x.TimeDisplay"></PropertyColumn>
+        <PropertyColumn Property="x => x.Agency.Name"></PropertyColumn>
+        <PropertyColumn Property="x => x.IncidentType.Name"></PropertyColumn>
+        <PropertyColumn Property="x => x.Location.Address"></PropertyColumn>
+        <TemplateColumn CellClass="d-flex justify-end">
+            <CellTemplate>
+                <MudStack Row>
+                    <MudButton Size="@Size.Small" Variant="@Variant.Filled" Color="@Color.Primary" OnClick="@(()=>StartedEditingItem(context.Item.Id))">Edit</MudButton>
+                </MudStack>
+            </CellTemplate>
+        </TemplateColumn>
+    </Columns>
+</MudDataGrid>
+
+@code {
+    private IList<ReportRecord> _reports = new List<ReportRecord>();
+    private bool _loading = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var reports = await Mediator.Send(new GetReportsQuery());
+        if (reports.Success)
+        {
+            this._reports = reports.Reports
+                .OrderByDescending(_ => _.Date)
+                .ThenByDescending(_ => _.Time)
+                .ToList();
+            this._loading = false;
+        }
+    }
+    void StartedEditingItem(string id)
+    {
+        NavManager.NavigateTo($"/report/{id}");
+    }
+
+}

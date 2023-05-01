@@ -6,14 +6,15 @@ namespace Aurora.Grains;
 
 public class UserServiceGrain : Grain, IUserServiceGrain
 {
-    private readonly IUserDataService _userDataService;
     private readonly ILogger<UserServiceGrain> _logger;
+    private readonly IUserDataService _userDataService;
 
     public UserServiceGrain(IUserDataService userDataService, ILogger<UserServiceGrain> logger)
     {
         _userDataService = userDataService;
         _logger = logger;
     }
+
     public Task<UserRecord?> FindByIdAsync(string userId)
     {
         return _userDataService.GetAsync(userId);

@@ -8,4 +8,6 @@ public interface IDataService<T, TKey>
     Task<IList<T>> GetAllAsync();
 
     Task<T?> GetAsync(string key);
+
+    Task<bool> ExistsAsync(string key);
 }

@@ -11,6 +11,7 @@
 	<ItemGroup>
 		<PackageReference Include="FluentValidation" Version="11.5.2" />
 		<PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="11.5.2" />
+		<PackageReference Include="MediatR" Version="12.0.1" />
 		<PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="7.0.5" />
 		<PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="7.0.5" />
 		<PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="7.0.5" />
@@ -37,7 +38,15 @@
 	<ItemGroup>
 		<PackageReference Include="OrleansDashboard" Version="7.2.0" />
 	</ItemGroup>
+
+	<!--Aurora Packages-->
 	<ItemGroup>
+		<ProjectReference Include="..\Aurora.Features\Aurora.Features.csproj" />
 		<ProjectReference Include="..\Aurora.Grains\Aurora.Grains.csproj" />
+		<ProjectReference Include="..\Aurora.Infrasatructure\Aurora.Infrastructure.csproj" />
+		<ProjectReference Include="..\Aurora.Web.Shared\Aurora.Web.Shared.csproj" />
+	</ItemGroup>
+	<ItemGroup>
+	  <Folder Include="Handlers\" />
 	</ItemGroup>
 </Project>

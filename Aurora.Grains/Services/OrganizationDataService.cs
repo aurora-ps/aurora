@@ -1,6 +1,5 @@
 ﻿using System.Collections.Concurrent;
 using Aurora.Interfaces;
-using Orleans.Runtime;
 
 namespace Aurora.Grains.Services;
 
@@ -29,5 +28,10 @@ public class OrganizationDataService : IOrganizationDataService
             Organizations.TryGetValue(key, out var organization);
             return organization;
         });
+    }
+
+    public Task<bool> ExistsAsync(string key)
+    {
+        return Task.FromResult(Organizations.ContainsKey(key));
     }
 }

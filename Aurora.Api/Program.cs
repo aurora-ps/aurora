@@ -1,7 +1,5 @@
 using Aurora.Api.Extensions;
-using Aurora.Api.Routers.Models;
-using Aurora.Grains.Services;
-using FluentValidation;
+using Aurora.Web.Shared.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,26 +11,13 @@ builder.ConfigureDatabase();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddScoped<IOrganizationDataService, OrganizationDataService>();
-builder.Services.AddScoped<IUserDataService, UserDataDataService>();
-
-builder.Services.AddValidatorsFromAssemblyContaining<AddUserModelValidator>();
+builder.SetupDependencies();
 
 if (builder.Environment.IsDevelopment())
-{
-    builder.Host.UseOrleans((context, siloBuilder) =>
-    {
-        siloBuilder.AddOrleansSilo(11111, 30000, false);
-    });
-}
+    builder.Host.UseOrleans((context, siloBuilder) => { siloBuilder.AddOrleansSilo(11111, 30000); });
 else
-{
     //TODO: Add production configuration
-    builder.Host.UseOrleans((context, siloBuilder) =>
-    {
-        siloBuilder.AddOrleansSilo(11111, 30000, false);
-    });
-}
+    builder.Host.UseOrleans((context, siloBuilder) => { siloBuilder.AddOrleansSilo(11111, 30000); });
 
 var app = builder.Build();
 

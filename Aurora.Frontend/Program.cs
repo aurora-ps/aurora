@@ -1,13 +1,23 @@
-using Aurora.Frontend.Data;
-using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Components.Web;
+using Aurora.Web.Shared.Extensions;
+using MudBlazor.Services;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.ConfigureDatabase();
 
 // Add services to the container.
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
-builder.Services.AddSingleton<WeatherForecastService>();
+builder.Services.AddMudServices();
+
+builder.SetupDependencies();
+
+if (builder.Environment.IsDevelopment())
+    builder.Host.UseOrleans((context, siloBuilder) => { siloBuilder.AddOrleansSilo(11111, 30000); });
+else
+    //TODO: Add production configuration
+    builder.Host.UseOrleans((context, siloBuilder) => { siloBuilder.AddOrleansSilo(11111, 30000); });
+
 
 var app = builder.Build();
 
