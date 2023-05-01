@@ -6,4 +6,8 @@ namespace Aurora.Grains.Services;
 public interface IReportDataService : IDataService<Report, string>
 {
     Task<Report> AddOrUpdateAsync(Report record);
+    Task<bool> UnDeleteAsync(string reportId);
+    Task<DateTime?> DeleteAsync(string getPrimaryKeyString);
+
+    Task<IList<Report>> GetAllAsync(bool includeDeleted = false);
 }

@@ -16,10 +16,9 @@ public class ReportServiceGrain : Grain, IReportServiceGrain
         _logger = logger;
     }
 
-    public async Task<IList<ReportRecord>> GetAllAsync()
+    public async Task<IList<ReportRecord>> GetAllAsync(bool includeDeleted = false)
     {
-        var reports = await _reportDataService.GetAllAsync();
-
+        var reports = await _reportDataService.GetAllAsync(includeDeleted);
         return reports.Select(r => r.ToReportRecord()).ToList();
     }
 

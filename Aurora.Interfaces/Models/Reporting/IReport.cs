@@ -15,4 +15,8 @@ public interface IReport
     AuroraUser User { get; set; }
     string AgencyId { get; set; }
     string IncidentTypeId { get; set; }
+
+    DateTime CreatedOnUtc { get; set; }
+
+    DateTime? DeletedOnUtc { get; set; }
 }

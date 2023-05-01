@@ -32,4 +32,8 @@ public class Report : IReport
     public string AgencyId { get; set; }
 
     public string IncidentTypeId { get; set; }
+
+    public DateTime CreatedOnUtc { get; set; } = DateTime.Now;
+
+    public DateTime? DeletedOnUtc { get; set; }
 }

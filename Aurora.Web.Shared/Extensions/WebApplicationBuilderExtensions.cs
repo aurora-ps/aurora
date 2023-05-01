@@ -24,8 +24,11 @@ public static class WebApplicationBuilderExtensions
         var connectionString = configuration.GetConnectionString("Aurora");
         builder.Services.AddDbContext<ApplicationDbContext>(options =>
             options.UseSqlServer(connectionString));
-        builder.Services.AddDbContextPool<ReportDbContext>(options =>options.UseSqlServer(connectionString, x => x.MigrationsAssembly("Aurora.Infrastructure")));
 
+        builder.Services.AddDbContext<ReportDbContext>(options =>options.UseSqlServer(connectionString, x => x.MigrationsAssembly("Aurora.Infrastructure")));
+
+        builder.Services.AddScoped<ApplicationDbContext, ApplicationDbContext>();
+        builder.Services.AddScoped<ReportDbContext, ReportDbContext>();
 
         builder.Services
             .AddIdentity<AuroraUser, AuroraIdentityRole>(options => options.SignIn.RequireConfirmedAccount = true)

@@ -43,7 +43,6 @@
 	<ItemGroup>
 		<ProjectReference Include="..\Aurora.Features\Aurora.Features.csproj" />
 		<ProjectReference Include="..\Aurora.Grains\Aurora.Grains.csproj" />
-		<ProjectReference Include="..\Aurora.Infrasatructure\Aurora.Infrastructure.csproj" />
 		<ProjectReference Include="..\Aurora.Web.Shared\Aurora.Web.Shared.csproj" />
 	</ItemGroup>
 	<ItemGroup>

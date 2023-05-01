@@ -8,7 +8,7 @@
 
 	<ItemGroup>
 		<ProjectReference Include="..\Aurora.Data.Interfaces\Aurora.Data.Interfaces.csproj" />
-		<ProjectReference Include="..\Aurora.Infrasatructure\Aurora.Infrastructure.csproj" />
+		<ProjectReference Include="..\Aurora.Infrastructure\Aurora.Infrastructure.csproj" />
 		<ProjectReference Include="..\Aurora.Interfaces\Aurora.Interfaces.csproj" />
 	</ItemGroup>
 

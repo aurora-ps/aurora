@@ -20,5 +20,8 @@ public interface IReportRecord
 
     string Narrative { get; set; }
 
-    IList<ReportPersonRecord> People { get; set; }
+    IList<ReportPersonRecord> People { get; set; } 
+    DateTime? DeletedOnUtc { get; set; }
+
+    DateTime CreatedOnUtc { get; set; }
 }

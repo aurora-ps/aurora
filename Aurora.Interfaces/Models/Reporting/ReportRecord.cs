@@ -16,6 +16,9 @@ public sealed record ReportRecord : IReportRecord
     [Id(8)] public string Narrative { get; set; }
     [Id(9)] public IList<ReportPersonRecord> People { get; set; } = new List<ReportPersonRecord>();
 
+    [Id(10)] public DateTime? DeletedOnUtc { get; set; }
+    [Id(11)] public DateTime CreatedOnUtc { get; set; }
+
     public string TimeDisplay => Time == null ? string.Empty : $"{Time.Value.Hours} : {Time.Value.Minutes}";
 }
 
@@ -34,6 +37,8 @@ public static class ReportExtensions{
             Date = report.Date,
             Time = report.Time,
             Id = report.Id,
+            CreatedOnUtc = report.CreatedOnUtc,
+            DeletedOnUtc = report.DeletedOnUtc,
             IncidentType = report.IncidentType == null
                 ? null
                 : new IncidentTypeRecord
@@ -92,6 +97,8 @@ public static class ReportExtensions{
             AgencyId = reportRecord.Agency.Id,
             Agency = new Agency(reportRecord.Agency.Id, reportRecord.Agency.Name),
             Date = reportRecord.Date,
+            CreatedOnUtc = reportRecord.CreatedOnUtc,
+            DeletedOnUtc = reportRecord.DeletedOnUtc,
             IncidentTypeId = reportRecord.IncidentType.Id,
             IncidentType = new IncidentType()
             {

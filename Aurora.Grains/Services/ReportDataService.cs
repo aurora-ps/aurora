@@ -17,15 +17,21 @@ public class ReportDataService : IReportDataService
         throw new NotImplementedException();
     }
 
-    public async Task<IList<Report>> GetAllAsync()
+    public async Task<IList<Report>> GetAllAsync(bool includeDeleted = false)
     {
-        return await _reportContext.Reports.Include(r => r.Agency)
+        var listAsync = await _reportContext.Reports
+            .Where(_ => (includeDeleted) || (_.DeletedOnUtc == null))
+            .AsNoTracking().Include(r => r.Agency)
             .Include(r => r.IncidentType)
             .Include(r => r.Location)
             .Include(r => r.People).ThenInclude(p => p.Location)
             .Include(r => r.People).ThenInclude(p => p.PhoneNumber)
             .ToListAsync();
+
+        return listAsync;
     }
+
+    public async Task<IList<Report>> GetAllAsync() => await this.GetAllAsync(true);
 
     public Task<Report?> GetAsync(string key)
     {
@@ -70,6 +76,32 @@ public class ReportDataService : IReportDataService
 
         // TODO Automapper and map values
         return record;
+    }
+
+    public async Task<bool> UnDeleteAsync(string reportId)
+    {
+        var record = await _reportContext.Reports.SingleOrDefaultAsync(r => r.Id == reportId);
+        if (record == null)
+            return false;
+        
+        record.DeletedOnUtc = null;
+        await _reportContext.SaveChangesAsync();
+
+        return true;
+    }
+
+    public async Task<DateTime?> DeleteAsync(string reportId)
+    {
+        var utcNow = DateTime.UtcNow;
+
+        var record = await _reportContext.Reports.SingleOrDefaultAsync(r => r.Id == reportId);
+        if (record == null)
+            return null;
+        
+        record.DeletedOnUtc = utcNow;
+        await _reportContext.SaveChangesAsync();
+
+        return utcNow;
     }
 
     private void UpdatePeople(Report report, IList<ReportPerson> recordPeople)

@@ -1,3 +1,4 @@
+using Aurora.Frontend.Services;
 using Aurora.Web.Shared.Extensions;
 using MudBlazor.Services;
 
@@ -11,6 +12,9 @@ builder.Services.AddServerSideBlazor();
 builder.Services.AddMudServices();
 
 builder.SetupDependencies();
+
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddScoped<BlazorUserService>();
 
 if (builder.Environment.IsDevelopment())
     builder.Host.UseOrleans((context, siloBuilder) => { siloBuilder.AddOrleansSilo(11111, 30000); });
@@ -34,6 +38,9 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
+
+app.UseAuthentication(); 
+app.UseAuthorization();  
 
 app.MapBlazorHub();
 app.MapFallbackToPage("/_Host");

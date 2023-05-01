@@ -33,7 +33,6 @@
 	<ItemGroup>
 		<ProjectReference Include="..\Aurora.Features\Aurora.Features.csproj" />
 		<ProjectReference Include="..\Aurora.Grains\Aurora.Grains.csproj" />
-		<ProjectReference Include="..\Aurora.Infrasatructure\Aurora.Infrastructure.csproj" />
 	</ItemGroup>
 
 </Project>

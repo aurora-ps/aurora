@@ -3,7 +3,6 @@
 @using Aurora.Interfaces.Models.Reporting
 @using Aurora.Features.Agency.GetAgencies
 @using Aurora.Features.Report.GetReport
-@using Aurora.Features.Report.GetReports
 @using Aurora.Features.Report.SaveReport
 
 <MudForm @ref="_form" @bind-IsValid="@_success" @bind-Errors="@_errors" ReadOnly="false">
@@ -97,19 +96,16 @@
                                                 }
                                             </MudItem>
                                             <MudItem xs="12" md="6">
-                                                <MudTextField Label="First Name" @bind-Value="person.FirstName" Required="true" />
+                                                <MudTextField Label="First Name" @bind-Value="person.FirstName" Required="false" />
                                             </MudItem>
                                             <MudItem xs="12" md="6">
-                                                <MudTextField Label="Last Name" @bind-Value="person.LastName" Required="true" />
+                                                <MudTextField Label="Last Name" @bind-Value="person.LastName" Required="false" />
                                             </MudItem>
                                             @if (AllowPhoneNumber(person))
                                             {
                                                 <MudItem xs="12"><MudText Typo="Typo.h6" GutterBottom="false">Contact Information</MudText></MudItem>
-                                                //<MudItem xs="6" md="3"><MudButton Variant="Variant.Filled" Color="Color.Primary" @onclick="AddPerson">Add Phone</MudButton></MudItem>
-                                                //<MudItem xs="6" md="3"><MudButton Variant="Variant.Filled" Color="Color.Primary" @onclick="AddPerson">Add Address</MudButton></MudItem>
-                                                //For now we are just going to support a single phone number
                                                 <MudItem xs="12" md="6">
-                                                    <MudTextField Label="Phone Number" @bind-Value="person.PhoneNumber.Number" Required="true" />
+                                                    <MudTextField Label="Phone Number" @bind-Value="person.PhoneNumber.Number" Required="false" />
                                                 </MudItem>
                                                 <MudItem xs="12" md="6">
                                                     <MudSelect @bind-Value="person.PhoneNumber.Type" Variant="Variant.Filled" Label="Type" AnchorOrigin="Origin.BottomCenter" RequiredError="Type must be selected">
@@ -123,13 +119,13 @@
                                             @if (AllowAddress(person))
                                             {
                                                 <MudItem xs="12" md="6">
-                                                    <MudTextField Label="Address" @bind-Value="person.Location.Address" Required="true" />
+                                                    <MudTextField Label="Address" @bind-Value="person.Location.Address" Required="false" />
                                                 </MudItem>
                                                 <MudItem xs="12" md="6">
-                                                    <MudTextField Label="City" @bind-Value="person.Location.City" Required="true" />
+                                                    <MudTextField Label="City" @bind-Value="person.Location.City" Required="false" />
                                                 </MudItem>
                                                 <MudItem xs="12" md="6">
-                                                    <MudTextField Label="State" @bind-Value="person.Location.State" Required="true" />
+                                                    <MudTextField Label="State" @bind-Value="person.Location.State" Required="false" />
                                                 </MudItem>
                                                 <MudItem xs="12" md="6">
                                                     <MudTextField Label="Zip" @bind-Value="person.Location.Zip" Required="false" />

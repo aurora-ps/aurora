@@ -72,4 +72,25 @@ public class ReportGrain : Grain, IReportGrain
     {
         return Task.FromResult(this._state != null);
     }
+
+    public async Task<bool> UnDeleteAsync()
+    {
+        if (await _reportDataService.UnDeleteAsync(this.GetPrimaryKeyString()))
+        {
+            this._state = await GetAsync(this.GetPrimaryKeyString());
+            return true;
+        }
+        return false;
+    }
+
+    public async Task<DateTime?> DeleteAsync()
+    {
+        DateTime? deletedOnUtc = await _reportDataService.DeleteAsync(this.GetPrimaryKeyString());
+        if (deletedOnUtc.HasValue)
+        {
+            this._state = await GetAsync(this.GetPrimaryKeyString());
+        }
+
+        return deletedOnUtc;
+    }
 }

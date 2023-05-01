@@ -1,4 +1,6 @@
-﻿@inherits LayoutComponentBase
+﻿@using Aurora.Frontend.Services
+@inherits LayoutComponentBase
+@inject BlazorUserService BlazorUserService
 
 <MudThemeProvider IsDarkMode="true" />
 <MudDialogProvider />
@@ -7,13 +9,20 @@
 <MudLayout>
     <MudAppBar Elevation="0">
         <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((e) => DrawerToggle())" />
+        <MudText Typo="Typo.h5">Public Safety Tools</MudText>
         <MudSpacer />
-        <MudIconButton Icon="@Icons.Custom.Brands.MudBlazor" Color="Color.Inherit" Link="https://mudblazor.com/" Target="_blank" />
-        <MudIconButton Icon="@Icons.Custom.Brands.GitHub" Color="Color.Inherit" Link="https://github.com/MudBlazor/MudBlazor/" Target="_blank" />
+        @if(_isAuthenticated)
+        {
+            <MudButton Color="Color.Primary" Variant="Variant.Filled" Href="logout">Logout</MudButton>
+        }
+        else
+        {
+            <MudButton Color="Color.Primary" Variant="Variant.Filled" Href="login">Login</MudButton>
+        }
     </MudAppBar>
     <MudDrawer @bind-Open="_drawerOpen" Elevation="1">
         <MudDrawerHeader>
-            <MudText Typo="Typo.h6">MudBlazorExample</MudText>
+            <MudText Typo="Typo.h6">Menu</MudText>
         </MudDrawerHeader>
         <NavMenu />
     </MudDrawer>
@@ -26,9 +35,17 @@
 
 @code {
     bool _drawerOpen = true;
+    bool _isAuthenticated = false;
 
     void DrawerToggle()
     {
         _drawerOpen = !_drawerOpen;
     }
+
+    protected override async Task OnInitializedAsync()
+    {
+        _isAuthenticated = await BlazorUserService.IsAuthenticatedAsync();
+        await base.OnInitializedAsync();
+    }
+
 }

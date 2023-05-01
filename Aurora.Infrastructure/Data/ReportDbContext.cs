@@ -20,6 +20,9 @@ public class ReportDbContext : DbContext, IReportDbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Report>()
+            .Property(_ => _.CreatedOnUtc).HasDefaultValueSql("GetUtcDate()");
+
+        modelBuilder.Entity<Report>()
             .HasOne(r => r.Agency)
             .WithMany()
             .HasForeignKey(r => r.AgencyId);
