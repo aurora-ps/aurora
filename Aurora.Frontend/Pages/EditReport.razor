@@ -1,174 +1,189 @@
 @page "/report/{recordId?}"
 @inject MediatR.IMediator Mediator
+@inject IDialogService DialogService
+
 @using Aurora.Interfaces.Models.Reporting
 @using Aurora.Features.Agency.GetAgencies
 @using Aurora.Features.Report.GetReport
 @using Aurora.Features.Report.SaveReport
+@using System.Text
+@using Aurora.Frontend.ExtensionMethods
 
-<MudForm @ref="_form" @bind-IsValid="@_success" @bind-Errors="@_errors" ReadOnly="false">
-    <MudList Clickable="false" Dense="true" DisableGutters="true">
-        <MudListItem>
-            <MudGrid Spacing="1">
-                <MudItem xs="12">
-                    <MudText Typo="Typo.h5" GutterBottom="true">Create Report</MudText>
-                </MudItem>
-                <MudItem xs="12" sm="6">
-                    <MudSelect T="AgencyRecord" Value="_report.Agency" ValueChanged="value => HandleAgencyValueChanged(_report, value)" Variant="Variant.Text" Label="Agency" AnchorOrigin="Origin.BottomCenter" Required="true" RequiredError="Agency must be selected" Disabled="!_agencies.Any()">
-                        @foreach (var agency in _agencies)
+<MudTabs>
+    <MudTabPanel Text="Report">
+        <MudForm @ref="_form" @bind-IsValid="@_success" @bind-Errors="@_errors" ReadOnly="false">
+            <MudList Clickable="false" Dense="true" DisableGutters="true">
+                <MudListItem>
+                    <MudGrid Spacing="1">
+                        <MudItem xs="12">
+                            <MudText Typo="Typo.h5" GutterBottom="true">@(string.IsNullOrEmpty(@recordId) ? "Create Report" : "Edit Report")</MudText>
+                        </MudItem>
+                        <MudItem xs="12" sm="6">
+                            <MudSelect T="AgencyRecord" Value="_report.Agency" ValueChanged="value => HandleAgencyValueChanged(_report, value)" Variant="Variant.Text" Label="Agency" AnchorOrigin="Origin.BottomCenter" Required="true" RequiredError="Agency must be selected" Disabled="!_agencies.Any()">
+                                @foreach (var agency in _agencies)
+                                {
+                                    <MudSelectItem Value="@agency" />
+                                }
+                            </MudSelect>
+                        </MudItem>
+                        <MudItem xs="12" sm="6">
+                            <MudSelect T="IncidentTypeRecord" Value="_report.IncidentType" ValueChanged="value => HandleIncidentTypeChanged(_report, value)" Variant="Variant.Text" Label="Incident Type" AnchorOrigin="Origin.BottomCenter" Required="true" RequiredError="Incient Type must be selected" Disabled="!_incidentTypes.Any()">
+                                @foreach (var incidentType in _incidentTypes)
+                                {
+                                    <MudSelectItem Value="@incidentType" />
+                                }
+                            </MudSelect>
+                        </MudItem>
+                        <MudItem xs="6" sm="3">
+                            <MudDatePicker Label="Date" @bind-Date="_report.Date" Editable="true" Required="false" />
+                        </MudItem>
+                        @if (_report?.IncidentType?.RequiresTime ?? false)
                         {
-                            <MudSelectItem Value="@agency" />
+
+                            <MudItem xs="6" sm="3">
+                                <MudTimePicker Label="Time" @bind-Time="_report.IncidentTime" Editable="true" Required="_report?.IncidentType?.RequiresTime ?? false" />
+                            </MudItem>
+                            <MudItem xs="6" sm="3">
+                                <MudDatePicker Label="Cleared Date" @bind-Date="_report.ClearedDate" MinDate="@_report.Date" Editable="true" Required="_report?.IncidentType?.RequiresTime ?? false" />
+                            </MudItem>
+                            <MudItem xs="6" sm="3">
+                                <MudTimePicker Label="Cleared Time" @bind-Time="_report.ClearedTime" Editable="true" Required="_report?.IncidentType?.RequiresTime ?? false" />
+                            </MudItem>
                         }
-                    </MudSelect>
-                </MudItem>
-                <MudItem xs="12" sm="6">
-                    <MudSelect T="IncidentTypeRecord" Value="_report.IncidentType" ValueChanged="value => HandleIncidentTypeChanged(_report, value)" Variant="Variant.Text" Label="Incident Type" AnchorOrigin="Origin.BottomCenter" Required="true" RequiredError="Incient Type must be selected" Disabled="!_incidentTypes.Any()">
-                        @foreach (var incidentType in _incidentTypes)
-                        {
-                            <MudSelectItem Value="@incidentType" />
-                        }
-                    </MudSelect>
-                </MudItem>
-                <MudItem xs="6" sm="3">
-                    <MudDatePicker Label="Date" @bind-Date="_report.Date" Editable="true" Required="false" />
-                </MudItem>
-                @if (_report?.IncidentType?.RequiresTime ?? false)
+
+                        <MudItem xs="12" sm="3">
+                            <MudNumericField Immediate="false" Label="Miles Driven" Format="N1" T="double?" @bind-Value="_report.Miles" />
+                        </MudItem>
+                    </MudGrid>
+                </MudListItem>
+                @if (this._report?.IncidentType?.CollectLocation ?? false)
                 {
+                    <MudDivider />
+                    <MudListItem>
+                        <MudGrid Spacing="1">
+                            @* Location Section *@
+                            <MudItem xs="12">
+                                <MudText Typo="Typo.h5" GutterBottom="false">Location</MudText>
+                            </MudItem>
+                            <MudItem xs="12" md="6" lg="4">
+                                <MudTextField Label="Address" @bind-Value="_report.Location.Address" Required="true" />
+                            </MudItem>
+                            <MudItem xs="12" md="6" lg="4">
+                                <MudTextField Label="City" @bind-Value="_report.Location.City" Required="true" />
+                            </MudItem>
+                            <MudItem xs="12" md="6" lg="2">
+                                <MudTextField Label="State" @bind-Value="_report.Location.State" Required="true" />
+                            </MudItem>
+                            <MudItem xs="12" md="6" lg="2">
+                                <MudTextField Label="Zip" @bind-Value="_report.Location.Zip" Required="false" />
+                            </MudItem>
 
-                    <MudItem xs="6" sm="3">
-                        <MudTimePicker Label="Time" @bind-Time="_report.IncidentTime" Editable="true" Required="_report?.IncidentType?.RequiresTime ?? false" />
-                    </MudItem>
-                    <MudItem xs="6" sm="3">
-                        <MudDatePicker Label="Cleared Date" @bind-Date="_report.ClearedDate" MinDate="@_report.Date" Editable="true" Required="_report?.IncidentType?.RequiresTime ?? false" />
-                    </MudItem>
-                    <MudItem xs="6" sm="3">
-                        <MudTimePicker Label="Cleared Time" @bind-Time="_report.ClearedTime" Editable="true" Required="_report?.IncidentType?.RequiresTime ?? false" />
-                    </MudItem>
+                        </MudGrid>
+                    </MudListItem>
                 }
-
-                <MudItem xs="12" sm="3">
-                    <MudNumericField Immediate="false" Label="Miles Driven" Format="N1" T="double?" @bind-Value="_report.Miles" />
-                </MudItem>
-            </MudGrid>
-        </MudListItem>
-        @if (this._report?.IncidentType?.CollectLocation ?? false)
-        {
-            <MudDivider />
-            <MudListItem>
-                <MudGrid Spacing="1">
-                    @* Location Section *@
-                    <MudItem xs="12">
-                        <MudText Typo="Typo.h5" GutterBottom="false">Location</MudText>
-                    </MudItem>
-                    <MudItem xs="12" md="6" lg="4">
-                        <MudTextField Label="Address" @bind-Value="_report.Location.Address" Required="true" />
-                    </MudItem>
-                    <MudItem xs="12" md="6" lg="4">
-                        <MudTextField Label="City" @bind-Value="_report.Location.City" Required="true" />
-                    </MudItem>
-                    <MudItem xs="12" md="6" lg="2">
-                        <MudTextField Label="State" @bind-Value="_report.Location.State" Required="true" />
-                    </MudItem>
-                    <MudItem xs="12" md="6" lg="2">
-                        <MudTextField Label="Zip" @bind-Value="_report.Location.Zip" Required="false" />
-                    </MudItem>
-
-                </MudGrid>
-            </MudListItem>
-        }
-        @if (this._report?.IncidentType?.CollectPerson ?? false)
-        {
-            <MudDivider />
-            <MudListItem>
-                <MudGrid Spacing="1">
-                    @* People Section *@
-                    <MudItem xs="8"><MudText Typo="Typo.h5" GutterBottom="false">People</MudText></MudItem>
-                    <MudItem xs="4" Class="d-flex justify-end"><MudButton Variant="Variant.Text" StartIcon="@Icons.Material.Filled.Person" Color="Color.Primary" @onclick="AddPerson">Add Person</MudButton></MudItem>
-                    <MudItem xs="12">
-                        <MudExpansionPanels MultiExpansion="true">
-                            @foreach (ReportPersonRecord person in _report.People)
-                            {
-                                <MudExpansionPanel IsInitiallyExpanded="true">
-                                    <TitleContent><MudIconButton Icon="@Icons.Material.Filled.Delete" OnClick="@(() => RemovePerson(person.Id))"></MudIconButton> @person.ToString()</TitleContent>
-                                    <ChildContent>
-                                        <MudGrid Spacing="1">
-                                            <MudItem xs="6" lg="2">
-                                                <MudSelect T="PersonType" @bind-Value="person.Type" Variant="Variant.Text" Label="Type" AnchorOrigin="Origin.BottomCenter" RequiredError="Type must be selected">
-                                                    @foreach (PersonType personType in Enum.GetValues(typeof(PersonType)))
-                                                    {
-                                                        <MudSelectItem Value="personType">@personType</MudSelectItem>
-                                                    }
-                                                </MudSelect>
-                                            </MudItem>
-                                            <MudItem xs="12" md="6" lg="4">
-                                                <MudTextField Label="First Name" @bind-Value="person.FirstName" Required="false" />
-                                            </MudItem>
-                                            <MudItem xs="12" md="6" lg="4">
-                                                <MudTextField Label="Last Name" @bind-Value="person.LastName" Required="false" />
-                                            </MudItem>
-                                            <MudItem xs="6" lg="2">
-                                                @if (person.Type == PersonType.Victim)
-                                                {
-                                                    <MudDatePicker Label="Date of Birth" @bind-Date="person.DateOfBirth" Editable="true" Required="false" />
-                                                }
-                                            </MudItem>
-                                            @if (AllowPhoneNumber(person))
-                                            {
-                                                <MudItem xs="12"><MudText Typo="Typo.h6" GutterBottom="false">Contact Information</MudText></MudItem>
-                                                <MudItem xs="12" md="6">
-                                                    <MudTextField Label="Phone Number" @bind-Value="person.PhoneNumber.Number" Required="false" />
-                                                </MudItem>
-                                                <MudItem xs="12" md="6">
-                                                    <MudSelect @bind-Value="person.PhoneNumber.Type" Variant="Variant.Text" Label="Type" AnchorOrigin="Origin.BottomCenter" RequiredError="Type must be selected">
-                                                        @foreach (PhoneNumberTypeEnum phoneNumberType in Enum.GetValues(typeof(PhoneNumberTypeEnum)))
+                @if (this._report?.IncidentType?.CollectPerson ?? false)
+                {
+                    <MudDivider />
+                    <MudListItem>
+                        <MudGrid Spacing="1">
+                            @* People Section *@
+                            <MudItem xs="8"><MudText Typo="Typo.h5" GutterBottom="false">People</MudText></MudItem>
+                            <MudItem xs="4" Class="d-flex justify-end"><MudButton Variant="Variant.Text" StartIcon="@Icons.Material.Filled.Person" Color="Color.Primary" @onclick="AddPerson">Add Person</MudButton></MudItem>
+                            <MudItem xs="12">
+                                <MudExpansionPanels MultiExpansion="true">
+                                    @foreach (ReportPersonRecord person in _report.People)
+                                    {
+                                        <MudExpansionPanel IsInitiallyExpanded="true">
+                                            <TitleContent><MudIconButton Icon="@Icons.Material.Filled.Delete" OnClick="@(() => RemovePerson(person.Id))"></MudIconButton> @person.ToString()</TitleContent>
+                                            <ChildContent>
+                                                <MudGrid Spacing="1">
+                                                    <MudItem xs="6" lg="2">
+                                                        <MudSelect T="PersonType" @bind-Value="person.Type" Variant="Variant.Text" Label="Type" AnchorOrigin="Origin.BottomCenter" RequiredError="Type must be selected">
+                                                            @foreach (PersonType personType in Enum.GetValues(typeof(PersonType)))
+                                                            {
+                                                                <MudSelectItem Value="personType">@personType</MudSelectItem>
+                                                            }
+                                                        </MudSelect>
+                                                    </MudItem>
+                                                    <MudItem xs="12" md="6" lg="4">
+                                                        <MudTextField Label="First Name" @bind-Value="person.FirstName" Required="false" />
+                                                    </MudItem>
+                                                    <MudItem xs="12" md="6" lg="4">
+                                                        <MudTextField Label="Last Name" @bind-Value="person.LastName" Required="false" />
+                                                    </MudItem>
+                                                    <MudItem xs="6" lg="2">
+                                                        @if (person.Type == PersonType.Victim)
                                                         {
-                                                            <MudSelectItem Value="phoneNumberType">@phoneNumberType</MudSelectItem>
+                                                            <MudDatePicker Label="Date of Birth" @bind-Date="person.DateOfBirth" Editable="true" Required="false" />
                                                         }
-                                                    </MudSelect>
-                                                </MudItem>
-                                            }
-                                            @if (AllowAddress(person))
-                                            {
-                                                <MudItem xs="12" md="6" lg="4">
-                                                    <MudTextField Label="Address" @bind-Value="person.Location.Address" Required="false" />
-                                                </MudItem>
-                                                <MudItem xs="12" md="6" lg="4">
-                                                    <MudTextField Label="City" @bind-Value="person.Location.City" Required="false" />
-                                                </MudItem>
-                                                <MudItem xs="12" md="6" lg="2">
-                                                    <MudTextField Label="State" @bind-Value="person.Location.State" Required="false" />
-                                                </MudItem>
-                                                <MudItem xs="12" md="6" lg="2">
-                                                    <MudTextField Label="Zip" @bind-Value="person.Location.Zip" Required="false" />
-                                                </MudItem>
-                                            }
-                                        </MudGrid>
-                                    </ChildContent>
-                                </MudExpansionPanel>
-                            }
-                        </MudExpansionPanels>
+                                                    </MudItem>
+                                                    @if (AllowPhoneNumber(person))
+                                                    {
+                                                        <MudItem xs="12"><MudText Typo="Typo.h6" GutterBottom="false">Contact Information</MudText></MudItem>
+                                                        <MudItem xs="12" md="6">
+                                                            <MudTextField Label="Phone Number" @bind-Value="person.PhoneNumber.Number" Required="false" />
+                                                        </MudItem>
+                                                        <MudItem xs="12" md="6">
+                                                            <MudSelect @bind-Value="person.PhoneNumber.Type" Variant="Variant.Text" Label="Type" AnchorOrigin="Origin.BottomCenter" RequiredError="Type must be selected">
+                                                                @foreach (PhoneNumberTypeEnum phoneNumberType in Enum.GetValues(typeof(PhoneNumberTypeEnum)))
+                                                                {
+                                                                    <MudSelectItem Value="phoneNumberType">@phoneNumberType</MudSelectItem>
+                                                                }
+                                                            </MudSelect>
+                                                        </MudItem>
+                                                    }
+                                                    @if (AllowAddress(person))
+                                                    {
+                                                        <MudItem xs="12" md="6" lg="4">
+                                                            <MudTextField Label="Address" @bind-Value="person.Location.Address" Required="false" />
+                                                        </MudItem>
+                                                        <MudItem xs="12" md="6" lg="4">
+                                                            <MudTextField Label="City" @bind-Value="person.Location.City" Required="false" />
+                                                        </MudItem>
+                                                        <MudItem xs="12" md="6" lg="2">
+                                                            <MudTextField Label="State" @bind-Value="person.Location.State" Required="false" />
+                                                        </MudItem>
+                                                        <MudItem xs="12" md="6" lg="2">
+                                                            <MudTextField Label="Zip" @bind-Value="person.Location.Zip" Required="false" />
+                                                        </MudItem>
+                                                    }
+                                                </MudGrid>
+                                            </ChildContent>
+                                        </MudExpansionPanel>
+                                    }
+                                </MudExpansionPanels>
+                            </MudItem>
+                        </MudGrid>
+                    </MudListItem>
+                }
+                <MudDivider />
+                <MudListItem>
+                    <MudItem xs="8"><MudText Typo="Typo.h5" GutterBottom="false">Narrative</MudText></MudItem>
+                    <MudItem xs="12">
+                        <MudTextField T="string" @bind-Value="@_report.Narrative" Lines="10" Variant="Variant.Filled" Required="true"></MudTextField>
                     </MudItem>
-                </MudGrid>
-            </MudListItem>
-        }
-        <MudDivider />
-        <MudListItem>
-            <MudItem xs="8"><MudText Typo="Typo.h5" GutterBottom="false">Narrative</MudText></MudItem>
+                </MudListItem>
+            </MudList>
+            <MudButton Variant="Variant.Filled" Color="Color.Primary" DisableElevation="true" OnClick="@(SaveForm)" Disabled="_saveState == SaveStateEnum.Saving">@SubmitButtonText</MudButton>
+        </MudForm>
+    </MudTabPanel>
+    <MudTabPanel Text="Report Summary">
+        <MudGrid>
             <MudItem xs="12">
-                <MudTextField T="string" @bind-Value="@_report.Narrative" Lines="10" Variant="Variant.Filled" Required="true"></MudTextField>
+                <MudTextField T="string" Text="@_reportText" Lines="40" Variant="Variant.Filled" ></MudTextField>
             </MudItem>
-        </MudListItem>
-    </MudList>
-    <MudButton Variant="Variant.Filled" Color="Color.Primary" DisableElevation="true" OnClick="@(SaveForm)" Disabled="_saveState == SaveStateEnum.Saving">@SubmitButtonText</MudButton>
-</MudForm>
+        </MudGrid>
+    </MudTabPanel>
+</MudTabs>
 
-<MudCard class="pa-4">
+@*<MudCard class="pa-4">
     <MudHidden Breakpoint="Breakpoint.Xs" Invert="true"><MudCard class="pa-1">XS</MudCard></MudHidden>
     <MudHidden Breakpoint="Breakpoint.Sm" Invert="true"><MudCard class="pa-1">SM</MudCard></MudHidden>
     <MudHidden Breakpoint="Breakpoint.Md" Invert="true"><MudCard class="pa-1">MD</MudCard></MudHidden>
     <MudHidden Breakpoint="Breakpoint.Lg" Invert="true"><MudCard class="pa-1">LG</MudCard></MudHidden>
     <MudHidden Breakpoint="Breakpoint.Xl" Invert="true"><MudCard class="pa-1">XL</MudCard></MudHidden>
     <MudHidden Breakpoint="Breakpoint.Xxl" Invert="true"><MudCard class="pa-1">XXL</MudCard></MudHidden>
-</MudCard>
+</MudCard>*@
 @code {
 
     [Parameter]
@@ -179,8 +194,8 @@
     MudForm _form;
 
     IReportRecord _report = new ReportRecord();
-    List<AgencyRecord> _agencies = new ();
-    List<IncidentTypeRecord> _incidentTypes = new ();
+    List<AgencyRecord> _agencies = new();
+    List<IncidentTypeRecord> _incidentTypes = new();
 
     protected override async Task OnInitializedAsync()
     {
@@ -190,7 +205,7 @@
         if (!string.IsNullOrEmpty(recordId))
         {
             var record = await Mediator.Send(new GetReportQuery(recordId));
-            if((record?.Success ?? false) && record.Report != null)
+            if ((record?.Success ?? false) && record.Report != null)
             {
                 _report = record.Report;
                 _incidentTypes = _agencies.FirstOrDefault(_ => _.Id == _report.Agency.Id)?.IncidentTypes.Select(_ => _).OrderBy(_ => _.Name).ToList() ?? new List<IncidentTypeRecord>();
@@ -259,7 +274,7 @@
         Saved,
         Unsaved
     }
-
+    
     private async Task SaveForm()
     {
         await _form.Validate();
@@ -328,7 +343,7 @@
     private async Task<ReportRecord> GetReport(string reportId)
     {
         var report = await Mediator.Send(new GetReportQuery(reportId));
-        if(report?.Success ?? false)
+        if (report?.Success ?? false)
         {
             return report.Report;
         }
@@ -346,5 +361,114 @@
     }
 
     private bool AllowAddress(ReportPersonRecord person) => true;
+    private string _reportText
+    {
+        get
+        {
+            var sb = new StringBuilder();
+            sb.AppendLine($"Agency: {_report.Agency.Name}");
+            sb.AppendLine($"Incident Type: {_report.IncidentType.Name}");
+
+            if(_report.Date.HasValue)
+                sb.AppendLine($"Date: {_report.Date.FormattedDateTime()}");
+            if (_report.ClearedDate.HasValue && _report.Date.HasValue)
+            {
+                AppendClearedTime(sb);
+            }
+            sb.AppendLine($"Miles Driven: {_report.Miles}");
+
+            AppendLocation(sb, _report.Location);
+            AppendPeople(sb, _report.People);
+
+            sb.AppendLine($"Narrative: {_report.Narrative}");
+
+            return sb.ToString();
+        }
+    }
+
+    private void AppendPeople(StringBuilder sb, IList<ReportPersonRecord>? reportPeople)
+    {
+        if(reportPeople == null || !reportPeople.Any())
+        {
+            return;
+        }
+        
+        sb.AppendLine("----------------------------------------------------");
+        sb.AppendLine("                  People");
+        sb.AppendLine("----------------------------------------------------");
+
+        foreach (var person in reportPeople)
+        {
+            
+            sb.AppendLine($"Name: {person.FirstName} {person.LastName}");
+            sb.AppendLine($"Type: {person.Type}");
+            if (person.DateOfBirth.HasValue)
+            {
+                sb.AppendLine($"Date of Birth: {person.DateOfBirth.Value.ToShortDateString()}");
+            }
+            if (!string.IsNullOrEmpty(person.PhoneNumber?.Number))
+            {
+                sb.AppendLine($"Phone Number: {person.PhoneNumber.Number} [{person.PhoneNumber.Type.ToString()}]");
+            }
+            AppendLocation(sb, person.Location);
+            sb.AppendLine("----------------------------------------------------");
+        }
+
+    }
+
+    private void AppendLocation(StringBuilder sb, LocationRecord? reportLocation)
+    {
+        if (reportLocation == null || string.IsNullOrEmpty(reportLocation.Address))
+        {
+            return;
+        }
+
+        var addressText = new StringBuilder();
+        addressText.Append($"Address: {reportLocation.Address}");
+        
+        if (!string.IsNullOrEmpty(reportLocation.City))
+        {
+            addressText.Append($", {reportLocation.City}");
+        }
+
+        if (!string.IsNullOrEmpty(reportLocation.State))
+        {
+            addressText.Append($", {reportLocation.State}");
+        }
+
+        if (!string.IsNullOrEmpty(reportLocation.Zip))
+        {
+            addressText.Append($", {reportLocation.Zip}");
+        }
+
+        sb.AppendLine(addressText.ToString());
+    }
+
+    private void AppendClearedTime(StringBuilder sb)
+    {
+        var elapsed = _report.ClearedDate.Value.Subtract(_report.Date.Value);
+        int hours = elapsed.Hours;
+        int minutes = 0;
+
+        if (elapsed.Minutes != 0)
+        {
+            var roundedMinutes = (int)(Math.Floor((double)elapsed.Minutes / 15) + 1);
+            if (roundedMinutes == 4)
+            {
+                hours++;
+                minutes = 0;
+            }
+
+            string minutesText = roundedMinutes switch
+            {
+                0 => "00",
+                1 => "25",
+                2 => "50",
+                3 => "75",
+                _ => "00"
+                };
+            sb.AppendLine($"Cleared Date: {_report.ClearedDate.FormattedDateTime()} - Elapsed: {hours}.{minutesText}");
+        }
+    }
 
 }

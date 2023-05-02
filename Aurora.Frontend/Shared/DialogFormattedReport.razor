@@ -1,0 +1,41 @@
+﻿@using Aurora.Interfaces.Models.Reporting
+@using System.Text
+<MudDialog >
+    <DialogContent >
+        <MudTextField T="string" @bind-Value="@ContentText" Variant="Variant.Filled"></MudTextField>
+        <MudText>@ContentText</MudText>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">Close</MudButton>
+    </DialogActions>
+</MudDialog>
+@code {
+    [CascadingParameter]
+    MudDialogInstance MudDialog
+    {
+        get;
+        set;
+    }
+    [Parameter]
+    public ReportRecord ReportRecord
+    {
+        get;
+        set;
+    }
+    void Cancel() => MudDialog.Cancel();
+
+    private string ContentText
+    {
+        get
+        {
+            var sb = new StringBuilder();
+            sb.AppendLine($"Agency: {ReportRecord.Agency.Name} | Incident Type: {ReportRecord.IncidentType.Name}");
+
+            return sb.ToString();
+        }
+        set
+        {
+
+        }
+    }
+}

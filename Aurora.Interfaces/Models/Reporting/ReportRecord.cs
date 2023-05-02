@@ -20,7 +20,7 @@ public sealed record ReportRecord : IReportRecord
     [Id(12)] public MinistryOpportunityRecord MinistryOpportunity { get; set; } = new ();
 
     public string TimeDisplay => Date == null ? string.Empty : $"{Date.Value.Hour:00}:{Date.Value.Minute:00}";
-    
+
     public TimeSpan? IncidentTime
     {
         get

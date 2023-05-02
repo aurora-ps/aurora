@@ -25,14 +25,14 @@
                 <TemplateColumn CellClass="d-flex justify-end">
                     <CellTemplate>
                         <MudStack Row>
-                            <MudButton Size="@Size.Small" Variant="@Variant.Filled" Color="@Color.Primary" OnClick="@(()=>StartedEditingItem(context.Item.Id))">Edit</MudButton>
+                            <MudButton Size="@Size.Small" Variant="@Variant.Text" Color="@Color.Primary" OnClick="@(()=>StartedEditingItem(context.Item.Id))">Edit</MudButton>
                             @if (context.Item.DeletedOnUtc == null)
                             {
-                                <MudButton Size="@Size.Small" Variant="@Variant.Filled" Color="@Color.Primary" OnClick="@(()=>DeleteItem(context.Item.Id))">Delete</MudButton>
+                                <MudButton Size="@Size.Small" Variant="@Variant.Text" Color="@Color.Primary" OnClick="@(()=>DeleteItem(context.Item.Id))">Delete</MudButton>
                             }
                             else
                             {
-                                <MudButton Size="@Size.Small" Variant="@Variant.Filled" Color="@Color.Primary" OnClick="@(()=>UnDeleteItem(context.Item.Id))">UnDelete</MudButton>
+                                <MudButton Size="@Size.Small" Variant="@Variant.Text" Color="@Color.Primary" OnClick="@(()=>UnDeleteItem(context.Item.Id))">UnDelete</MudButton>
                             }
                         </MudStack>
                     </CellTemplate>
