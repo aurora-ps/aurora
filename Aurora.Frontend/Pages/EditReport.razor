@@ -158,6 +158,27 @@
                 }
                 <MudDivider />
                 <MudListItem>
+                    <MudGrid Spacing="1">
+                        <MudItem xs="12"><MudText Typo="Typo.h5" GutterBottom="false">Ministry</MudText></MudItem>
+                        <MudItem xs="12" sm="6" md="4" lg="3">
+                            <MudNumericField @bind-Value="@_report.MinistryOpportunity.CounselingOpportunities" Label="Counseling Opportunities"></MudNumericField>
+                        </MudItem>
+                        <MudItem xs="12" sm="6" md="4" lg="3">
+                            <MudNumericField @bind-Value="@_report.MinistryOpportunity.GospelPresentations" Label="Gospel Presentations"></MudNumericField>
+                        </MudItem>
+                        <MudItem xs="12" sm="6" md="4" lg="3">
+                            <MudNumericField @bind-Value="@_report.MinistryOpportunity.ProfessionsOfFaith" Label="Professions of Faith"></MudNumericField>
+                        </MudItem>
+                        <MudItem xs="12" sm="6" md="4" lg="3">
+                            <MudNumericField @bind-Value="@_report.MinistryOpportunity.BibleStudies" Label="Bible Studies"></MudNumericField>
+                        </MudItem>
+                        <MudItem xs="12" sm="6" md="4" lg="3">
+                            <MudNumericField @bind-Value="@_report.MinistryOpportunity.Baptisms" Label="Baptisims"></MudNumericField>
+                        </MudItem>
+                    </MudGrid>
+                </MudListItem>
+                <MudDivider />
+                <MudListItem>
                     <MudItem xs="8"><MudText Typo="Typo.h5" GutterBottom="false">Narrative</MudText></MudItem>
                     <MudItem xs="12">
                         <MudTextField T="string" @bind-Value="@_report.Narrative" Lines="10" Variant="Variant.Filled" Required="true"></MudTextField>
