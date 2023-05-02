@@ -4,6 +4,10 @@ public interface IReportRecord
 {
     string Id { get; set; }
 
+    int ReportId { get; set; }
+
+    ReportStateEnum State { get; set; }
+
     string UserId { get; set; }
 
     DateTime? Date { get; set; }

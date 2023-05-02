@@ -85,6 +85,8 @@ public class ReportDbContext : DbContext, IReportDbContext
                 new() { AgencyId = "50978BC3-DC9B-496A-84BB-53071C081BFC", IncidentTypeId = "5D035B97-5CB0-4FA9-978E-7B34A250426E" },
                 new() { AgencyId = "50978BC3-DC9B-496A-84BB-53071C081BFC", IncidentTypeId = "105B5539-879E-4F8C-B6F1-2C493CF81FAB" },
                 new() { AgencyId = "50978BC3-DC9B-496A-84BB-53071C081BFC", IncidentTypeId = "A7A975E0-5952-434E-9D87-F8B049D84016" },
+                new() { AgencyId = "50978BC3-DC9B-496A-84BB-53071C081BFC", IncidentTypeId = "199E7EA4-9AD2-4221-8A9D-F410621AA3CC" },
+                new() { AgencyId = "50978BC3-DC9B-496A-84BB-53071C081BFC", IncidentTypeId = "03A14A69-C6B7-4573-B95E-12574354C65B" },
             });
 
         base.OnModelCreating(modelBuilder);
@@ -106,20 +108,30 @@ public class ReportDbContext : DbContext, IReportDbContext
         {
             new()
             {
-                Id = "EB4F4F16-7B39-448D-9215-B578335F08DE", Name = "Death Call", CollectTime = true, RequiresTime = true,
+                Id = "EB4F4F16-7B39-448D-9215-B578335F08DE", Name = "Death Call", CollectTime = true,
+                RequiresTime = true,
                 CollectLocation = true,
                 CollectPerson = true
             },
             new() { Id = "AB0F1C6E-E6E5-489D-A88E-8010AB8A358A", Name = "Administration" },
             new()
             {
-                Id = "5D035B97-5CB0-4FA9-978E-7B34A250426E", Name = "Training", CollectTime = true, RequiresTime = true, CollectLocation = true },
-            new() { Id = "105B5539-879E-4F8C-B6F1-2C493CF81FAB", Name = "Other", CollectTime = true, CollectLocation = true, CollectPerson = true },
+                Id = "5D035B97-5CB0-4FA9-978E-7B34A250426E", Name = "Training", CollectTime = true, RequiresTime = true,
+                CollectLocation = true
+            },
             new()
             {
-                Id = "A7A975E0-5952-434E-9D87-F8B049D84016", Name = "Crisis Call", CollectTime = true, RequiresTime = true,
+                Id = "105B5539-879E-4F8C-B6F1-2C493CF81FAB", Name = "Other", CollectTime = true, CollectLocation = true,
+                CollectPerson = true
+            },
+            new()
+            {
+                Id = "A7A975E0-5952-434E-9D87-F8B049D84016", Name = "Crisis Call", CollectTime = true,
+                RequiresTime = true,
                 CollectLocation = true, CollectPerson = true
             },
+            new() { Id = "199E7EA4-9AD2-4221-8A9D-F410621AA3CC", Name = "Ride Along", CollectTime = true, CollectLocation = true },
+            new() { Id = "03A14A69-C6B7-4573-B95E-12574354C65B", Name = "Roll Call/Meeting", CollectTime = true, CollectLocation = true  }
         };
     }
 }

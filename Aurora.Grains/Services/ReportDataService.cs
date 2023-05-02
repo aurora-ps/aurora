@@ -69,6 +69,7 @@ public class ReportDataService : IReportDataService
             existing.Narrative = record.Narrative;
             existing.ClearedDate = record.ClearedDate;
             existing.MinistryOpportunity = record.MinistryOpportunity;
+            existing.State = record.State;
 
             UpdatePeople(existing, record.People.ToList());
 

@@ -3,6 +3,11 @@ namespace Aurora.Interfaces.Models.Reporting;
 public interface IReport
 {
     string Id { get; set; }
+
+    int ReportId { get; set; }
+
+    ReportStateEnum State { get; set; }
+
     DateTime? Date { get; set; }
 
     DateTime? ClearedDate { get; set; }

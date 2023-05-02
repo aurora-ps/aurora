@@ -15,6 +15,8 @@ public class Report : IReport
 
     public string Id { get; set; } = Guid.NewGuid().ToString();
 
+    public ReportStateEnum State { get; set; } = ReportStateEnum.Draft;
+
     public DateTime? Date { get; set; } = DateTime.Now.Date;
 
     public DateTime? ClearedDate { get; set; }

@@ -4,6 +4,7 @@ using Aurora.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Aurora.Infrastructure.Migrations
 {
     [DbContext(typeof(ReportDbContext))]
-    partial class ReportDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230502182153_AddNewIncidentTypes")]
+    partial class AddNewIncidentTypes
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -299,18 +302,18 @@ namespace Aurora.Infrastructure.Migrations
                         new
                         {
                             Id = "199E7EA4-9AD2-4221-8A9D-F410621AA3CC",
-                            CollectLocation = true,
+                            CollectLocation = false,
                             CollectPerson = false,
-                            CollectTime = true,
+                            CollectTime = false,
                             Name = "Ride Along",
                             RequiresTime = false
                         },
                         new
                         {
                             Id = "03A14A69-C6B7-4573-B95E-12574354C65B",
-                            CollectLocation = true,
+                            CollectLocation = false,
                             CollectPerson = false,
-                            CollectTime = true,
+                            CollectTime = false,
                             Name = "Roll Call/Meeting",
                             RequiresTime = false
                         });
@@ -359,9 +362,6 @@ namespace Aurora.Infrastructure.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ReportId"));
-
-                    b.Property<int>("State")
-                        .HasColumnType("int");
 
                     b.HasKey("Id");
 

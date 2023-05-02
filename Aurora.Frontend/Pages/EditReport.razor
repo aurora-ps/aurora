@@ -18,15 +18,15 @@
                         <MudItem xs="12">
                             <MudText Typo="Typo.h5" GutterBottom="true">@(string.IsNullOrEmpty(@recordId) ? "Create Report" : "Edit Report")</MudText>
                         </MudItem>
-                        <MudItem xs="12" sm="6">
-                            <MudSelect T="AgencyRecord" Value="_report.Agency" ValueChanged="value => HandleAgencyValueChanged(_report, value)" Variant="Variant.Text" Label="Agency" AnchorOrigin="Origin.BottomCenter" Required="true" RequiredError="Agency must be selected" Disabled="!_agencies.Any()">
+                        <MudItem xs="12" sm="6" md="4">
+                            <MudSelect T="AgencyRecord" Value="@_report.Agency" ValueChanged="value => HandleAgencyValueChanged(_report, value)" Variant="Variant.Text" Label="Agency" AnchorOrigin="Origin.BottomCenter" Required="true" RequiredError="Agency must be selected" Disabled="!_agencies.Any()">
                                 @foreach (var agency in _agencies)
                                 {
                                     <MudSelectItem Value="@agency" />
                                 }
                             </MudSelect>
                         </MudItem>
-                        <MudItem xs="12" sm="6">
+                        <MudItem xs="12" sm="6" md="4">
                             <MudSelect T="IncidentTypeRecord" Value="_report.IncidentType" ValueChanged="value => HandleIncidentTypeChanged(_report, value)" Variant="Variant.Text" Label="Incident Type" AnchorOrigin="Origin.BottomCenter" Required="true" RequiredError="Incient Type must be selected" Disabled="!_incidentTypes.Any()">
                                 @foreach (var incidentType in _incidentTypes)
                                 {
@@ -34,10 +34,18 @@
                                 }
                             </MudSelect>
                         </MudItem>
+                        <MudItem xs="12" sm="6" md="4">
+                            <MudSelect T="ReportState" Value="CurrentReportState" ValueChanged="value => HandleReportStateChanged(_report, value)" Variant="Variant.Text" Label="Report State" AnchorOrigin="Origin.BottomCenter" Required="true" RequiredError="Incient Type must be selected" Disabled="!_reportStates.Any()">
+                            @foreach (var reportState in _reportStates)
+                            {
+                                <MudSelectItem Value="@reportState" />
+                            }
+                            </MudSelect>
+                        </MudItem>
                         <MudItem xs="6" sm="3">
                             <MudDatePicker Label="Date" @bind-Date="_report.Date" Editable="true" Required="false" />
                         </MudItem>
-                        @if (_report?.IncidentType?.RequiresTime ?? false)
+                        @if ((_report?.IncidentType?.CollectTime ?? false) || (_report?.IncidentType?.RequiresTime ?? false))
                         {
 
                             <MudItem xs="6" sm="3">
@@ -215,8 +223,10 @@
     MudForm _form;
 
     IReportRecord _report = new ReportRecord();
+
     List<AgencyRecord> _agencies = new();
     List<IncidentTypeRecord> _incidentTypes = new();
+    List<ReportState> _reportStates = GetReportStates();
 
     protected override async Task OnInitializedAsync()
     {
@@ -295,7 +305,7 @@
         Saved,
         Unsaved
     }
-    
+
     private async Task SaveForm()
     {
         await _form.Validate();
@@ -312,6 +322,7 @@
                 Narrative = _report.Narrative,
                 Date = _report.Date,
                 ClearedDate = _report.ClearedDate,
+                State = _report.State,
                 Location = new LocationRecord()
                 {
                     Address = _report.Location.Address,
@@ -320,6 +331,7 @@
                     Zip = _report.Location.Zip
                 },
                 Miles = _report.Miles,
+                MinistryOpportunity = _report.MinistryOpportunity,
                 People = _report.People.Select(_ => new ReportPersonRecord
                 {
                     Id = _.Id,
@@ -413,14 +425,14 @@
         {
             return;
         }
-        
+
         sb.AppendLine("----------------------------------------------------");
         sb.AppendLine("                  People");
         sb.AppendLine("----------------------------------------------------");
 
         foreach (var person in reportPeople)
         {
-            
+
             sb.AppendLine($"Name: {person.FirstName} {person.LastName}");
             sb.AppendLine($"Type: {person.Type}");
             if (person.DateOfBirth.HasValue)
@@ -446,7 +458,7 @@
 
         var addressText = new StringBuilder();
         addressText.Append($"Address: {reportLocation.Address}");
-        
+
         if (!string.IsNullOrEmpty(reportLocation.City))
         {
             addressText.Append($", {reportLocation.City}");
@@ -487,9 +499,37 @@
                 2 => "50",
                 3 => "75",
                 _ => "00"
-                };
+            };
             sb.AppendLine($"Cleared Date: {_report.ClearedDate.FormattedDateTime()} - Elapsed: {hours}.{minutesText}");
         }
+    }
+
+    private Task HandleReportStateChanged(IReportRecord report, ReportState value)
+    {
+        _report.State = (ReportStateEnum)value.Value;
+
+        return Task.CompletedTask;
+    }
+
+    private record ReportState(int Value, string Text)
+    {
+        public override string ToString() => Text;
+    }
+
+    static List<ReportState> GetReportStates()
+    {
+        return Enum.GetValues(typeof(ReportStateEnum)).Cast<ReportStateEnum>().Select(_ => new ReportState((int)_, _.ToString())).ToList();
+
+        //    List<ReportStateEnum> _reportStates = Enum.GetValues(typeof(ReportStateEnum)).Cast<ReportStateEnum>().ToList();
+    }
+
+    private ReportState CurrentReportState
+    {
+        get
+        {
+            return _reportStates.FirstOrDefault(_ => _.Value == (int)_report.State);
+        }
+        set => _report.State = (ReportStateEnum)value.Value;
     }
 
 }

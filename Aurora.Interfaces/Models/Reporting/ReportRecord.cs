@@ -18,6 +18,8 @@ public sealed record ReportRecord : IReportRecord
     [Id(10)] public DateTime CreatedOnUtc { get; set; }
     [Id(11)] public DateTime? ClearedDate { get; set; }
     [Id(12)] public MinistryOpportunityRecord MinistryOpportunity { get; set; } = new ();
+    [Id(13)] public ReportStateEnum State { get; set; } = ReportStateEnum.Draft;
+    [Id(14)] public int ReportId { get; set; }
 
     public string TimeDisplay => Date == null ? string.Empty : $"{Date.Value.Hour:00}:{Date.Value.Minute:00}";
 
@@ -83,6 +85,8 @@ public static class ReportExtensions{
             Date = report.Date,
             ClearedDate = report.ClearedDate,
             Id = report.Id,
+            ReportId = report.ReportId,
+            State = report.State,
             CreatedOnUtc = report.CreatedOnUtc,
             DeletedOnUtc = report.DeletedOnUtc,
             IncidentType = report.IncidentType == null
@@ -140,6 +144,8 @@ public static class ReportExtensions{
         var report = new Report
         {
             Id = reportRecord.Id,
+            ReportId = reportRecord.ReportId,
+            State = reportRecord.State,
             AuroraUserId = reportRecord.UserId,
             AgencyId = reportRecord.Agency.Id,
             Date = reportRecord.Date,

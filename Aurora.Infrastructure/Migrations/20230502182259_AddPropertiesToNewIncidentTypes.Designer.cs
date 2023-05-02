@@ -4,6 +4,7 @@ using Aurora.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Aurora.Infrastructure.Migrations
 {
     [DbContext(typeof(ReportDbContext))]
-    partial class ReportDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230502182259_AddPropertiesToNewIncidentTypes")]
+    partial class AddPropertiesToNewIncidentTypes
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -359,9 +362,6 @@ namespace Aurora.Infrastructure.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ReportId"));
-
-                    b.Property<int>("State")
-                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
