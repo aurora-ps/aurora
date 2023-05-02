@@ -1,4 +1,4 @@
-﻿namespace Aurora.Interfaces.Models.Reporting;
+namespace Aurora.Interfaces.Models.Reporting;
 
 public interface IReportRecord
 {
@@ -10,18 +10,24 @@ public interface IReportRecord
 
     TimeSpan? Time { get; set; }
 
+    DateTime? ClearedDate { get; set; }
+    TimeSpan? ClearedTime { get; set; }
+
     AgencyRecord Agency { get; set; }
 
     IncidentTypeRecord IncidentType { get; set; }
 
     double? Miles { get; set; }
 
-    LocationRecord Location { get; set; }
+    LocationRecord? Location { get; set; }
 
     string Narrative { get; set; }
 
     IList<ReportPersonRecord> People { get; set; } 
+
     DateTime? DeletedOnUtc { get; set; }
 
     DateTime CreatedOnUtc { get; set; }
+
+    MinistryOpportunityRecord MinistryOpportunity { get; set; }
 }

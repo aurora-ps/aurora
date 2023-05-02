@@ -22,6 +22,7 @@ public class IncidentType
     public bool CollectLocation { get; set; } = false;
 
     public bool CollectPerson { get; set; } = false;
+
     public virtual ICollection<AgencyIncidentType> AgencyIncidentTypes { get; set; }
 
     public override int GetHashCode()

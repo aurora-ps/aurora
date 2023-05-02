@@ -1,4 +1,4 @@
-﻿@page "/report/{recordId?}"
+@page "/report/{recordId?}"
 @inject MediatR.IMediator Mediator
 @using Aurora.Interfaces.Models.Reporting
 @using Aurora.Features.Agency.GetAgencies
@@ -13,10 +13,10 @@
                     <MudText Typo="Typo.h5" GutterBottom="true">Create Report</MudText>
                 </MudItem>
                 <MudItem xs="12" md="6">
-                    <MudSelect T="AgencyRecord" Value="_report.Agency" ValueChanged="value => HandleAgencyValueChanged(_report, value)" Variant="Variant.Filled" Label="Agency" AnchorOrigin="Origin.BottomCenter" Required="true" RequiredError="Agency must be selected" Disabled="!_agencies.Any()" >
+                    <MudSelect T="AgencyRecord" Value="_report.Agency" ValueChanged="value => HandleAgencyValueChanged(_report, value)" Variant="Variant.Filled" Label="Agency" AnchorOrigin="Origin.BottomCenter" Required="true" RequiredError="Agency must be selected" Disabled="!_agencies.Any()">
                         @foreach (var agency in _agencies)
                         {
-                            <MudSelectItem Value="@agency"  />
+                            <MudSelectItem Value="@agency" />
                         }
                     </MudSelect>
                 </MudItem>
@@ -31,8 +31,14 @@
                 <MudItem xs="12" md="6">
                     <MudDatePicker Label="Date" @bind-Date="_report.Date" Editable="true" Required="false" />
                 </MudItem>
-                <MudItem xs="12" md="6">
+                <MudItem xs="6" sm="3">
                     <MudTimePicker Label="Time" @bind-Time="_report.Time" Editable="true" Required="_report?.IncidentType?.RequiresTime ?? false" />
+                </MudItem>
+                <MudItem xs="6" sm="3">
+                    <MudDatePicker Label="Cleared Date" @bind-Date="_report.ClearedDate" MinDate="@_report.Date" Editable="true" Required="_report?.IncidentType?.RequiresTime ?? false" />
+                </MudItem>
+                <MudItem xs="6" sm="3">
+                    <MudTimePicker Label="Cleared Time" @bind-Time="_report.ClearedTime" Editable="true" Required="_report?.IncidentType?.RequiresTime ?? false" />
                 </MudItem>
 
                 <MudItem xs="12" md="6">
@@ -197,7 +203,7 @@
         };
 
         this._report.People.Add(newPerson);
-        StateHasChanged();
+        //StateHasChanged();
     }
 
     private void HandleAgencyValueChanged(IReportRecord report, AgencyRecord value)
@@ -265,6 +271,8 @@
                 Narrative = _report.Narrative,
                 Date = _report.Date,
                 Time = _report.Time,
+                ClearedDate = _report.ClearedDate,
+                ClearedTime = _report.ClearedTime,
                 Location = new LocationRecord()
                 {
                     Address = _report.Location.Address,

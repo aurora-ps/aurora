@@ -1,4 +1,4 @@
-﻿namespace Aurora.Interfaces.Models.Reporting;
+namespace Aurora.Interfaces.Models.Reporting;
 
 public class Report : IReport
 {
@@ -13,13 +13,17 @@ public class Report : IReport
 
     public TimeSpan? Time { get; set; }
 
+    public DateTime? ClearedDate { get; set; }
+    public TimeSpan? ClearedTime { get; set; }
+
+
     public Agency Agency { get; set; }
 
     public IncidentType IncidentType { get; set; }
 
     public double? Miles { get; set; }
 
-    public Location Location { get; set; }
+    public Location? Location { get; set; }
 
     public string Narrative { get; set; }
 
@@ -36,4 +40,6 @@ public class Report : IReport
     public DateTime CreatedOnUtc { get; set; } = DateTime.Now;
 
     public DateTime? DeletedOnUtc { get; set; }
+
+    public MinistryOpportunityRecord MinistryOpportunity { get; set; } = new ();
 }

@@ -1,4 +1,4 @@
-﻿namespace Aurora.Interfaces.Models.Reporting;
+namespace Aurora.Interfaces.Models.Reporting;
 
 [GenerateSerializer]
 [Immutable]
@@ -9,15 +9,19 @@ public sealed record ReportRecord : IReportRecord
 
     [Id(2)] public DateTime? Date { get; set; }
     [Id(3)] public TimeSpan? Time { get; set; }
-    [Id(4)] public AgencyRecord Agency { get; set; }
-    [Id(5)] public IncidentTypeRecord IncidentType { get; set; }
+    [Id(4)] public AgencyRecord Agency { get; set; } = new ();
+    [Id(5)] public IncidentTypeRecord IncidentType { get; set; } = new ();
     [Id(6)] public double? Miles { get; set; }
-    [Id(7)] public LocationRecord Location { get; set; }
-    [Id(8)] public string Narrative { get; set; }
+    [Id(7)] public LocationRecord Location { get; set; } = new ();
+    [Id(8)] public string Narrative { get; set; } = string.Empty;
     [Id(9)] public IList<ReportPersonRecord> People { get; set; } = new List<ReportPersonRecord>();
 
     [Id(10)] public DateTime? DeletedOnUtc { get; set; }
     [Id(11)] public DateTime CreatedOnUtc { get; set; }
+    [Id(12)] public DateTime? ClearedDate { get; set; }
+    [Id(13)] public TimeSpan? ClearedTime { get; set; }
+    
+    [Id(14)] public MinistryOpportunityRecord MinistryOpportunity { get; set; } = new ();
 
     public string TimeDisplay => Time == null ? string.Empty : $"{Time.Value.Hours} : {Time.Value.Minutes}";
 }
@@ -36,6 +40,8 @@ public static class ReportExtensions{
                 },
             Date = report.Date,
             Time = report.Time,
+            ClearedDate = report.ClearedDate,
+            ClearedTime = report.ClearedTime,
             Id = report.Id,
             CreatedOnUtc = report.CreatedOnUtc,
             DeletedOnUtc = report.DeletedOnUtc,
@@ -83,7 +89,8 @@ public static class ReportExtensions{
                         Type = _.PhoneNumber.Type
                     }
                 }
-            ).ToList()
+            ).ToList(),
+            MinistryOpportunity = report.MinistryOpportunity
 
         };
     }
@@ -95,21 +102,10 @@ public static class ReportExtensions{
             Id = reportRecord.Id,
             AuroraUserId = reportRecord.UserId,
             AgencyId = reportRecord.Agency.Id,
-            Agency = new Agency(reportRecord.Agency.Id, reportRecord.Agency.Name),
             Date = reportRecord.Date,
             CreatedOnUtc = reportRecord.CreatedOnUtc,
             DeletedOnUtc = reportRecord.DeletedOnUtc,
             IncidentTypeId = reportRecord.IncidentType.Id,
-            IncidentType = new IncidentType()
-            {
-                Id = reportRecord.IncidentType.Id,
-                Name = reportRecord.IncidentType.Name,
-                CollectPerson = reportRecord.IncidentType.CollectPerson,
-                CollectLocation = reportRecord.IncidentType.CollectLocation,
-                CollectTime = reportRecord.IncidentType.CollectTime,
-                RequiresTime = reportRecord.IncidentType.RequiresTime,
-
-            },
             Location = reportRecord.Location != null ? new Location
             {
                 Address = reportRecord.Location.Address,
@@ -141,7 +137,10 @@ public static class ReportExtensions{
                     } : null,
                 Type = _.Type
             }).ToList(),
-            Time = reportRecord.Time
+            Time = reportRecord.Time,
+            ClearedDate = reportRecord.ClearedDate,
+            ClearedTime = reportRecord.ClearedTime,
+            MinistryOpportunity = reportRecord.MinistryOpportunity
         };
         return report;
     }

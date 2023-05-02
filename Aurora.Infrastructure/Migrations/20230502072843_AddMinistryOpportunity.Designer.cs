@@ -4,6 +4,7 @@ using Aurora.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Aurora.Infrastructure.Migrations
 {
     [DbContext(typeof(ReportDbContext))]
-    partial class ReportDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230502072843_AddMinistryOpportunity")]
+    partial class AddMinistryOpportunity
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -98,7 +101,7 @@ namespace Aurora.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Agencies", (string)null);
+                    b.ToTable("Agencies");
 
                     b.HasData(
                         new
@@ -110,11 +113,6 @@ namespace Aurora.Infrastructure.Migrations
                         {
                             Id = "BAD172CE-D1D5-4AD0-809C-9BD04D6D22AC",
                             Name = "Person - CRT"
-                        },
-                        new
-                        {
-                            Id = "50978BC3-DC9B-496A-84BB-53071C081BFC",
-                            Name = "Durham PD"
                         });
                 });
 
@@ -130,7 +128,7 @@ namespace Aurora.Infrastructure.Migrations
 
                     b.HasIndex("IncidentTypeId");
 
-                    b.ToTable("AgencyIncidentType", (string)null);
+                    b.ToTable("AgencyIncidentType");
 
                     b.HasData(
                         new
@@ -181,31 +179,6 @@ namespace Aurora.Infrastructure.Migrations
                         new
                         {
                             AgencyId = "BAD172CE-D1D5-4AD0-809C-9BD04D6D22AC",
-                            IncidentTypeId = "A7A975E0-5952-434E-9D87-F8B049D84016"
-                        },
-                        new
-                        {
-                            AgencyId = "50978BC3-DC9B-496A-84BB-53071C081BFC",
-                            IncidentTypeId = "EB4F4F16-7B39-448D-9215-B578335F08DE"
-                        },
-                        new
-                        {
-                            AgencyId = "50978BC3-DC9B-496A-84BB-53071C081BFC",
-                            IncidentTypeId = "AB0F1C6E-E6E5-489D-A88E-8010AB8A358A"
-                        },
-                        new
-                        {
-                            AgencyId = "50978BC3-DC9B-496A-84BB-53071C081BFC",
-                            IncidentTypeId = "5D035B97-5CB0-4FA9-978E-7B34A250426E"
-                        },
-                        new
-                        {
-                            AgencyId = "50978BC3-DC9B-496A-84BB-53071C081BFC",
-                            IncidentTypeId = "105B5539-879E-4F8C-B6F1-2C493CF81FAB"
-                        },
-                        new
-                        {
-                            AgencyId = "50978BC3-DC9B-496A-84BB-53071C081BFC",
                             IncidentTypeId = "A7A975E0-5952-434E-9D87-F8B049D84016"
                         });
                 });
@@ -238,7 +211,7 @@ namespace Aurora.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("IncidentTypes", (string)null);
+                    b.ToTable("IncidentTypes");
 
                     b.HasData(
                         new
@@ -340,7 +313,7 @@ namespace Aurora.Infrastructure.Migrations
 
                     b.HasIndex("IncidentTypeId");
 
-                    b.ToTable("Reports", (string)null);
+                    b.ToTable("Reports");
                 });
 
             modelBuilder.Entity("Aurora.Interfaces.Models.Reporting.ReportPerson", b =>
@@ -374,7 +347,7 @@ namespace Aurora.Infrastructure.Migrations
 
                     b.HasIndex("ReportId");
 
-                    b.ToTable("ReportPerson", (string)null);
+                    b.ToTable("ReportPerson");
                 });
 
             modelBuilder.Entity("Aurora.Interfaces.Models.Reporting.AgencyIncidentType", b =>
@@ -416,7 +389,35 @@ namespace Aurora.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.OwnsOne("Aurora.Interfaces.Models.Reporting.Report.Location#Aurora.Interfaces.Models.Reporting.Location", "Location", b1 =>
+                    b.OwnsOne("Aurora.Interfaces.Models.Reporting.MinistryOpportunityRecord", "MinistryOpportunity", b1 =>
+                        {
+                            b1.Property<string>("ReportId")
+                                .HasColumnType("nvarchar(450)");
+
+                            b1.Property<int?>("Baptisms")
+                                .HasColumnType("int");
+
+                            b1.Property<int?>("BibleStudies")
+                                .HasColumnType("int");
+
+                            b1.Property<int?>("CounselingOpportunities")
+                                .HasColumnType("int");
+
+                            b1.Property<int?>("GospelPresentations")
+                                .HasColumnType("int");
+
+                            b1.Property<int?>("ProfessionsOfFaith")
+                                .HasColumnType("int");
+
+                            b1.HasKey("ReportId");
+
+                            b1.ToTable("Reports");
+
+                            b1.WithOwner()
+                                .HasForeignKey("ReportId");
+                        });
+
+                    b.OwnsOne("Aurora.Interfaces.Models.Reporting.Location", "Location", b1 =>
                         {
                             b1.Property<string>("ReportId")
                                 .HasColumnType("nvarchar(450)");
@@ -442,35 +443,7 @@ namespace Aurora.Infrastructure.Migrations
 
                             b1.HasKey("ReportId");
 
-                            b1.ToTable("Reports", (string)null);
-
-                            b1.WithOwner()
-                                .HasForeignKey("ReportId");
-                        });
-
-                    b.OwnsOne("Aurora.Interfaces.Models.Reporting.Report.MinistryOpportunity#Aurora.Interfaces.Models.Reporting.MinistryOpportunityRecord", "MinistryOpportunity", b1 =>
-                        {
-                            b1.Property<string>("ReportId")
-                                .HasColumnType("nvarchar(450)");
-
-                            b1.Property<int?>("Baptisms")
-                                .HasColumnType("int");
-
-                            b1.Property<int?>("BibleStudies")
-                                .HasColumnType("int");
-
-                            b1.Property<int?>("CounselingOpportunities")
-                                .HasColumnType("int");
-
-                            b1.Property<int?>("GospelPresentations")
-                                .HasColumnType("int");
-
-                            b1.Property<int?>("ProfessionsOfFaith")
-                                .HasColumnType("int");
-
-                            b1.HasKey("ReportId");
-
-                            b1.ToTable("Reports", (string)null);
+                            b1.ToTable("Reports");
 
                             b1.WithOwner()
                                 .HasForeignKey("ReportId");
@@ -494,7 +467,28 @@ namespace Aurora.Infrastructure.Migrations
                         .WithMany("People")
                         .HasForeignKey("ReportId");
 
-                    b.OwnsOne("Aurora.Interfaces.Models.Reporting.ReportPerson.Location#Aurora.Interfaces.Models.Reporting.Location", "Location", b1 =>
+                    b.OwnsOne("Aurora.Interfaces.Models.Reporting.PhoneNumber", "PhoneNumber", b1 =>
+                        {
+                            b1.Property<int>("ReportPersonId")
+                                .HasColumnType("int");
+
+                            b1.Property<string>("Number")
+                                .IsRequired()
+                                .HasMaxLength(20)
+                                .HasColumnType("nvarchar(20)");
+
+                            b1.Property<int>("Type")
+                                .HasColumnType("int");
+
+                            b1.HasKey("ReportPersonId");
+
+                            b1.ToTable("ReportPerson");
+
+                            b1.WithOwner()
+                                .HasForeignKey("ReportPersonId");
+                        });
+
+                    b.OwnsOne("Aurora.Interfaces.Models.Reporting.Location", "Location", b1 =>
                         {
                             b1.Property<int>("ReportPersonId")
                                 .HasColumnType("int");
@@ -520,28 +514,7 @@ namespace Aurora.Infrastructure.Migrations
 
                             b1.HasKey("ReportPersonId");
 
-                            b1.ToTable("ReportPerson", (string)null);
-
-                            b1.WithOwner()
-                                .HasForeignKey("ReportPersonId");
-                        });
-
-                    b.OwnsOne("Aurora.Interfaces.Models.Reporting.ReportPerson.PhoneNumber#Aurora.Interfaces.Models.Reporting.PhoneNumber", "PhoneNumber", b1 =>
-                        {
-                            b1.Property<int>("ReportPersonId")
-                                .HasColumnType("int");
-
-                            b1.Property<string>("Number")
-                                .IsRequired()
-                                .HasMaxLength(20)
-                                .HasColumnType("nvarchar(20)");
-
-                            b1.Property<int>("Type")
-                                .HasColumnType("int");
-
-                            b1.HasKey("ReportPersonId");
-
-                            b1.ToTable("ReportPerson", (string)null);
+                            b1.ToTable("ReportPerson");
 
                             b1.WithOwner()
                                 .HasForeignKey("ReportPersonId");

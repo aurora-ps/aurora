@@ -40,6 +40,9 @@ public class ReportDbContext : DbContext, IReportDbContext
         modelBuilder.Entity<Report>()
             .OwnsOne(r => r.Location);
 
+        modelBuilder.Entity<Report>()
+            .OwnsOne(r => r.MinistryOpportunity);
+
         modelBuilder.Entity<ReportPerson>()
             .OwnsOne(p => p.PhoneNumber);
 
@@ -75,6 +78,11 @@ public class ReportDbContext : DbContext, IReportDbContext
                 new() { AgencyId = "BAD172CE-D1D5-4AD0-809C-9BD04D6D22AC", IncidentTypeId = "5D035B97-5CB0-4FA9-978E-7B34A250426E" },
                 new() { AgencyId = "BAD172CE-D1D5-4AD0-809C-9BD04D6D22AC", IncidentTypeId = "105B5539-879E-4F8C-B6F1-2C493CF81FAB" },
                 new() { AgencyId = "BAD172CE-D1D5-4AD0-809C-9BD04D6D22AC", IncidentTypeId = "A7A975E0-5952-434E-9D87-F8B049D84016" },
+                new() { AgencyId = "50978BC3-DC9B-496A-84BB-53071C081BFC", IncidentTypeId = "EB4F4F16-7B39-448D-9215-B578335F08DE" },
+                new() { AgencyId = "50978BC3-DC9B-496A-84BB-53071C081BFC", IncidentTypeId = "AB0F1C6E-E6E5-489D-A88E-8010AB8A358A" },
+                new() { AgencyId = "50978BC3-DC9B-496A-84BB-53071C081BFC", IncidentTypeId = "5D035B97-5CB0-4FA9-978E-7B34A250426E" },
+                new() { AgencyId = "50978BC3-DC9B-496A-84BB-53071C081BFC", IncidentTypeId = "105B5539-879E-4F8C-B6F1-2C493CF81FAB" },
+                new() { AgencyId = "50978BC3-DC9B-496A-84BB-53071C081BFC", IncidentTypeId = "A7A975E0-5952-434E-9D87-F8B049D84016" },
             });
 
         base.OnModelCreating(modelBuilder);
@@ -86,6 +94,7 @@ public class ReportDbContext : DbContext, IReportDbContext
         {
             new("87D773C9-9420-4B42-857D-3DB4783476BC", "Durham - CRT"),
             new("BAD172CE-D1D5-4AD0-809C-9BD04D6D22AC", "Person - CRT"),
+            new("50978BC3-DC9B-496A-84BB-53071C081BFC", "Durham PD")
         };
     }
 
@@ -104,11 +113,11 @@ public class ReportDbContext : DbContext, IReportDbContext
             {
                 Id = "5D035B97-5CB0-4FA9-978E-7B34A250426E", Name = "Training", CollectTime = true, RequiresTime = true, CollectLocation = true
             },
-            new() { Id = "105B5539-879E-4F8C-B6F1-2C493CF81FAB", Name = "Other", CollectTime = true },
+            new() { Id = "105B5539-879E-4F8C-B6F1-2C493CF81FAB", Name = "Other", CollectTime = true, CollectLocation = true, CollectPerson = true},
             new()
             {
                 Id = "A7A975E0-5952-434E-9D87-F8B049D84016", Name = "Crisis Call", CollectTime = true, RequiresTime = true,
-                CollectLocation = true
+                CollectLocation = true, CollectPerson = true
             },
         };
     }

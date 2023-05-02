@@ -15,10 +15,10 @@
         </MudGrid>
     </MudCardHeader>
     <MudCardContent>
-        <MudDataGrid  Items="@_reports" Filterable="true" SortMode="SortMode.Multiple" Groupable="false" Dense="true">
+        <MudDataGrid @ref="@_reportGrid" Items="@_reports" Filterable="true" SortMode="SortMode.Multiple" Groupable="false" Dense="true">
             <Columns>
                 <PropertyColumn Property="x => x.Date" Format="MM/dd/yyyy"></PropertyColumn>
-                <PropertyColumn Property="x => x.TimeDisplay"></PropertyColumn>
+                <PropertyColumn Property="x => x.TimeDisplay" Title="Time" ></PropertyColumn>
                 <PropertyColumn Property="x => x.Agency.Name" Title="Agency"></PropertyColumn>
                 <PropertyColumn Property="x => x.IncidentType.Name" Title="Incident Type"></PropertyColumn>
                 <PropertyColumn Property="x => x.Location.Address"></PropertyColumn>
@@ -43,12 +43,24 @@
 </MudCard>
 
 @code {
+    private MudDataGrid<ReportRecord> _reportGrid;
     private IList<ReportRecord> _reports = new List<ReportRecord>();
     private bool _showHidden;
 
     protected override async Task OnInitializedAsync()
     {
         await RefreshReports();
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        await base.OnAfterRenderAsync(firstRender);
+
+        if(firstRender)
+        {
+            await _reportGrid.SetSortAsync(nameof(ReportRecord.Date), SortDirection.Descending, _ => _.Date);
+            await _reportGrid.SetSortAsync(nameof(ReportRecord.Time), SortDirection.Descending, _ => _.Time);
+        }
     }
 
     private async Task RefreshReports()
