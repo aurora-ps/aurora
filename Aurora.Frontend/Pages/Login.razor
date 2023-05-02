@@ -1,0 +1,65 @@
+﻿@page "/login"
+@using System.ComponentModel.DataAnnotations
+@using Aurora.Features.User.AuthenticateUser
+@using Aurora.Frontend.Services
+@using Aurora.Interfaces.Models
+@using Microsoft.AspNetCore.Identity
+@inject NavigationManager NavManager
+@inject AuthenticationStateProvider AuthenticationStateProvider
+
+@inject SignInManager<AuroraUser> SigninManager
+@inject MediatR.IMediator Mediator
+
+<EditForm Model="@model" OnValidSubmit="OnValidSubmit">
+    <DataAnnotationsValidator />
+    <MudGrid>
+        <MudItem xs="0" sm="3" md="4"></MudItem>
+        <MudItem xs="12" sm="6" md="4">
+            <MudCard>
+                <MudCardContent>
+                    <MudTextField Label="Username" @bind-Value="model.Username" For="@(() => model.Username)" />
+                    <MudTextField Label="Password" @bind-Value="model.Password" For="@(() => model.Password)" InputType="InputType.Password" />
+                </MudCardContent>
+                <MudCardActions>
+                    <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto">Login</MudButton>
+                </MudCardActions>
+            </MudCard>
+        </MudItem>
+        <MudItem xs="0" sm="3" md="4">@success</MudItem>
+    </MudGrid>
+</EditForm>
+@code {
+    RegisterAccountForm model = new RegisterAccountForm();
+    bool success;
+
+    public class RegisterAccountForm
+    {
+        [Required]
+        public string Username { get; set; }
+
+        [Required]
+        public string Password { get; set; }
+
+    }
+
+    private async Task OnValidSubmit(EditContext context)
+    {
+        var command = new AuthenticateUserCommand()
+        {
+            UserName = model.Username,
+            Password = model.Password
+        };
+
+        var result = await Mediator.Send(command);
+        if (result.Success)
+        {
+            await ((CustomAuthenticationStateProvider)AuthenticationStateProvider).AuthenticateUser(result.IdentityUser);
+            NavManager.NavigateTo("/");
+        }
+        else
+        {
+            success = false;
+        }
+    }
+
+}

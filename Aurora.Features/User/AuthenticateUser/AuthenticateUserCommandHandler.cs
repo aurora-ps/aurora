@@ -42,12 +42,13 @@ public class AuthenticateUserCommandHandler : IRequestHandler<AuthenticateUserCo
         var user = await _userManager.FindByNameAsync(command.UserName);
         if (user != null && await _userManager.CheckPasswordAsync(user, command.Password))
         {
-            var userGrain = await GetUserDetails(user);
+            var userRecord = await GetUserDetails(user);
             var roles = await _userManager.GetRolesAsync(user);
 
             var authClaims = new List<Claim>
             {
                 new(ClaimTypes.Name, user.UserName),
+                new(ClaimTypes.NameIdentifier, user.Id),
                 new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
             };
 
@@ -55,7 +56,7 @@ public class AuthenticateUserCommandHandler : IRequestHandler<AuthenticateUserCo
 
             var token = GetToken(_appConfig, authClaims);
 
-            return AuthenticateUserCommandResult.CreateSuccess(userGrain, token);
+            return AuthenticateUserCommandResult.CreateSuccess(userRecord, user, token);
         }
 
         return AuthenticateUserCommandResult.Unauthorized();

@@ -1,5 +1,6 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
 using Aurora.Interfaces;
+using Aurora.Interfaces.Models;
 using FluentValidation.Results;
 
 namespace Aurora.Features.User.AuthenticateUser;
@@ -23,15 +24,19 @@ public class AuthenticateUserCommandResult
         };
     }
 
-    public static AuthenticateUserCommandResult CreateSuccess(UserRecord user, JwtSecurityToken token)
+    public static AuthenticateUserCommandResult CreateSuccess(UserRecord user, AuroraUser auroraUser,
+        JwtSecurityToken token)
     {
         return new AuthenticateUserCommandResult
         {
             Success = true,
             User = user,
-            Token = new JwtSecurityTokenHandler().WriteToken(token)
+            Token = new JwtSecurityTokenHandler().WriteToken(token),
+            IdentityUser = auroraUser
         };
     }
+
+    public AuroraUser IdentityUser { get; set; }
 
     public static AuthenticateUserCommandResult Unauthorized()
     {

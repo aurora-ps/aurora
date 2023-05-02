@@ -1,5 +1,6 @@
 using Aurora.Frontend.Services;
 using Aurora.Web.Shared.Extensions;
+using Microsoft.AspNetCore.Components.Authorization;
 using MudBlazor.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -14,7 +15,7 @@ builder.Services.AddMudServices();
 builder.SetupDependencies();
 
 builder.Services.AddHttpContextAccessor();
-builder.Services.AddScoped<BlazorUserService>();
+builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthenticationStateProvider>();
 
 if (builder.Environment.IsDevelopment())
     builder.Host.UseOrleans((context, siloBuilder) => { siloBuilder.AddOrleansSilo(11111, 30000); });

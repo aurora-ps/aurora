@@ -1,6 +1,5 @@
 ﻿@using Aurora.Frontend.Services
 @inherits LayoutComponentBase
-@inject BlazorUserService BlazorUserService
 
 <MudThemeProvider IsDarkMode="true" />
 <MudDialogProvider />
@@ -44,7 +43,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        _isAuthenticated = await BlazorUserService.IsAuthenticatedAsync();
+        //_isAuthenticated = await AuthenticationService.IsAuthenticated();
         await base.OnInitializedAsync();
     }
 

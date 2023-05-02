@@ -1,4 +1,6 @@
-﻿namespace Aurora.Interfaces;
+﻿using Aurora.Interfaces.Models;
+
+namespace Aurora.Interfaces;
 
 public interface IUserGrain : IGrainWithStringKey
 {
