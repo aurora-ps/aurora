@@ -131,7 +131,8 @@ public static class ReportExtensions{
                     {
                         Number = _.PhoneNumber.Number,
                         Type = _.PhoneNumber.Type
-                    }
+                    },
+                    RequestFollowup = _.RequestFollowup
                 }
             ).ToList(),
             MinistryOpportunity = report.MinistryOpportunity
@@ -181,7 +182,8 @@ public static class ReportExtensions{
                         Number = _.PhoneNumber.Number,
                         Type = _.PhoneNumber.Type
                     } : null,
-                Type = _.Type
+                Type = _.Type,
+                RequestFollowup = _.RequestFollowup
             }).ToList(),
             ClearedDate = reportRecord.ClearedDate,
             MinistryOpportunity = reportRecord.MinistryOpportunity

@@ -10,6 +10,8 @@ public class ReportPerson : Person
 
     public PersonType Type { get; set; }
 
+    public bool RequestFollowup { get; set; }
+
     public override string ToString() => $"{DisplayName} ({Type})";
 
     private string DisplayName => string.IsNullOrEmpty(FullName) ? "New Person" : FullName;

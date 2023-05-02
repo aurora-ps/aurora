@@ -36,10 +36,10 @@
                         </MudItem>
                         <MudItem xs="12" sm="6" md="4">
                             <MudSelect T="ReportState" Value="CurrentReportState" ValueChanged="value => HandleReportStateChanged(_report, value)" Variant="Variant.Text" Label="Report State" AnchorOrigin="Origin.BottomCenter" Required="true" RequiredError="Incient Type must be selected" Disabled="!_reportStates.Any()">
-                            @foreach (var reportState in _reportStates)
-                            {
-                                <MudSelectItem Value="@reportState" />
-                            }
+                                @foreach (var reportState in _reportStates)
+                                {
+                                    <MudSelectItem Value="@reportState" />
+                                }
                             </MudSelect>
                         </MudItem>
                         <MudItem xs="6" sm="3">
@@ -125,36 +125,38 @@
                                                             <MudDatePicker Label="Date of Birth" @bind-Date="person.DateOfBirth" Editable="true" Required="false" />
                                                         }
                                                     </MudItem>
-                                                    @if (AllowPhoneNumber(person))
-                                                    {
-                                                        <MudItem xs="12"><MudText Typo="Typo.h6" GutterBottom="false">Contact Information</MudText></MudItem>
-                                                        <MudItem xs="12" md="6">
-                                                            <MudTextField Label="Phone Number" @bind-Value="person.PhoneNumber.Number" Required="false" />
-                                                        </MudItem>
-                                                        <MudItem xs="12" md="6">
-                                                            <MudSelect @bind-Value="person.PhoneNumber.Type" Variant="Variant.Text" Label="Type" AnchorOrigin="Origin.BottomCenter" RequiredError="Type must be selected">
-                                                                @foreach (PhoneNumberTypeEnum phoneNumberType in Enum.GetValues(typeof(PhoneNumberTypeEnum)))
-                                                                {
-                                                                    <MudSelectItem Value="phoneNumberType">@phoneNumberType</MudSelectItem>
-                                                                }
-                                                            </MudSelect>
-                                                        </MudItem>
-                                                    }
-                                                    @if (AllowAddress(person))
-                                                    {
-                                                        <MudItem xs="12" md="6" lg="4">
-                                                            <MudTextField Label="Address" @bind-Value="person.Location.Address" Required="false" />
-                                                        </MudItem>
-                                                        <MudItem xs="12" md="6" lg="4">
-                                                            <MudTextField Label="City" @bind-Value="person.Location.City" Required="false" />
-                                                        </MudItem>
-                                                        <MudItem xs="12" md="6" lg="2">
-                                                            <MudTextField Label="State" @bind-Value="person.Location.State" Required="false" />
-                                                        </MudItem>
-                                                        <MudItem xs="12" md="6" lg="2">
-                                                            <MudTextField Label="Zip" @bind-Value="person.Location.Zip" Required="false" />
-                                                        </MudItem>
-                                                    }
+
+                                                    <MudItem xs="12">
+                                                        <MudGrid>
+                                                            <MudItem xs="6"><MudText Typo="Typo.h6" GutterBottom="false">Contact Information</MudText></MudItem>
+                                                            <MudItem xs="6"><MudCheckBox Label="Request Follow-up?" @bind-Checked="@person.RequestFollowup"></MudCheckBox></MudItem>        
+                                                        </MudGrid>
+                                                    </MudItem>
+                                                    
+                                                    <MudItem xs="12" md="6">
+                                                        <MudTextField Label="Phone Number" @bind-Value="person.PhoneNumber.Number" Required="false" />
+                                                    </MudItem>
+                                                    <MudItem xs="12" md="6">
+                                                        <MudSelect @bind-Value="person.PhoneNumber.Type" Variant="Variant.Text" Label="Type" AnchorOrigin="Origin.BottomCenter" RequiredError="Type must be selected">
+                                                            @foreach (PhoneNumberTypeEnum phoneNumberType in Enum.GetValues(typeof(PhoneNumberTypeEnum)))
+                                                            {
+                                                                <MudSelectItem Value="phoneNumberType">@phoneNumberType</MudSelectItem>
+                                                            }
+                                                        </MudSelect>
+                                                    </MudItem>
+
+                                                    <MudItem xs="12" md="6" lg="4">
+                                                        <MudTextField Label="Address" @bind-Value="person.Location.Address" Required="false" />
+                                                    </MudItem>
+                                                    <MudItem xs="12" md="6" lg="4">
+                                                        <MudTextField Label="City" @bind-Value="person.Location.City" Required="false" />
+                                                    </MudItem>
+                                                    <MudItem xs="12" md="6" lg="2">
+                                                        <MudTextField Label="State" @bind-Value="person.Location.State" Required="false" />
+                                                    </MudItem>
+                                                    <MudItem xs="12" md="6" lg="2">
+                                                        <MudTextField Label="Zip" @bind-Value="person.Location.Zip" Required="false" />
+                                                    </MudItem>
                                                 </MudGrid>
                                             </ChildContent>
                                         </MudExpansionPanel>
@@ -199,20 +201,20 @@
     <MudTabPanel Text="Report Summary">
         <MudGrid>
             <MudItem xs="12">
-                <MudTextField T="string" Text="@_reportText" Lines="40" Variant="Variant.Filled" ></MudTextField>
+                <MudTextField T="string" Text="@_reportText" Lines="40" Variant="Variant.Filled"></MudTextField>
             </MudItem>
         </MudGrid>
     </MudTabPanel>
 </MudTabs>
 
 @*<MudCard class="pa-4">
-    <MudHidden Breakpoint="Breakpoint.Xs" Invert="true"><MudCard class="pa-1">XS</MudCard></MudHidden>
-    <MudHidden Breakpoint="Breakpoint.Sm" Invert="true"><MudCard class="pa-1">SM</MudCard></MudHidden>
-    <MudHidden Breakpoint="Breakpoint.Md" Invert="true"><MudCard class="pa-1">MD</MudCard></MudHidden>
-    <MudHidden Breakpoint="Breakpoint.Lg" Invert="true"><MudCard class="pa-1">LG</MudCard></MudHidden>
-    <MudHidden Breakpoint="Breakpoint.Xl" Invert="true"><MudCard class="pa-1">XL</MudCard></MudHidden>
-    <MudHidden Breakpoint="Breakpoint.Xxl" Invert="true"><MudCard class="pa-1">XXL</MudCard></MudHidden>
-</MudCard>*@
+        <MudHidden Breakpoint="Breakpoint.Xs" Invert="true"><MudCard class="pa-1">XS</MudCard></MudHidden>
+        <MudHidden Breakpoint="Breakpoint.Sm" Invert="true"><MudCard class="pa-1">SM</MudCard></MudHidden>
+        <MudHidden Breakpoint="Breakpoint.Md" Invert="true"><MudCard class="pa-1">MD</MudCard></MudHidden>
+        <MudHidden Breakpoint="Breakpoint.Lg" Invert="true"><MudCard class="pa-1">LG</MudCard></MudHidden>
+        <MudHidden Breakpoint="Breakpoint.Xl" Invert="true"><MudCard class="pa-1">XL</MudCard></MudHidden>
+        <MudHidden Breakpoint="Breakpoint.Xxl" Invert="true"><MudCard class="pa-1">XXL</MudCard></MudHidden>
+    </MudCard>*@
 @code {
 
     [Parameter]
@@ -350,7 +352,8 @@
                         City = _.Location.City,
                         State = _.Location.State,
                         Zip = _.Location.Zip
-                    }
+                    },
+                    RequestFollowup = _.RequestFollowup
                 }).ToList()
             });
 
@@ -389,8 +392,7 @@
 
     private bool AllowPhoneNumber(ReportPersonRecord person)
     {
-        bool allowPhoneNumber = person.Type != PersonType.Victim;
-        return allowPhoneNumber;
+        return true;
     }
 
     private bool AllowAddress(ReportPersonRecord person) => true;
@@ -402,7 +404,7 @@
             sb.AppendLine($"Agency: {_report.Agency.Name}");
             sb.AppendLine($"Incident Type: {_report.IncidentType.Name}");
 
-            if(_report.Date.HasValue)
+            if (_report.Date.HasValue)
                 sb.AppendLine($"Date: {_report.Date.FormattedDateTime()}");
             if (_report.ClearedDate.HasValue && _report.Date.HasValue)
             {
@@ -411,17 +413,75 @@
             sb.AppendLine($"Miles Driven: {_report.Miles}");
 
             AppendLocation(sb, _report.Location);
+
             AppendPeople(sb, _report.People);
 
             sb.AppendLine($"Narrative: {_report.Narrative}");
 
+            AppendMinistry(sb, _report.MinistryOpportunity);
+
+            if (_report.People.Any(_ => _.RequestFollowup))
+            {
+                sb.AppendLine();
+                sb.AppendLine("--------------------------------------------------------------------");
+                sb.AppendLine("                  Follow-up Requested");
+                sb.AppendLine("--------------------------------------------------------------------");
+
+                _report.People.Where(_ => _.RequestFollowup).ToList().ForEach(_ =>
+                {
+                    sb.AppendLine($"Name: {_.FirstName} {_.LastName}");
+                    sb.AppendLine($"Type: {_.Type}");
+                    if(!string.IsNullOrEmpty(_.PhoneNumber?.Number))
+                        sb.AppendLine($"Phone Number: {_.PhoneNumber.Number} [{_.PhoneNumber.Type.ToString()}]");
+
+                    AppendLocation(sb, _.Location);
+                });
+
+            }
+
             return sb.ToString();
+
         }
+    }
+
+    private void AppendMinistry(StringBuilder sb, MinistryOpportunityRecord ministryOpportunity)
+    {
+        if(ministryOpportunity == null)
+        {
+            return;
+        }
+
+        var ministrySb = new StringBuilder();
+
+        if (ministryOpportunity.CounselingOpportunities is > 0)
+            ministrySb.AppendLine($"Counseling: {ministryOpportunity.CounselingOpportunities.Value}");
+
+        if (ministryOpportunity.BibleStudies is > 0)
+            ministrySb.AppendLine($"Bible Studies: {ministryOpportunity.BibleStudies.Value}");
+
+        if (ministryOpportunity.GospelPresentations is > 0)
+            ministrySb.AppendLine($"Gospel Presentations: {ministryOpportunity.GospelPresentations.Value}");
+
+        if (ministryOpportunity.ProfessionsOfFaith > 0)
+            ministrySb.AppendLine($"Professions of Faith: {ministryOpportunity.ProfessionsOfFaith.Value}");
+
+        if (ministryOpportunity.Baptisms > 0)
+            ministrySb.AppendLine($"Baptisms: {ministryOpportunity.Baptisms.Value}");
+
+        if(ministrySb.Length == 0)
+            return;
+        
+        sb.AppendLine();
+        sb.AppendLine("----------------------------------------------------");
+        sb.AppendLine("                Ministry Report");
+        sb.AppendLine("----------------------------------------------------");
+        sb.Append(ministrySb.ToString());
+
     }
 
     private void AppendPeople(StringBuilder sb, IList<ReportPersonRecord>? reportPeople)
     {
-        if(reportPeople == null || !reportPeople.Any())
+        if (reportPeople == null || !reportPeople.Any())
         {
             return;
         }

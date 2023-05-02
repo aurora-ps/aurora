@@ -129,6 +129,7 @@ public class ReportDataService : IReportDataService
                 existingRecord.PhoneNumber = person.PhoneNumber;
                 existingRecord.Type = person.Type;
                 existingRecord.DateOfBirth = person.DateOfBirth;
+                existingRecord.RequestFollowup = person.RequestFollowup;
             }
         }
 

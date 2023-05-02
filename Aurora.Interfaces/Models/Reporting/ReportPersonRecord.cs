@@ -13,6 +13,7 @@ public record ReportPersonRecord
     [Id(6)] public LocationRecord Location { get; set; } = new();
     [Id(7)] public PhoneNumberRecord? PhoneNumber { get; set; }
     [Id(8)] public PersonType Type { get; set; }
+    [Id(9)] public bool RequestFollowup { get; set; } = false;
     
 
     public override string ToString() => $"{DisplayName} ({Type})";
