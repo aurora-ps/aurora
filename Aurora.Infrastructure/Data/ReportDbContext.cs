@@ -22,6 +22,8 @@ public class ReportDbContext : DbContext, IReportDbContext
         modelBuilder.Entity<Report>()
             .Property(_ => _.CreatedOnUtc).HasDefaultValueSql("GetUtcDate()");
 
+        modelBuilder.Entity<Report>().HasAlternateKey(_ => _.ReportId).IsClustered(false);
+
         modelBuilder.Entity<Report>()
             .HasOne(r => r.Agency)
             .WithMany()
@@ -111,9 +113,8 @@ public class ReportDbContext : DbContext, IReportDbContext
             new() { Id = "AB0F1C6E-E6E5-489D-A88E-8010AB8A358A", Name = "Administration" },
             new()
             {
-                Id = "5D035B97-5CB0-4FA9-978E-7B34A250426E", Name = "Training", CollectTime = true, RequiresTime = true, CollectLocation = true
-            },
-            new() { Id = "105B5539-879E-4F8C-B6F1-2C493CF81FAB", Name = "Other", CollectTime = true, CollectLocation = true, CollectPerson = true},
+                Id = "5D035B97-5CB0-4FA9-978E-7B34A250426E", Name = "Training", CollectTime = true, RequiresTime = true, CollectLocation = true },
+            new() { Id = "105B5539-879E-4F8C-B6F1-2C493CF81FAB", Name = "Other", CollectTime = true, CollectLocation = true, CollectPerson = true },
             new()
             {
                 Id = "A7A975E0-5952-434E-9D87-F8B049D84016", Name = "Crisis Call", CollectTime = true, RequiresTime = true,

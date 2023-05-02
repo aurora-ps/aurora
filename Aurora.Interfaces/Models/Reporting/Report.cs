@@ -1,3 +1,6 @@
+using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.EntityFrameworkCore;
+
 namespace Aurora.Interfaces.Models.Reporting;
 
 public class Report : IReport
@@ -6,6 +9,9 @@ public class Report : IReport
     {
         Location = new Location { LocationType = LocationTypeEnum.Incident };
     }
+
+    [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+    public int ReportId { get; set; }
 
     public string Id { get; set; } = Guid.NewGuid().ToString();
 
