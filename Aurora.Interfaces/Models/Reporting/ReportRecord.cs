@@ -97,7 +97,7 @@ public static class ReportExtensions{
                     RequiresTime = report.IncidentType.RequiresTime,
                 },
             Location = report.Location == null
-                ? null
+                ? new LocationRecord()
                 : new LocationRecord
                 {
                     Address = report.Location.Address,
