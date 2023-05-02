@@ -31,15 +31,19 @@
                 <MudItem xs="12" md="6">
                     <MudDatePicker Label="Date" @bind-Date="_report.Date" Editable="true" Required="false" />
                 </MudItem>
-                <MudItem xs="6" sm="3">
-                    <MudTimePicker Label="Time" @bind-Time="_report.Time" Editable="true" Required="_report?.IncidentType?.RequiresTime ?? false" />
-                </MudItem>
-                <MudItem xs="6" sm="3">
-                    <MudDatePicker Label="Cleared Date" @bind-Date="_report.ClearedDate" MinDate="@_report.Date" Editable="true" Required="_report?.IncidentType?.RequiresTime ?? false" />
-                </MudItem>
-                <MudItem xs="6" sm="3">
-                    <MudTimePicker Label="Cleared Time" @bind-Time="_report.ClearedTime" Editable="true" Required="_report?.IncidentType?.RequiresTime ?? false" />
-                </MudItem>
+                @if (_report?.IncidentType?.RequiresTime ?? false)
+                {
+
+                    <MudItem xs="6" sm="3">
+                        <MudTimePicker Label="Time" @bind-Time="_report.Time" Editable="true" Required="_report?.IncidentType?.RequiresTime ?? false" />
+                    </MudItem>
+                    <MudItem xs="6" sm="3">
+                        <MudDatePicker Label="Cleared Date" @bind-Date="_report.ClearedDate" MinDate="@_report.Date" Editable="true" Required="_report?.IncidentType?.RequiresTime ?? false" />
+                    </MudItem>
+                    <MudItem xs="6" sm="3">
+                        <MudTimePicker Label="Cleared Time" @bind-Time="_report.ClearedTime" Editable="true" Required="_report?.IncidentType?.RequiresTime ?? false" />
+                    </MudItem>
+                }
 
                 <MudItem xs="12" md="6">
                     <MudNumericField Immediate="false" Label="Miles Driven" Format="N1" T="double?" @bind-Value="_report.Miles" />

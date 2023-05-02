@@ -46,21 +46,16 @@
     private MudDataGrid<ReportRecord> _reportGrid;
     private IList<ReportRecord> _reports = new List<ReportRecord>();
     private bool _showHidden;
-
     protected override async Task OnInitializedAsync()
     {
         await RefreshReports();
+        SetDefaultSort();
     }
 
-    protected override async Task OnAfterRenderAsync(bool firstRender)
+    private void SetDefaultSort()
     {
-        await base.OnAfterRenderAsync(firstRender);
-
-        if(firstRender)
-        {
-            await _reportGrid.SetSortAsync(nameof(ReportRecord.Date), SortDirection.Descending, _ => _.Date);
-            await _reportGrid.SetSortAsync(nameof(ReportRecord.Time), SortDirection.Descending, _ => _.Time);
-        }
+        _reportGrid.SortDefinitions.Add(nameof(ReportRecord.Date), new SortDefinition<ReportRecord>(nameof(ReportRecord.Date), true, 0, x => x.Date, null));
+        _reportGrid.SortDefinitions.Add(nameof(ReportRecord.TimeDisplay), new SortDefinition<ReportRecord>(nameof(ReportRecord.TimeDisplay), true, 1, x=> x.TimeDisplay, null));
     }
 
     private async Task RefreshReports()
@@ -68,8 +63,7 @@
         var reports = await Mediator.Send(new GetReportsQuery(_showHidden));
         if (reports.Success)
         {
-            _reports = reports.Reports;
-
+            _reports = reports.Reports.OrderByDescending(_ => _.Date).ThenByDescending(_ => _.Time).ToList();
         }
     }
 
@@ -123,6 +117,7 @@
     private async Task OnShowHiddenClicked()
     {
         _showHidden = !_showHidden;
+
         await RefreshReports();
     }
 

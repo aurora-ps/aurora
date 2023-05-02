@@ -23,7 +23,7 @@ public sealed record ReportRecord : IReportRecord
     
     [Id(14)] public MinistryOpportunityRecord MinistryOpportunity { get; set; } = new ();
 
-    public string TimeDisplay => Time == null ? string.Empty : $"{Time.Value.Hours} : {Time.Value.Minutes}";
+    public string TimeDisplay => Time == null ? string.Empty : $"{Time.Value.Hours:00}:{Time.Value.Minutes:00}";
 }
 
 public static class ReportExtensions{
