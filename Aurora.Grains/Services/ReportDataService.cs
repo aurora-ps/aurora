@@ -24,6 +24,7 @@ public class ReportDataService : IReportDataService
             .AsNoTracking().Include(r => r.Agency)
             .Include(r => r.IncidentType)
             .Include(r => r.Location)
+            .Include(r => r.MinistryOpportunity)
             .Include(r => r.People).ThenInclude(p => p.Location)
             .Include(r => r.People).ThenInclude(p => p.PhoneNumber)
             .ToListAsync();
@@ -39,6 +40,7 @@ public class ReportDataService : IReportDataService
             .Include(r => r.Agency)
             .Include(r => r.IncidentType)
             .Include(r => r.Location)
+            .Include(r => r.MinistryOpportunity)
             .Include(r => r.People).ThenInclude(p => p.Location)
             .Include(r => r.People).ThenInclude(p => p.PhoneNumber)
             .SingleOrDefaultAsync(r => r.Id == key);
@@ -65,7 +67,8 @@ public class ReportDataService : IReportDataService
             existing.Location = record.Location;
             existing.Miles = record.Miles;
             existing.Narrative = record.Narrative;
-            existing.Time = record.Time;
+            existing.ClearedDate = record.ClearedDate;
+            existing.MinistryOpportunity = record.MinistryOpportunity;
 
             UpdatePeople(existing, record.People.ToList());
 

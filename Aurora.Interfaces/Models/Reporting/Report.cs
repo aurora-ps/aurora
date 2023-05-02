@@ -11,11 +11,7 @@ public class Report : IReport
 
     public DateTime? Date { get; set; } = DateTime.Now.Date;
 
-    public TimeSpan? Time { get; set; }
-
     public DateTime? ClearedDate { get; set; }
-    public TimeSpan? ClearedTime { get; set; }
-
 
     public Agency Agency { get; set; }
 

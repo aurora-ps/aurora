@@ -8,9 +8,8 @@ public interface IReportRecord
 
     DateTime? Date { get; set; }
 
-    TimeSpan? Time { get; set; }
-
     DateTime? ClearedDate { get; set; }
+
     TimeSpan? ClearedTime { get; set; }
 
     AgencyRecord Agency { get; set; }
@@ -30,4 +29,5 @@ public interface IReportRecord
     DateTime CreatedOnUtc { get; set; }
 
     MinistryOpportunityRecord MinistryOpportunity { get; set; }
+    TimeSpan? IncidentTime { get; set; }
 }

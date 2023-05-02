@@ -4,11 +4,8 @@ public interface IReport
 {
     string Id { get; set; }
     DateTime? Date { get; set; }
-    TimeSpan? Time { get; set; }
 
     DateTime? ClearedDate { get; set; }
-
-    TimeSpan? ClearedTime { get; set; }
 
     Agency Agency { get; set; }
     IncidentType IncidentType { get; set; }

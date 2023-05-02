@@ -8,22 +8,64 @@ public sealed record ReportRecord : IReportRecord
     [Id(1)] public string UserId { get; set; }
 
     [Id(2)] public DateTime? Date { get; set; }
-    [Id(3)] public TimeSpan? Time { get; set; }
-    [Id(4)] public AgencyRecord Agency { get; set; } = new ();
-    [Id(5)] public IncidentTypeRecord IncidentType { get; set; } = new ();
-    [Id(6)] public double? Miles { get; set; }
-    [Id(7)] public LocationRecord Location { get; set; } = new ();
-    [Id(8)] public string Narrative { get; set; } = string.Empty;
-    [Id(9)] public IList<ReportPersonRecord> People { get; set; } = new List<ReportPersonRecord>();
+    [Id(3)] public AgencyRecord Agency { get; set; } = new ();
+    [Id(4)] public IncidentTypeRecord IncidentType { get; set; } = new ();
+    [Id(5)] public double? Miles { get; set; }
+    [Id(6)] public LocationRecord Location { get; set; } = new ();
+    [Id(7)] public string Narrative { get; set; } = string.Empty;
+    [Id(8)] public IList<ReportPersonRecord> People { get; set; } = new List<ReportPersonRecord>();
+    [Id(9)] public DateTime? DeletedOnUtc { get; set; }
+    [Id(10)] public DateTime CreatedOnUtc { get; set; }
+    [Id(11)] public DateTime? ClearedDate { get; set; }
+    [Id(12)] public MinistryOpportunityRecord MinistryOpportunity { get; set; } = new ();
 
-    [Id(10)] public DateTime? DeletedOnUtc { get; set; }
-    [Id(11)] public DateTime CreatedOnUtc { get; set; }
-    [Id(12)] public DateTime? ClearedDate { get; set; }
-    [Id(13)] public TimeSpan? ClearedTime { get; set; }
+    public string TimeDisplay => Date == null ? string.Empty : $"{Date.Value.Hour:00}:{Date.Value.Minute:00}";
     
-    [Id(14)] public MinistryOpportunityRecord MinistryOpportunity { get; set; } = new ();
+    public TimeSpan? IncidentTime
+    {
+        get
+        {
+            if (this.Date == null)
+            {
+                return null;
+            }
 
-    public string TimeDisplay => Time == null ? string.Empty : $"{Time.Value.Hours:00}:{Time.Value.Minutes:00}";
+            var currentDate = this.Date.Value;
+            return new TimeSpan(0, currentDate.Hour, currentDate.Minute, currentDate.Second);
+        }
+        set
+        {
+            if (this.Date == null || value == null)
+            {
+                return;
+            }
+            
+            this.Date = new DateTime(this.Date.Value.Year, this.Date.Value.Month, this.Date.Value.Day, value.Value.Hours, value.Value.Minutes, value.Value.Seconds);
+        }
+    }
+    public TimeSpan? ClearedTime
+    {
+        get
+        {
+            if (this.ClearedDate == null)
+            {
+                return null;
+            }
+
+            var currentDate = this.ClearedDate.Value;
+            return new TimeSpan(0, currentDate.Hour, currentDate.Minute, currentDate.Second);
+        }
+        set
+        {
+            if (this.ClearedDate == null || value == null)
+            {
+                return;
+            }
+            
+            this.ClearedDate = new DateTime(this.ClearedDate.Value.Year, this.ClearedDate.Value.Month, this.ClearedDate.Value.Day, value.Value.Hours, value.Value.Minutes, value.Value.Seconds);
+        }
+    }
+    
 }
 
 public static class ReportExtensions{
@@ -39,9 +81,7 @@ public static class ReportExtensions{
                     Name = report.Agency.Name
                 },
             Date = report.Date,
-            Time = report.Time,
             ClearedDate = report.ClearedDate,
-            ClearedTime = report.ClearedTime,
             Id = report.Id,
             CreatedOnUtc = report.CreatedOnUtc,
             DeletedOnUtc = report.DeletedOnUtc,
@@ -137,9 +177,7 @@ public static class ReportExtensions{
                     } : null,
                 Type = _.Type
             }).ToList(),
-            Time = reportRecord.Time,
             ClearedDate = reportRecord.ClearedDate,
-            ClearedTime = reportRecord.ClearedTime,
             MinistryOpportunity = reportRecord.MinistryOpportunity
         };
         return report;

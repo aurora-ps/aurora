@@ -63,7 +63,7 @@
         var reports = await Mediator.Send(new GetReportsQuery(_showHidden));
         if (reports.Success)
         {
-            _reports = reports.Reports.OrderByDescending(_ => _.Date).ThenByDescending(_ => _.Time).ToList();
+            _reports = reports.Reports.OrderByDescending(_ => _.Date).ToList();
         }
     }
 

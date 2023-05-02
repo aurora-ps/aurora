@@ -28,14 +28,14 @@
                         }
                     </MudSelect>
                 </MudItem>
-                <MudItem xs="12" md="6">
+                <MudItem xs="12" sm="3">
                     <MudDatePicker Label="Date" @bind-Date="_report.Date" Editable="true" Required="false" />
                 </MudItem>
                 @if (_report?.IncidentType?.RequiresTime ?? false)
                 {
 
                     <MudItem xs="6" sm="3">
-                        <MudTimePicker Label="Time" @bind-Time="_report.Time" Editable="true" Required="_report?.IncidentType?.RequiresTime ?? false" />
+                        <MudTimePicker Label="Time" @bind-Time="_report.IncidentTime" Editable="true" Required="_report?.IncidentType?.RequiresTime ?? false" />
                     </MudItem>
                     <MudItem xs="6" sm="3">
                         <MudDatePicker Label="Cleared Date" @bind-Date="_report.ClearedDate" MinDate="@_report.Date" Editable="true" Required="_report?.IncidentType?.RequiresTime ?? false" />
@@ -45,7 +45,7 @@
                     </MudItem>
                 }
 
-                <MudItem xs="12" md="6">
+                <MudItem xs="12" sm="3">
                     <MudNumericField Immediate="false" Label="Miles Driven" Format="N1" T="double?" @bind-Value="_report.Miles" />
                 </MudItem>
             </MudGrid>
@@ -274,9 +274,7 @@
                 IncidentType = new IncidentTypeRecord() { Id = _report.IncidentType.Id },
                 Narrative = _report.Narrative,
                 Date = _report.Date,
-                Time = _report.Time,
                 ClearedDate = _report.ClearedDate,
-                ClearedTime = _report.ClearedTime,
                 Location = new LocationRecord()
                 {
                     Address = _report.Location.Address,
