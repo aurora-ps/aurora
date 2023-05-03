@@ -9,4 +9,8 @@ public sealed record UserRecord
     [Id(1)] public string Name { get; set; } = string.Empty;
 
     [Id(2)] public string Email { get; set; } = string.Empty;
+
+    [Id(3)] public string FirstName { get; set; } = string.Empty;
+
+    [Id(4)] public string LastName { get; set; } = string.Empty;
 }

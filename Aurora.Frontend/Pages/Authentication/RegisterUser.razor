@@ -1,0 +1,117 @@
+﻿@page "/authentication/register"
+@using System.ComponentModel.DataAnnotations
+@using System.Security.Claims
+@using Aurora.Features.User.AuthenticateUser
+@using Aurora.Features.User.RegisterUser
+@using Aurora.Frontend.Services
+@inject NavigationManager NavManager
+@inject AuthenticationService AuthenticationService
+
+@inject MediatR.IMediator Mediator
+
+<EditForm Model="@model" OnValidSubmit="OnValidSubmit">
+    <DataAnnotationsValidator />
+    <MudGrid>
+        <MudItem xs="0" sm="3"></MudItem>
+        <MudItem xs="12" sm="6">
+            <MudCard>
+                <MudCardContent>
+                    <MudTextField Label="First name" HelperText="Max. 8 characters"
+                                  @bind-Value="model.Username" For="@(() => model.Username)"/>
+                    <MudTextField Label="Password" HelperText="Choose a strong password" Class="mt-3"
+                                  @bind-Value="model.Password" For="@(() => model.Password)" InputType="InputType.Password"/>
+                    <MudTextField Label="Password" HelperText="Repeat the password" Class="mt-3"
+                                  @bind-Value="model.ConfirmPassword" For="@(() => model.ConfirmPassword)" InputType="InputType.Password"/>
+                </MudCardContent>
+                <MudCardActions>
+                    
+                    <MudGrid>
+                        <MudItem xs="6"><MudButton Variant="Variant.Text" StartIcon="@Icons.Material.Filled.Person" Color="Color.Primary" @onclick="ShowLogin">Login</MudButton></MudItem>
+                        <MudItem xs="6"><MudButton ButtonType="ButtonType.Submit" Variant="Variant.Text" Color="Color.Primary" Class="ml-auto">Submit</MudButton></MudItem>
+                    </MudGrid>
+                </MudCardActions>
+            </MudCard>
+        </MudItem>
+    </MudGrid>
+</EditForm>
+
+@code {
+    [Parameter]
+    public string ReturnUrl { get; set; }
+
+    [Parameter]
+    public EventCallback<bool> OnShowLogin { get; set; }
+
+    RegisterAccountForm model = new();
+    bool success;
+
+    public class RegisterAccountForm
+    {
+        [Required]
+        [EmailAddress]
+        public string Username { get; set; }
+
+        //[Required]
+        //public string FirstName { get; set; }
+
+        //[Required]
+        //public string LastName { get; set; }
+
+        [Required]
+        [StringLength(100, ErrorMessage = "Password must be at least 10 characters long.", MinimumLength = 10)]
+        public string Password { get; set; }
+
+        [Required]
+        [Compare("Password", ErrorMessage = "Passwords do not match.")]
+        public string ConfirmPassword { get; set; }
+
+    }
+
+    private async Task OnValidSubmit(EditContext context)
+    {
+        var command = new RegisterUserCommand()
+        {
+            UserName = model.Username,
+            Password = model.Password
+        };
+
+        var registerUserResponse  = await Mediator.Send(command);
+        if (registerUserResponse.IsSuccess)
+        {
+            var authenticateUser = new AuthenticateUserCommand()
+            {
+                UserName = model.Username,
+                Password = model.Password
+            };
+
+            var authUserResult = await Mediator.Send(authenticateUser);
+
+            if (authUserResult.Success)
+            {
+                var identity = AuthenticationService.GetClaimsIdentity(authUserResult.IdentityUser, authUserResult.Token);
+
+                var newUser = new ClaimsPrincipal(identity);
+                AuthenticationService.CurrentUser = newUser;
+
+                if (string.IsNullOrEmpty(ReturnUrl) || ReturnUrl.IndexOf("?returnUrl=", StringComparison.InvariantCulture) <= 0)
+                {
+                    NavManager.NavigateTo("/");
+                    return;
+                }
+
+                var returnUrl = ReturnUrl.Substring(ReturnUrl.IndexOf("?returnUrl=", StringComparison.InvariantCultureIgnoreCase));
+                NavManager.NavigateTo(returnUrl);
+            }
+        }
+        else
+        {
+            success = false;
+        }
+    }
+
+    private async Task ShowLogin()
+    {
+        await OnShowLogin.InvokeAsync(true);
+    }
+
+}

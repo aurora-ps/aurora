@@ -7,4 +7,6 @@ public interface IUserServiceGrain : IGrainWithStringKey
     Task<UserRecord?> FindByNameAsync(string userName);
 
     Task<IList<UserRecord>> GetAllAsync();
+
+    Task<UserRecord?> AddAsync(UserRecord userRecord);
 }

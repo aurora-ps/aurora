@@ -29,4 +29,11 @@ public class UserServiceGrain : Grain, IUserServiceGrain
     {
         return _userDataService.GetAllAsync();
     }
+
+    public async Task<UserRecord?> AddAsync(UserRecord userRecord)
+    {
+        
+        var result = await _userDataService.AddAsync(userRecord);
+        return result;
+    }
 }

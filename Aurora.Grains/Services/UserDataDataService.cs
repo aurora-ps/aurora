@@ -17,19 +17,25 @@ public sealed class UserDataDataService : IUserDataService
         _userManager = userManager;
     }
 
-    public async Task<UserRecord> AddAsync(UserRecord data)
+    public async Task<UserRecord?> AddAsync(UserRecord data)
     {
         if (_userManager.Users.Any(u => u.Id == data.Id)) throw new InvalidOperationException("User already exists.");
+        if (_userManager.Users.Any(_ => _.Email == data.Email))throw new InvalidOperationException("User already exists.");
 
         var user = new AuroraUser
         {
             Id = data.Id,
             UserName = data.Name,
-            Email = data.Email
+            Email = data.Email,
+            FirstName = data.FirstName,
+            LastName = data.LastName
         };
 
         var result = await _userManager.CreateAsync(user);
-        if (!result.Succeeded) throw new InvalidOperationException("Failed to create user.");
+        if (!result.Succeeded)
+        {
+            return null;
+        }
 
         return await GetByUserNameAsync(data.Name);
     }

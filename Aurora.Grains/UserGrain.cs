@@ -9,7 +9,7 @@ public class UserGrain : Grain, IUserGrain
 {
     private readonly ILogger<UserGrain> _logger;
     private readonly IUserDataService _userDataDataService;
-    private UserRecord _state = new();
+    private UserRecord? _state;
 
     public UserGrain(
         IUserDataService userDataDataService,
@@ -22,7 +22,7 @@ public class UserGrain : Grain, IUserGrain
     [ReadOnly]
     public Task<bool> IsInitialized()
     {
-        return Task.FromResult(!string.IsNullOrEmpty(_state.Id));
+        return Task.FromResult(!string.IsNullOrEmpty(_state?.Id));
     }
 
     public async Task<UserRecord?> GetDetailsAsync()
@@ -31,7 +31,7 @@ public class UserGrain : Grain, IUserGrain
         if (!await IsInitialized())
             await UpdateFromDataStore();
 
-        return string.IsNullOrEmpty(_state.Id) ? null : _state;
+        return string.IsNullOrEmpty(_state?.Id) ? null : _state;
     }
 
     public async Task<bool> DeleteAsync()
@@ -44,20 +44,6 @@ public class UserGrain : Grain, IUserGrain
         }
 
         return false;
-    }
-
-    public async Task<UserRecord?> AddAsync(string name, string email)
-    {
-        _state = new UserRecord
-        {
-            Id = this.GetPrimaryKeyString(),
-            Name = name,
-            Email = email
-        };
-
-        await _userDataDataService.AddAsync(_state);
-
-        return await GetDetailsAsync();
     }
 
     public override async Task OnActivateAsync(CancellationToken cancellationToken)

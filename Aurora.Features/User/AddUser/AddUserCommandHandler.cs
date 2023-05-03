@@ -14,8 +14,18 @@ public class AddUserCommandHandler : IRequestHandler<AddUserCommand, AddUserResp
 
     public async Task<AddUserResponse> Handle(AddUserCommand command, CancellationToken cancellationToken)
     {
-        var grain = _clusterClient.GetGrain<IUserGrain>(Guid.NewGuid().ToString());
-        var userRecord = await grain.AddAsync(command.UserName, command.Email);
+        var grain = _clusterClient.GetGrain<IUserServiceGrain>(Guid.NewGuid().ToString());
+
+        var newUser = new UserRecord
+        {
+            Id = Guid.NewGuid().ToString(),
+            Email = command.UserName,
+            Name = command.UserName,
+            FirstName = command.FirstName,
+            LastName = command.LastName,
+        };
+
+        var userRecord = await grain.AddAsync(newUser);
         if (userRecord is null)
             return AddUserResponse.CreateFailure();
 

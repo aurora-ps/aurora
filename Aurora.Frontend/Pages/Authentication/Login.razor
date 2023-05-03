@@ -5,6 +5,7 @@
 @using Aurora.Frontend.Services
 @using Aurora.Interfaces.Models
 @using Microsoft.AspNetCore.Identity
+
 @inject NavigationManager NavManager
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject AuthenticationService AuthenticationService
@@ -12,28 +13,39 @@
 @inject SignInManager<AuroraUser> SigninManager
 @inject MediatR.IMediator Mediator
 
-<EditForm Model="@model" OnValidSubmit="OnValidSubmit">
-    <DataAnnotationsValidator />
-    <MudGrid>
-        <MudItem xs="0" sm="3" md="4"></MudItem>
-        <MudItem xs="12" sm="6" md="4">
-            <MudCard>
-                <MudCardContent>
-                    <MudTextField Label="Username" @bind-Value="model.Username" For="@(() => model.Username)" />
-                    <MudTextField Label="Password" @bind-Value="model.Password" For="@(() => model.Password)" InputType="InputType.Password" />
-                </MudCardContent>
-                <MudCardActions>
-                    <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto">Login</MudButton>
-                </MudCardActions>
-            </MudCard>
-        </MudItem>
-        <MudItem xs="0" sm="3" md="4">@success</MudItem>
-    </MudGrid>
-</EditForm>
+@if (showRegister)
+{
+    <RegisterUser ReturnUrl="@ReturnUrl" OnShowLogin="ShowLogin" />
+}
+else
+{
+    <EditForm Model="@model" OnValidSubmit="OnValidSubmit">
+        <DataAnnotationsValidator />
+        <MudGrid>
+            <MudItem xs="0" sm="3"></MudItem>
+            <MudItem xs="12" sm="6">
+                <MudCard>
+                    <MudCardContent>
+                        <MudTextField Label="Username" @bind-Value="model.Username" For="@(() => model.Username)" />
+                        <MudTextField Label="Password" @bind-Value="model.Password" For="@(() => model.Password)" InputType="InputType.Password" />
+                    </MudCardContent>
+                    <MudCardActions>
+                        <MudGrid>
+                            <MudItem xs="6"><MudButton ButtonType="ButtonType.Submit" Variant="Variant.Text" Color="Color.Primary" Class="ml-auto">Login</MudButton></MudItem>
+                            <MudItem xs="6"><MudButton Variant="Variant.Text" StartIcon="@Icons.Material.Filled.Person" Color="Color.Primary" @onclick="Register">Create Account</MudButton></MudItem>
+                        </MudGrid>
+                    </MudCardActions>
+                </MudCard>
+            </MudItem>
+        </MudGrid>
+    </EditForm>
+}
 
 @code {
     [Parameter]
     public string ReturnUrl { get; set; }
+
+    bool showRegister = false;
 
     RegisterAccountForm model = new ();
     bool success;
@@ -77,6 +89,16 @@
         {
             success = false;
         }
+    }
+
+    private void Register()
+    {
+        showRegister = true;
+    }
+
+    private void ShowLogin()
+    {
+        showRegister = false;
     }
 
 }
