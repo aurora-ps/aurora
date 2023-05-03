@@ -1,4 +1,5 @@
 ﻿using Aurora.Interfaces;
+using Aurora.Interfaces.Models.Reporting;
 using MediatR;
 
 namespace Aurora.Features.Report.GetReports
@@ -15,7 +16,17 @@ namespace Aurora.Features.Report.GetReports
         public async Task<GetReportsQueryResult> Handle(GetReportsQuery request, CancellationToken cancellationToken)
         {
             var reportService = _clusterClient.GetGrain<IReportServiceGrain>("");
-            var reports = await reportService.GetAllAsync(request.ShowHidden);
+
+            IList<ReportRecord> reports;
+            if (!string.IsNullOrEmpty(request.UserId))
+            {
+                reports = await reportService.GetUserReportsAsync(request.UserId, request.ShowHidden);
+            }
+            else
+            {
+                reports = await reportService.GetAllAsync(request.ShowHidden);
+            }
+            
 
             return GetReportsQueryResult.CreateSuccess(reports);
         }

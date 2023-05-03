@@ -1,11 +1,17 @@
 ﻿@page "/reports"
+@attribute [Authorize]
+
 @inject MediatR.IMediator Mediator
 @inject NavigationManager NavManager
 @inject IDialogService DialogService
+@inject AuthenticationService AuthState
+
 @using Aurora.Interfaces.Models.Reporting
 @using Aurora.Features.Report.GetReports
 @using Aurora.Features.Report.UnDeleteReport
 @using Aurora.Features.Report.DeleteReport
+@using Aurora.Frontend.Services
+@using System.Security.Claims
 
 <MudCard>
     <MudCardHeader>
@@ -18,11 +24,12 @@
         <MudDataGrid @ref="@_reportGrid" Items="@_reports" Filterable="true" SortMode="SortMode.Multiple" Groupable="false" Dense="true">
             <Columns>
                 <PropertyColumn Property="x => x.Date" Format="MM/dd/yyyy"></PropertyColumn>
-                <PropertyColumn Property="x => x.TimeDisplay" Title="Time" ></PropertyColumn>
+                <PropertyColumn Property="x => x.TimeDisplay" Title="Time"></PropertyColumn>
+                <PropertyColumn Property="x => x.State" Title="State"></PropertyColumn>
                 <PropertyColumn Property="x => x.Agency.Name" Title="Agency"></PropertyColumn>
                 <PropertyColumn Property="x => x.IncidentType.Name" Title="Incident Type"></PropertyColumn>
-                <PropertyColumn Property="x => x.Location.Address"></PropertyColumn>
-                <TemplateColumn CellClass="d-flex justify-end">
+                <PropertyColumn Property="x => x.Location.Address" ></PropertyColumn>
+                <TemplateColumn CellClass="d-flex justify-end" Filterable="false">
                     <CellTemplate>
                         <MudStack Row>
                             <MudButton Size="@Size.Small" Variant="@Variant.Text" Color="@Color.Primary" OnClick="@(()=>StartedEditingItem(context.Item.Id))">Edit</MudButton>
@@ -60,11 +67,17 @@
 
     private async Task RefreshReports()
     {
-        var reports = await Mediator.Send(new GetReportsQuery(_showHidden));
-        if (reports.Success)
+        var userId = AuthState.CurrentUser?.Claims.FirstOrDefault(_ => _.Type == ClaimTypes.NameIdentifier)?.Value;
+        if (userId != null)
         {
-            _reports = reports.Reports.OrderByDescending(_ => _.Date).ToList();
+            var reportQuery = GetReportsQuery.Create(userId, _showHidden);
+            var reports = await Mediator.Send(reportQuery);
+            if (reports.Success)
+            {
+                _reports = reports.Reports.OrderByDescending(_ => _.Date).ToList();
+            }
         }
+
     }
 
     void StartedEditingItem(string id)

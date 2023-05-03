@@ -10,4 +10,5 @@ public interface IReportDataService : IDataService<Report, string>
     Task<DateTime?> DeleteAsync(string getPrimaryKeyString);
 
     Task<IList<Report>> GetAllAsync(bool includeDeleted = false);
+    Task<IList<Report>> GetForUserAsync(string? requestUserId, bool requestShowHidden);
 }

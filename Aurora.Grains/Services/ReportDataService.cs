@@ -32,6 +32,20 @@ public class ReportDataService : IReportDataService
         return listAsync;
     }
 
+    public async Task<IList<Report>> GetForUserAsync(string? requestUserId, bool includeDeleted)
+    {
+        return await _reportContext.Reports
+            .Where(_ => (includeDeleted) || (_.DeletedOnUtc == null))
+            .Where(_ => _.AuroraUserId == requestUserId)
+            .AsNoTracking().Include(r => r.Agency)
+            .Include(r => r.IncidentType)
+            .Include(r => r.Location)
+            .Include(r => r.MinistryOpportunity)
+            .Include(r => r.People).ThenInclude(p => p.Location)
+            .Include(r => r.People).ThenInclude(p => p.PhoneNumber)
+            .ToListAsync();
+    }
+
     public async Task<IList<Report>> GetAllAsync() => await this.GetAllAsync(true);
 
     public Task<Report?> GetAsync(string key)
