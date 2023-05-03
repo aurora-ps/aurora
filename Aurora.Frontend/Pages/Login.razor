@@ -1,4 +1,4 @@
-﻿@page "/login"
+﻿@page "/authentication/login"
 @using System.ComponentModel.DataAnnotations
 @using System.Security.Claims
 @using Aurora.Features.User.AuthenticateUser
@@ -32,6 +32,9 @@
 </EditForm>
 
 @code {
+    [Parameter]
+    public string ReturnUrl { get; set; }
+
     RegisterAccountForm model = new ();
     bool success;
 
@@ -57,11 +60,18 @@
         if (result.Success)
         {
             var identity = AuthenticationService.GetClaimsIdentity(result.IdentityUser, result.Token);
-           
+
             var newUser = new ClaimsPrincipal(identity);
             AuthenticationService.CurrentUser = newUser;
 
-            NavManager.NavigateTo("/");
+            if (string.IsNullOrEmpty(ReturnUrl) || ReturnUrl.IndexOf("?returnUrl=", StringComparison.InvariantCulture) <= 0)
+            {
+                NavManager.NavigateTo("/");
+                return;
+            }
+
+            var returnUrl = ReturnUrl.Substring(ReturnUrl.IndexOf("?returnUrl=", StringComparison.InvariantCultureIgnoreCase));
+            NavManager.NavigateTo(returnUrl);
         }
         else
         {
