@@ -48,41 +48,4 @@ namespace Aurora.Frontend.Services
             NotifyAuthenticationStateChanged(Task.FromResult(new AuthenticationState(claimsPrincipal)));
         }
     }
-
-    public class AuthenticationService
-    {
-        public event Action<ClaimsPrincipal>? UserChanged;
-        private ClaimsPrincipal? _currentUser;
-
-        public AuthenticationService()
-        {
-        }
-
-        public ClaimsPrincipal CurrentUser
-        {
-            get => _currentUser ?? new();
-            set
-            {
-                if (Equals(_currentUser, value)) return;
-
-                _currentUser = value;
-                if (UserChanged is not null)
-                {
-                    UserChanged.Invoke(_currentUser);
-                }
-                    
-            }
-        }
-
-        public ClaimsIdentity GetClaimsIdentity(AuroraUser user, string token)
-        {
-            var identity = new ClaimsIdentity(new[]
-            {
-                new Claim(ClaimTypes.Name, user.UserName),
-                new Claim(ClaimTypes.NameIdentifier, user.Id),
-            }, "Custom Authentication");
-
-            return identity;
-        }
-    }
 }

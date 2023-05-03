@@ -1,3 +1,4 @@
+using Aurora.Frontend.Data;
 using Aurora.Frontend.Services;
 using Aurora.Web.Shared.Extensions;
 using Microsoft.AspNetCore.Components.Authorization;
@@ -15,6 +16,7 @@ builder.Services.AddMudServices();
 builder.SetupDependencies();
 
 builder.Services.AddHttpContextAccessor();
+builder.Services.AddScoped<DataSeeding>();
 builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthenticationStateProvider>();
 builder.Services.AddSingleton<AuthenticationService>();
 
@@ -24,8 +26,9 @@ else
     //TODO: Add production configuration
     builder.Host.UseOrleans((context, siloBuilder) => { siloBuilder.AddOrleansSilo(11111, 30000); });
 
-
 var app = builder.Build();
+
+await SeedData(app);
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
@@ -48,3 +51,11 @@ app.MapBlazorHub();
 app.MapFallbackToPage("/_Host");
 
 app.Run();
+
+async Task SeedData(WebApplication webApplication)
+{
+    var services = webApplication.Services.CreateScope();
+    var service = services.ServiceProvider.GetService<DataSeeding>();
+    if(service != null)
+        await service.SeedData();
+}

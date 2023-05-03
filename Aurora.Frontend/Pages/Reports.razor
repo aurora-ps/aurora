@@ -17,7 +17,13 @@
     <MudCardHeader>
         <MudGrid>
             <MudItem xs="9"><MudText Typo="Typo.h5">Reports</MudText></MudItem>
-            <MudItem xs="3"  Class="d-flex justify-end"><MudCheckBox T="bool" Checked="@_showHidden" Label="Show Hidden" CheckedChanged="@(OnShowHiddenClicked)"></MudCheckBox></MudItem>
+            <MudItem xs="3" Class="d-flex justify-end">
+                @if (_isAdmin)
+                {
+                    <MudCheckBox T="bool" Checked="@_showAll" Label="Show Hidden" CheckedChanged="@(OnShowAllClicked)"/>
+                }
+                <MudCheckBox T="bool" Checked="@_showHidden" Label="Show Hidden" CheckedChanged="@(OnShowHiddenClicked)" />
+            </MudItem>
         </MudGrid>
     </MudCardHeader>
     <MudCardContent>
@@ -28,7 +34,7 @@
                 <PropertyColumn Property="x => x.State" Title="State"></PropertyColumn>
                 <PropertyColumn Property="x => x.Agency.Name" Title="Agency"></PropertyColumn>
                 <PropertyColumn Property="x => x.IncidentType.Name" Title="Incident Type"></PropertyColumn>
-                <PropertyColumn Property="x => x.Location.Address" ></PropertyColumn>
+                <PropertyColumn Property="x => x.Location.Address"></PropertyColumn>
                 <TemplateColumn CellClass="d-flex justify-end" Filterable="false">
                     <CellTemplate>
                         <MudStack Row>
@@ -53,16 +59,20 @@
     private MudDataGrid<ReportRecord> _reportGrid;
     private IList<ReportRecord> _reports = new List<ReportRecord>();
     private bool _showHidden;
+    private bool _showAll;
+    private bool _isAdmin;
+
     protected override async Task OnInitializedAsync()
     {
         await RefreshReports();
         SetDefaultSort();
+        _isAdmin = AuthState.CurrentUser?.Claims.FirstOrDefault(_ => _.Type == ClaimTypes.Role)?.Value == "Administrator";
     }
 
     private void SetDefaultSort()
     {
         _reportGrid.SortDefinitions.Add(nameof(ReportRecord.Date), new SortDefinition<ReportRecord>(nameof(ReportRecord.Date), true, 0, x => x.Date, null));
-        _reportGrid.SortDefinitions.Add(nameof(ReportRecord.TimeDisplay), new SortDefinition<ReportRecord>(nameof(ReportRecord.TimeDisplay), true, 1, x=> x.TimeDisplay, null));
+        _reportGrid.SortDefinitions.Add(nameof(ReportRecord.TimeDisplay), new SortDefinition<ReportRecord>(nameof(ReportRecord.TimeDisplay), true, 1, x => x.TimeDisplay, null));
     }
 
     private async Task RefreshReports()
@@ -70,7 +80,7 @@
         var userId = AuthState.CurrentUser?.Claims.FirstOrDefault(_ => _.Type == ClaimTypes.NameIdentifier)?.Value;
         if (userId != null)
         {
-            var reportQuery = GetReportsQuery.Create(userId, _showHidden);
+            var reportQuery = GetReportsQuery.Create(userId, _showHidden, _showAll);
             var reports = await Mediator.Send(reportQuery);
             if (reports.Success)
             {
@@ -88,7 +98,7 @@
     async Task DeleteItem(string id)
     {
         var parameters = new DialogParameters
-        {
+    {
             { "ContentText", "Do you want to Delete this report?" },
             { "ButtonText", "Yes" }
         };
@@ -109,7 +119,7 @@
     async Task UnDeleteItem(string id)
     {
         var parameters = new DialogParameters
-        {
+    {
             { "ContentText", "Do you want to Un-Delete this report?" },
             { "ButtonText", "Yes" }
         };
@@ -130,6 +140,13 @@
     private async Task OnShowHiddenClicked()
     {
         _showHidden = !_showHidden;
+
+        await RefreshReports();
+    }
+
+    private async Task OnShowAllClicked()
+    {
+        _showAll = !_showAll;
 
         await RefreshReports();
     }

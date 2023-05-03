@@ -1,14 +1,16 @@
-﻿using System.IdentityModel.Tokens.Jwt;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Configuration;
+using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+
+using JwtRegisteredClaimNames = Microsoft.IdentityModel.JsonWebTokens.JwtRegisteredClaimNames;
+
 using Aurora.Interfaces;
 using Aurora.Interfaces.Models;
 using FluentValidation;
 using MediatR;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.Configuration;
-using Microsoft.IdentityModel.Tokens;
-using JwtRegisteredClaimNames = Microsoft.IdentityModel.JsonWebTokens.JwtRegisteredClaimNames;
 
 namespace Aurora.Features.User.AuthenticateUser;
 
@@ -34,32 +36,35 @@ public class AuthenticateUserCommandHandler : IRequestHandler<AuthenticateUserCo
     public async Task<AuthenticateUserCommandResult> Handle(AuthenticateUserCommand command,
         CancellationToken cancellationToken)
     {
-        var validationResult = await _authenticateUserValidator.ValidateAsync(command);
+        var validationResult = await _authenticateUserValidator.ValidateAsync(command, cancellationToken);
 
         if (!validationResult.IsValid)
             return AuthenticateUserCommandResult.BadRequest(validationResult.Errors);
 
-        var user = await _userManager.FindByNameAsync(command.UserName);
-        if (user != null && await _userManager.CheckPasswordAsync(user, command.Password))
+        var user = await _userManager.FindByNameAsync(command.UserName!);
+        if (user == null || !await _userManager.CheckPasswordAsync(user, command.Password!))
+            return AuthenticateUserCommandResult.Unauthorized();
+
+        var userRecord = await GetUserDetails(user);
+        if (userRecord == null)
         {
-            var userRecord = await GetUserDetails(user);
-            var roles = await _userManager.GetRolesAsync(user);
-
-            var authClaims = new List<Claim>
-            {
-                new(ClaimTypes.Name, user.UserName),
-                new(ClaimTypes.NameIdentifier, user.Id),
-                new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
-            };
-
-            authClaims.AddRange(roles.Select(role => new Claim(ClaimTypes.Role, role)));
-
-            var token = GetToken(_appConfig, authClaims);
-
-            return AuthenticateUserCommandResult.CreateSuccess(userRecord, user, token);
+            return AuthenticateUserCommandResult.Unauthorized();
         }
 
-        return AuthenticateUserCommandResult.Unauthorized();
+        var roles = await _userManager.GetRolesAsync(user);
+
+        var authClaims = new List<Claim>
+        {
+            new(ClaimTypes.Name, user.UserName!),
+            new(ClaimTypes.NameIdentifier, user.Id),
+            new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
+        };
+
+        authClaims.AddRange(roles.Select(role => new Claim(ClaimTypes.Role, role)));
+
+        var token = GetToken(_appConfig, authClaims);
+
+        return AuthenticateUserCommandResult.CreateSuccess(userRecord, user, token);
     }
 
     private async Task<UserRecord?> GetUserDetails(AuroraUser user)

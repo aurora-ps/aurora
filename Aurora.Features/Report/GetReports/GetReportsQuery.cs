@@ -4,28 +4,21 @@ namespace Aurora.Features.Report.GetReports;
 
 public class GetReportsQuery : IRequest<GetReportsQueryResult>
 {
-
-    private GetReportsQuery(bool showHidden = false)
-    {
-        this.ShowHidden = showHidden;
-    }
-
-    private GetReportsQuery(string userId, bool showHidden = false)
+    private GetReportsQuery(string userId, bool showHidden = false, bool showAll = false)
     {
         this.UserId = userId;
         this.ShowHidden = showHidden;
+        this.ShowAll = showAll;
     }
 
-    public string? UserId { get; set; }
+    public string? UserId { get; }
 
-    public bool ShowHidden { get; set; }
+    public bool ShowHidden { get; }
 
-    public static GetReportsQuery Create(string userId, bool showHidden)
+    public bool ShowAll { get; }
+
+    public static GetReportsQuery Create(string userId, bool showHidden, bool showAll)
     {
-        return new GetReportsQuery(userId, showHidden);
-    }
-    public static GetReportsQuery Create(bool showHidden)
-    {
-        return new GetReportsQuery(showHidden);
+        return new GetReportsQuery(userId, showHidden, showAll);
     }
 }
