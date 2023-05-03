@@ -26,4 +26,10 @@ public class ReportServiceGrain : Grain, IReportServiceGrain
     {
         return await _reportDataService.ExistsAsync(reportId);
     }
+
+    public async Task<IList<ReportRecord>> GetUserReportsAsync(string? requestUserId, bool requestShowHidden)
+    {
+        var reports = await _reportDataService.GetForUserAsync(requestUserId, requestShowHidden);
+        return reports.Select(r => r.ToReportRecord()).ToList();
+    }
 }

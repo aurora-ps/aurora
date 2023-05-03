@@ -6,4 +6,5 @@ public interface IReportServiceGrain : IGrainWithStringKey
 {
     Task<IList<ReportRecord>> GetAllAsync(bool includeDeleted = false);
     Task<bool> ReportExistsAsync(string reportId);
+    Task<IList<ReportRecord>> GetUserReportsAsync(string? requestUserId, bool requestShowHidden);
 }
