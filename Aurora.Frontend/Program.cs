@@ -16,6 +16,7 @@ builder.SetupDependencies();
 
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthenticationStateProvider>();
+builder.Services.AddSingleton<AuthenticationService>();
 
 if (builder.Environment.IsDevelopment())
     builder.Host.UseOrleans((context, siloBuilder) => { siloBuilder.AddOrleansSilo(11111, 30000); });

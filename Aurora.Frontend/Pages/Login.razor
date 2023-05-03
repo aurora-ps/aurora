@@ -1,11 +1,13 @@
 ﻿@page "/login"
 @using System.ComponentModel.DataAnnotations
+@using System.Security.Claims
 @using Aurora.Features.User.AuthenticateUser
 @using Aurora.Frontend.Services
 @using Aurora.Interfaces.Models
 @using Microsoft.AspNetCore.Identity
 @inject NavigationManager NavManager
 @inject AuthenticationStateProvider AuthenticationStateProvider
+@inject AuthenticationService AuthenticationService
 
 @inject SignInManager<AuroraUser> SigninManager
 @inject MediatR.IMediator Mediator
@@ -28,8 +30,9 @@
         <MudItem xs="0" sm="3" md="4">@success</MudItem>
     </MudGrid>
 </EditForm>
+
 @code {
-    RegisterAccountForm model = new RegisterAccountForm();
+    RegisterAccountForm model = new ();
     bool success;
 
     public class RegisterAccountForm
@@ -53,7 +56,11 @@
         var result = await Mediator.Send(command);
         if (result.Success)
         {
-            await ((CustomAuthenticationStateProvider)AuthenticationStateProvider).AuthenticateUser(result.IdentityUser);
+            var identity = AuthenticationService.GetClaimsIdentity(result.IdentityUser, result.Token);
+           
+            var newUser = new ClaimsPrincipal(identity);
+            AuthenticationService.CurrentUser = newUser;
+
             NavManager.NavigateTo("/");
         }
         else

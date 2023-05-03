@@ -8,6 +8,20 @@ namespace Aurora.Frontend.Services
 
     public class CustomAuthenticationStateProvider : AuthenticationStateProvider
     {
+        private AuthenticationState authenticationState;
+
+        public CustomAuthenticationStateProvider(AuthenticationService service)
+        {
+            authenticationState = new AuthenticationState(service.CurrentUser);
+
+            service.UserChanged += OnUserChanged;
+        }
+
+        private void OnUserChanged(ClaimsPrincipal newUser)
+        {
+            NotifyAuthenticationStateChanged(Task.FromResult(new AuthenticationState(newUser)));
+        }
+
         public override Task<AuthenticationState> GetAuthenticationStateAsync()
         {
             //var identity = new ClaimsIdentity(new[]
@@ -32,6 +46,43 @@ namespace Aurora.Frontend.Services
 
             var claimsPrincipal = new ClaimsPrincipal(identity);
             NotifyAuthenticationStateChanged(Task.FromResult(new AuthenticationState(claimsPrincipal)));
+        }
+    }
+
+    public class AuthenticationService
+    {
+        public event Action<ClaimsPrincipal>? UserChanged;
+        private ClaimsPrincipal? _currentUser;
+
+        public AuthenticationService()
+        {
+        }
+
+        public ClaimsPrincipal CurrentUser
+        {
+            get => _currentUser ?? new();
+            set
+            {
+                if (Equals(_currentUser, value)) return;
+
+                _currentUser = value;
+                if (UserChanged is not null)
+                {
+                    UserChanged.Invoke(_currentUser);
+                }
+                    
+            }
+        }
+
+        public ClaimsIdentity GetClaimsIdentity(AuroraUser user, string token)
+        {
+            var identity = new ClaimsIdentity(new[]
+            {
+                new Claim(ClaimTypes.Name, user.UserName),
+                new Claim(ClaimTypes.NameIdentifier, user.Id),
+            }, "Custom Authentication");
+
+            return identity;
         }
     }
 }

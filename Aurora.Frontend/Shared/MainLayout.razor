@@ -1,5 +1,4 @@
-﻿@using Aurora.Frontend.Services
-@inherits LayoutComponentBase
+﻿@inherits LayoutComponentBase
 
 <MudThemeProvider IsDarkMode="true" />
 <MudDialogProvider />
@@ -10,14 +9,14 @@
         <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((e) => DrawerToggle())" />
         <MudText Typo="Typo.h5">Public Safety Tools</MudText>
         <MudSpacer />
-        @if(_isAuthenticated)
-        {
-            <MudButton Color="Color.Primary" Variant="Variant.Filled" Href="logout">Logout</MudButton>
-        }
-        else
-        {
-            <MudButton Color="Color.Primary" Variant="Variant.Filled" Href="login">Login</MudButton>
-        }
+        <AuthorizeView>
+            <Authorized>
+                <MudButton Color="Color.Primary" Variant="Variant.Filled" >Logout</MudButton>
+            </Authorized>
+            <NotAuthorized>
+                <MudButton Color="Color.Primary" Variant="Variant.Filled" Href="login">Login</MudButton>
+            </NotAuthorized>
+        </AuthorizeView>
     </MudAppBar>
     <MudDrawer @bind-Open="_drawerOpen" Elevation="1">
         <MudDrawerHeader>
@@ -34,7 +33,6 @@
 
 @code {
     bool _drawerOpen = true;
-    bool _isAuthenticated = false;
 
     void DrawerToggle()
     {
@@ -43,7 +41,6 @@
 
     protected override async Task OnInitializedAsync()
     {
-        //_isAuthenticated = await AuthenticationService.IsAuthenticated();
         await base.OnInitializedAsync();
     }
 

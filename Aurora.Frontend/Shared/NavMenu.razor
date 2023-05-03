@@ -1,11 +1,16 @@
-﻿<MudNavMenu>
-    <MudNavLink Href="" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Home">Home</MudNavLink>
-    <MudNavGroup Title="Users">
-        <MudNavLink Href="users" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Person">Users</MudNavLink>
-    </MudNavGroup>
-    <MudNavGroup Title="Reports" Expanded="true">
-        <MudNavLink Href="reports" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Note">Reports</MudNavLink>
-        <MudNavLink Href="createreport" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.EditNote">Create Report</MudNavLink>
-    </MudNavGroup>
+﻿@inject AuthenticationStateProvider AuthenticationStateProvider
 
+<MudNavMenu>
+    <MudNavLink Href="" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Home">Home</MudNavLink>
+    <AuthorizeView>
+        <Authorized>
+            <MudNavGroup Title="Users">
+                <MudNavLink Href="users" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Person">Users</MudNavLink>
+            </MudNavGroup>
+            <MudNavGroup Title="Reports" Expanded="true">
+                <MudNavLink Href="reports" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Note">Reports</MudNavLink>
+                <MudNavLink Href="createreport" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.EditNote">Create Report</MudNavLink>
+            </MudNavGroup>
+        </Authorized>
+    </AuthorizeView>
 </MudNavMenu>
