@@ -36,14 +36,8 @@ namespace Aurora.Frontend.Services
             return Task.FromResult(new AuthenticationState(user));
         }
 
-        public async Task AuthenticateUser(AuroraUser user)
+        public async Task AuthenticateUser(ClaimsIdentity identity)
         {
-            var identity = new ClaimsIdentity(new[]
-            {
-                new Claim(ClaimTypes.Name, user.UserName),
-                new Claim(ClaimTypes.NameIdentifier, user.Id),
-            }, "Custom Authentication");
-
             var claimsPrincipal = new ClaimsPrincipal(identity);
             NotifyAuthenticationStateChanged(Task.FromResult(new AuthenticationState(claimsPrincipal)));
         }

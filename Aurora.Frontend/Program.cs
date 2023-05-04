@@ -7,6 +7,7 @@ using MudBlazor.Services;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.ConfigureDatabase();
+builder.SetupAuthenticationWithCookie();
 
 // Add services to the container.
 builder.Services.AddRazorPages();
@@ -18,6 +19,7 @@ builder.SetupDependencies();
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<DataSeeding>();
 builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthenticationStateProvider>();
+builder.Services.AddScoped<CustomAuthenticationStateProvider>();
 builder.Services.AddSingleton<AuthenticationService>();
 
 if (builder.Environment.IsDevelopment())
