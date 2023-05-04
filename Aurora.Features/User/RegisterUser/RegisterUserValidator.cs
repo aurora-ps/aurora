@@ -10,8 +10,8 @@ public class RegisterUserValidator : AbstractValidator<RegisterUserCommand>
         RuleFor(x => x.UserName).NotEmpty().WithMessage("User Name is required");
         RuleFor(x => x.Password)
             .NotEmpty().WithMessage("Password is required")
-            .Length(10, 40).WithMessage("Password must be between 10 and 40 characters")
-            .Must(HasValidPassword).WithMessage("Password must contain at least one number, one uppercase letter")
+            .Length(8, 40).WithMessage("Password must be between 8 and 40 characters")
+            //.Must(HasValidPassword).WithMessage("Password must contain at least one number, one uppercase letter")
             ;
     }
 
