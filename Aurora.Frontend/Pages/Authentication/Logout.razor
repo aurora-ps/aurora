@@ -1,0 +1,15 @@
+﻿@page "/authentication/logout"
+@using Microsoft.AspNetCore.Identity
+@using Aurora.Interfaces.Models
+@inject SignInManager<AuroraUser> SignInManager
+@inject NavigationManager NavManager
+
+@code {
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        await SignInManager.SignOutAsync();
+
+        NavManager.NavigateTo("/");
+    }
+}

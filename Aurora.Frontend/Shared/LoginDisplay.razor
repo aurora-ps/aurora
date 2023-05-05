@@ -1,12 +1,32 @@
-﻿<AuthorizeView>
+﻿@using Microsoft.AspNetCore.Identity
+@using Aurora.Interfaces.Models
+@inject SignInManager<AuroraUser> SignInManager
+@inject NavigationManager NavManager
+
+@code {
+
+    private async Task Logout()
+    {
+        await SignInManager.SignOutAsync();
+
+        NavManager.NavigateTo("/");
+    }
+
+}
+
+<AuthorizeView>
     <Authorized>
         <a href="Identity/Account/Manage">Hello, @context.User.Identity?.Name!</a>
-        <form method="post" action="Identity/Account/Logout">
+        <MudButton Variant="Variant.Text" StartIcon="@Icons.Material.Filled.Person" Color="Color.Primary" Href="/Identity/Account/Logout">Logout</MudButton>
+        @*<form method="post" action="Identity/Account/Logout">
             <button type="submit" class="nav-link btn btn-link">Log out</button>
-        </form>
+        </form>*@
     </Authorized>
     <NotAuthorized>
         <a href="Identity/Account/Register">Register</a>
         <a href="Identity/Account/Login">Log in</a>
     </NotAuthorized>
 </AuthorizeView>
+
+@{
+}

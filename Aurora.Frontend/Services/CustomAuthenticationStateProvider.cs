@@ -13,8 +13,6 @@ namespace Aurora.Frontend.Services
         public CustomAuthenticationStateProvider(AuthenticationService service)
         {
             authenticationState = new AuthenticationState(service.CurrentUser);
-
-            service.UserChanged += OnUserChanged;
         }
 
         private void OnUserChanged(ClaimsPrincipal newUser)

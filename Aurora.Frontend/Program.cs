@@ -30,7 +30,9 @@ builder.Services.AddScoped<DataSeeding>();
 builder.Services.AddScoped<AuthenticationStateProvider, RevalidatingIdentityAuthenticationStateProvider<AuroraUser>>();
 //builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthenticationStateProvider>();
 //builder.Services.AddScoped<CustomAuthenticationStateProvider>();
-//builder.Services.AddSingleton<AuthenticationService>();
+
+builder.Services.AddScoped<HttpContextAccessor>();
+builder.Services.AddScoped<AuthenticationService>();
 
 if (builder.Environment.IsDevelopment())
 {

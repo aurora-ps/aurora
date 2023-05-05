@@ -73,46 +73,46 @@
 
     private async Task OnValidSubmit(EditContext context)
     {
-        var command = new RegisterUserCommand()
-        {
-            UserName = model.Username,
-            Password = model.Password,
-            FirstName = model.FirstName,
-            LastName = model.LastName,
-        };
+        //var command = new RegisterUserCommand()
+        //{
+        //    UserName = model.Username,
+        //    Password = model.Password,
+        //    FirstName = model.FirstName,
+        //    LastName = model.LastName,
+        //};
 
-        var registerUserResponse  = await Mediator.Send(command);
-        if (registerUserResponse.IsSuccess)
-        {
-            var authenticateUser = new AuthenticateUserCommand()
-            {
-                UserName = model.Username,
-                Password = model.Password,
-            };
+        //var registerUserResponse  = await Mediator.Send(command);
+        //if (registerUserResponse.IsSuccess)
+        //{
+        //    var authenticateUser = new AuthenticateUserCommand()
+        //    {
+        //        UserName = model.Username,
+        //        Password = model.Password,
+        //    };
 
-            var authUserResult = await Mediator.Send(authenticateUser);
+        //    var authUserResult = await Mediator.Send(authenticateUser);
 
-            if (authUserResult.Success)
-            {
-                var identity = AuthenticationService.GetClaimsIdentity(authUserResult.IdentityUser, authUserResult.Token);
+        //    if (authUserResult.Success)
+        //    {
+        //        var identity = AuthenticationService.GetClaimsIdentity(authUserResult.IdentityUser, authUserResult.Token);
 
-                var newUser = new ClaimsPrincipal(identity);
-                AuthenticationService.CurrentUser = newUser;
+        //        var newUser = new ClaimsPrincipal(identity);
+        //        AuthenticationService.CurrentUser = newUser;
 
-                if (string.IsNullOrEmpty(ReturnUrl) || ReturnUrl.IndexOf("?returnUrl=", StringComparison.InvariantCulture) <= 0)
-                {
-                    NavManager.NavigateTo("/");
-                    return;
-                }
+        //        if (string.IsNullOrEmpty(ReturnUrl) || ReturnUrl.IndexOf("?returnUrl=", StringComparison.InvariantCulture) <= 0)
+        //        {
+        //            NavManager.NavigateTo("/");
+        //            return;
+        //        }
 
-                var returnUrl = ReturnUrl.Substring(ReturnUrl.IndexOf("?returnUrl=", StringComparison.InvariantCultureIgnoreCase));
-                NavManager.NavigateTo(returnUrl);
-            }
-        }
-        else
-        {
-            success = false;
-        }
+        //        var returnUrl = ReturnUrl.Substring(ReturnUrl.IndexOf("?returnUrl=", StringComparison.InvariantCultureIgnoreCase));
+        //        NavManager.NavigateTo(returnUrl);
+        //    }
+        //}
+        //else
+        //{
+        //    success = false;
+        //}
     }
 
     private async Task ShowLogin()
