@@ -116,11 +116,6 @@ public static class WebApplicationBuilderExtensions
         builder.Services.AddScoped<ApplicationDbContext, ApplicationDbContext>();
         builder.Services.AddScoped<ReportDbContext, ReportDbContext>();
 
-        builder.Services
-            .AddIdentity<AuroraUser, AuroraIdentityRole>(options => options.SignIn.RequireConfirmedAccount = true)
-            .AddEntityFrameworkStores<ApplicationDbContext>()
-            .AddDefaultTokenProviders();
-
     }
 
     public static void SetupDependencies(this WebApplicationBuilder builder)

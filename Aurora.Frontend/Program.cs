@@ -1,13 +1,22 @@
 using Aurora.Frontend.Data;
 using Aurora.Frontend.Services;
+using Aurora.Infrastructure.Data;
+using Aurora.Interfaces.Models;
 using Aurora.Web.Shared.Extensions;
+using BlazorApp2.Areas.Identity;
 using Microsoft.AspNetCore.Components.Authorization;
+using Microsoft.AspNetCore.Identity;
 using MudBlazor.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.ConfigureDatabase();
-builder.SetupAuthenticationWithCookie();
+
+
+builder.Services
+    .AddIdentity<AuroraUser, AuroraIdentityRole>(options => options.SignIn.RequireConfirmedAccount = false)
+    .AddEntityFrameworkStores<ApplicationDbContext>();
+//builder.SetupAuthenticationWithCookie();
 
 // Add services to the container.
 builder.Services.AddRazorPages();
@@ -18,12 +27,16 @@ builder.SetupDependencies();
 
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<DataSeeding>();
-builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthenticationStateProvider>();
-builder.Services.AddScoped<CustomAuthenticationStateProvider>();
-builder.Services.AddSingleton<AuthenticationService>();
+builder.Services.AddScoped<AuthenticationStateProvider, RevalidatingIdentityAuthenticationStateProvider<AuroraUser>>();
+//builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthenticationStateProvider>();
+//builder.Services.AddScoped<CustomAuthenticationStateProvider>();
+//builder.Services.AddSingleton<AuthenticationService>();
 
 if (builder.Environment.IsDevelopment())
+{
     builder.Host.UseOrleans((context, siloBuilder) => { siloBuilder.AddOrleansSilo(11111, 30000); });
+    builder.Services.AddDatabaseDeveloperPageExceptionFilter();
+}
 else
     //TODO: Add production configuration
     builder.Host.UseOrleans((context, siloBuilder) => { siloBuilder.AddOrleansSilo(11111, 30000); });

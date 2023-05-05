@@ -10,14 +10,7 @@
         <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((e) => DrawerToggle())" />
         <MudText Typo="Typo.h5">Public Safety Tools</MudText>
         <MudSpacer />
-        <AuthorizeView>
-            <Authorized>
-                <MudButton Color="Color.Primary" Variant="Variant.Filled" >Logout</MudButton>
-            </Authorized>
-            <NotAuthorized>
-                <MudButton Color="Color.Primary" Variant="Variant.Filled" Href="/authentication/login">Login</MudButton>
-            </NotAuthorized>
-        </AuthorizeView>
+        <LoginDisplay />
     </MudAppBar>
     <MudDrawer @bind-Open="_drawerOpen" Elevation="1">
         <MudDrawerHeader>
@@ -49,7 +42,7 @@
         var user = (await AuthState).User;
         if (user?.Identity?.IsAuthenticated ?? false)
         {
-            NavManager.NavigateTo($"authentication/login?returnUrl={Uri.EscapeDataString(NavManager.Uri)}");
+            //NavManager.NavigateTo($"authentication/login?returnUrl={Uri.EscapeDataString(NavManager.Uri)}");
         }
     }
 
