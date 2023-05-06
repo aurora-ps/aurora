@@ -16,15 +16,14 @@
 
 <AuthorizeView>
     <Authorized>
-        <a href="Identity/Account/Manage">Hello, @context.User.Identity?.Name!</a>
         <MudButton Variant="Variant.Text" StartIcon="@Icons.Material.Filled.Person" Color="Color.Primary" Href="/Identity/Account/Logout">Logout</MudButton>
         @*<form method="post" action="Identity/Account/Logout">
             <button type="submit" class="nav-link btn btn-link">Log out</button>
         </form>*@
     </Authorized>
     <NotAuthorized>
-        <a href="Identity/Account/Register">Register</a>
-        <a href="Identity/Account/Login">Log in</a>
+        <MudButton Variant="Variant.Text" StartIcon="@Icons.Material.Filled.Person" Color="Color.Default" Href="/Identity/Account/Register">Register</MudButton>
+        <MudButton Variant="Variant.Text" StartIcon="@Icons.Material.Filled.Person" Color="Color.Primary" Href="/Identity/Account/Login">Login</MudButton>
     </NotAuthorized>
 </AuthorizeView>
 

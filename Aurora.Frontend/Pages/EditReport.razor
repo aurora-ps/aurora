@@ -1,6 +1,7 @@
 @page "/report/{recordId?}"
 @inject MediatR.IMediator Mediator
 @inject IDialogService DialogService
+@inject AuthenticationService AuthService
 
 @using Aurora.Interfaces.Models.Reporting
 @using Aurora.Features.Agency.GetAgencies
@@ -8,6 +9,8 @@
 @using Aurora.Features.Report.SaveReport
 @using System.Text
 @using Aurora.Frontend.ExtensionMethods
+@using Aurora.Frontend.Services
+@using System.Security.Claims
 
 <MudTabs>
     <MudTabPanel Text="Report">
@@ -43,19 +46,19 @@
                             </MudSelect>
                         </MudItem>
                         <MudItem xs="6" sm="3">
-                            <MudDatePicker Label="Date" @bind-Date="_report.Date" Editable="true" Required="false" />
+                            <MudDatePicker Label="Date" @bind-Date="_incidentDate" Editable="true" Required="false" />
                         </MudItem>
                         @if ((_report?.IncidentType?.CollectTime ?? false) || (_report?.IncidentType?.RequiresTime ?? false))
                         {
 
                             <MudItem xs="6" sm="3">
-                                <MudTimePicker Label="Time" @bind-Time="_report.IncidentTime" Editable="true" Required="_report?.IncidentType?.RequiresTime ?? false" />
+                                <MudTimePicker Label="Time" @bind-Time="_incidentTime" Editable="true" Required="_report?.IncidentType?.RequiresTime ?? false" />
                             </MudItem>
                             <MudItem xs="6" sm="3">
-                                <MudDatePicker Label="Cleared Date" @bind-Date="_report.ClearedDate" MinDate="@_report.Date" Editable="true" Required="_report?.IncidentType?.RequiresTime ?? false" />
+                                <MudDatePicker Label="Cleared Date" @bind-Date="_clearedDate" MinDate="@_incidentDate" Editable="true" Required="_report?.IncidentType?.RequiresTime ?? false" />
                             </MudItem>
                             <MudItem xs="6" sm="3">
-                                <MudTimePicker Label="Cleared Time" @bind-Time="_report.ClearedTime" Editable="true" Required="_report?.IncidentType?.RequiresTime ?? false" />
+                                <MudTimePicker Label="Cleared Time" @bind-Time="_clearedTime" Editable="true" Required="_report?.IncidentType?.RequiresTime ?? false" />
                             </MudItem>
                         }
 
@@ -242,6 +245,9 @@
             {
                 _report = record.Report;
                 _incidentTypes = _agencies.FirstOrDefault(_ => _.Id == _report.Agency.Id)?.IncidentTypes.Select(_ => _).OrderBy(_ => _.Name).ToList() ?? new List<IncidentTypeRecord>();
+                SetReportDates(_report.Date, _report.ClearedDate);
+                //_incidentDate = record.Report.Date;
+                //_clearedDate = record.Report.ClearedDate;
             }
         }
     }
@@ -311,19 +317,28 @@
     private async Task SaveForm()
     {
         await _form.Validate();
+        var user = AuthService.CurrentUser;
+
+        if(user == null)
+            throw new Exception("User not found");
+
+        var userId = user.Claims.FirstOrDefault(_ => _.Type == ClaimTypes.NameIdentifier)?.Value;
+        if (string.IsNullOrEmpty(userId))
+            throw new Exception("User not found");
+
         if (_form.IsValid)
         {
             _saveState = SaveStateEnum.Saving;
 
             var command = SaveReportCommand.Create(new ReportRecord
             {
-                UserId = "0317fa18-52f9-4334-8f11-de08edf63ae8",
+                UserId = userId,
                 Id = recordId ?? Guid.NewGuid().ToString(),
                 Agency = new AgencyRecord() { Id = _report.Agency.Id },
                 IncidentType = new IncidentTypeRecord() { Id = _report.IncidentType.Id },
                 Narrative = _report.Narrative,
-                Date = _report.Date,
-                ClearedDate = _report.ClearedDate,
+                Date = GetIncidentDateTime(),
+                ClearedDate = GetClearedDateTime(),
                 State = _report.State,
                 Location = new LocationRecord()
                 {
@@ -470,7 +485,7 @@
 
         if(ministrySb.Length == 0)
             return;
-        
+
         sb.AppendLine();
         sb.AppendLine("----------------------------------------------------");
         sb.AppendLine("                Ministry Report");
@@ -591,5 +606,54 @@
         }
         set => _report.State = (ReportStateEnum)value.Value;
     }
+
+    private void SetReportDates(DateTime? incidentDate, DateTime? clearedDate)
+    {
+        _incidentDate = incidentDate?.Date;
+        _clearedDate = clearedDate?.Date;
+        if (incidentDate.HasValue)
+        {
+            _incidentTime = incidentDate?.TimeOfDay;
+        }
+        if (clearedDate.HasValue)
+        {
+            _clearedTime = clearedDate?.TimeOfDay;
+        }
+    }
+
+    private DateTime? GetIncidentDateTime()
+    {
+        if (_incidentDate.HasValue)
+        {
+            var incidentDateTime = _incidentDate.Value;
+            if (_incidentTime.HasValue)
+            {
+                incidentDateTime = incidentDateTime.Add(_incidentTime.Value);
+            }
+            return incidentDateTime;
+        }
+
+        return null;
+    }
+
+    private DateTime? GetClearedDateTime()
+    {
+        if (_clearedDate.HasValue)
+        {
+            var incidentDateTime = _clearedDate.Value;
+            if (_incidentTime.HasValue)
+            {
+                incidentDateTime = incidentDateTime.Add(_clearedTime.Value);
+            }
+            return incidentDateTime;
+        }
+
+        return null;
+    }
+
+    private DateTime? _incidentDate;
+    private DateTime? _clearedDate;
+    private TimeSpan? _incidentTime;
+    private TimeSpan? _clearedTime;
 
 }

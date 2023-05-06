@@ -15,7 +15,9 @@ builder.ConfigureDatabase();
 
 builder.Services
     .AddIdentity<AuroraUser, AuroraIdentityRole>(options => options.SignIn.RequireConfirmedAccount = false)
-    .AddEntityFrameworkStores<ApplicationDbContext>();
+    .AddEntityFrameworkStores<ApplicationDbContext>()
+    .AddDefaultTokenProviders()
+    .AddDefaultUI();
 //builder.SetupAuthenticationWithCookie();
 
 // Add services to the container.

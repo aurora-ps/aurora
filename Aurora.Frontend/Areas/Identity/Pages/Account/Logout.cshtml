@@ -3,7 +3,7 @@
 @inject SignInManager<AuroraUser> SignInManager
 @functions {
 
-    public async Task<IActionResult> OnGetAsync(string returnUrl = null)
+    public async Task<IActionResult> OnGetAsync(string? returnUrl = null)
     {
 
         if (SignInManager.IsSignedIn(User))
