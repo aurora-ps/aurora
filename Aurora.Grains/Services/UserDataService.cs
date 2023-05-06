@@ -6,13 +6,13 @@ using Microsoft.EntityFrameworkCore;
 namespace Aurora.Grains.Services;
 
 /// <summary>
-///     Simple in-memory data service for testing.
+///     No longer a simple in-memory service - Fully functioning.
 /// </summary>
-public sealed class UserDataDataService : IUserDataService
+public sealed class UserDataService : IUserDataService
 {
     private readonly UserManager<AuroraUser> _userManager;
 
-    public UserDataDataService(UserManager<AuroraUser> userManager)
+    public UserDataService(UserManager<AuroraUser> userManager)
     {
         _userManager = userManager;
     }
@@ -28,7 +28,8 @@ public sealed class UserDataDataService : IUserDataService
             UserName = data.Name,
             Email = data.Email,
             FirstName = data.FirstName,
-            LastName = data.LastName
+            LastName = data.LastName,
+            LastLoginUtc = data.LastLoginUtc
         };
 
         var result = await _userManager.CreateAsync(user);
@@ -49,7 +50,10 @@ public sealed class UserDataDataService : IUserDataService
             {
                 Id = u.Id,
                 Name = u.UserName,
-                Email = u.Email
+                Email = u.Email,
+                FirstName = u.FirstName,
+                LastName = u.LastName,
+                LastLoginUtc = u.LastLoginUtc
             }).ToListAsync();
 
             return results;
@@ -69,7 +73,10 @@ public sealed class UserDataDataService : IUserDataService
         {
             Id = user.Id,
             Name = user.UserName,
-            Email = user.Email
+            Email = user.Email,
+            FirstName = user.FirstName,
+            LastName = user.LastName,
+            LastLoginUtc = user.LastLoginUtc
         };
     }
 
@@ -87,7 +94,10 @@ public sealed class UserDataDataService : IUserDataService
         {
             Id = user.Id,
             Name = user.UserName,
-            Email = user.Email
+            Email = user.Email,
+            FirstName = user.FirstName,
+            LastName = user.LastName,
+            LastLoginUtc = user.LastLoginUtc
         };
     }
 
@@ -97,5 +107,13 @@ public sealed class UserDataDataService : IUserDataService
         if (user == null) return;
 
         var result = await _userManager.DeleteAsync(user);
+    }
+
+    public async Task SetLastLoginAsync(string key, DateTime utcNow)
+    {
+        var user = await _userManager.FindByIdAsync(key);
+        if (user == null) return;
+        user.LastLoginUtc = utcNow;
+        await _userManager.UpdateAsync(user);
     }
 }

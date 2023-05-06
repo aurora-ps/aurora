@@ -6,6 +6,7 @@ using Aurora.Web.Shared.Extensions;
 using BlazorApp2.Areas.Identity;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using MudBlazor.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -74,6 +75,15 @@ app.Run();
 async Task SeedData(WebApplication webApplication)
 {
     var services = webApplication.Services.CreateScope();
+
+    RunMigrations(services);
+
+    void RunMigrations(IServiceScope serviceScope)
+    {
+        serviceScope.ServiceProvider.GetService<ApplicationDbContext>()?.Database.Migrate();
+        serviceScope.ServiceProvider.GetService<ReportDbContext>()?.Database.Migrate();
+    }
+
     var service = services.ServiceProvider.GetService<DataSeeding>();
     if(service != null)
         await service.SeedData();

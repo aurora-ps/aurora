@@ -2,8 +2,7 @@
 @using Aurora.Features.User.GetUsers
 @using Aurora.Interfaces
 @using MediatR
-
-@inject IMediator mediator
+@inject IMediator Mediator
 
 <PageTitle>Users</PageTitle>
 
@@ -16,14 +15,18 @@ else
 {
     <MudTable Items="Model" Hover="true" SortLabel="Sort By" Elevation="0">
         <HeaderContent>
-            <MudTh><MudTableSortLabel InitialDirection="SortDirection.Ascending" SortBy="new Func<UserRecord, object>(x=>x.Id)">Date</MudTableSortLabel></MudTh>
-            <MudTh><MudTableSortLabel SortBy="new Func<UserRecord, object>(x=>x.Name)">Username</MudTableSortLabel></MudTh>
-            <MudTh><MudTableSortLabel SortBy="new Func<UserRecord, object>(x=>x.Email)">Email</MudTableSortLabel></MudTh>
+            <MudTh><MudTableSortLabel SortBy="new Func<UserRecord, object>(x => x.FirstName)">First Name</MudTableSortLabel></MudTh>
+            <MudTh><MudTableSortLabel SortBy="new Func<UserRecord, object>(x => x.LastName)">Last Name</MudTableSortLabel></MudTh>
+            <MudTh><MudTableSortLabel SortBy="new Func<UserRecord, object>(x => x.Name)">Username</MudTableSortLabel></MudTh>
+            <MudTh><MudTableSortLabel SortBy="new Func<UserRecord, object>(x => x.Email)">Email</MudTableSortLabel></MudTh>
+            <MudTh><MudTableSortLabel SortBy="new Func<UserRecord, object>(x => x.LastLoginUtc)">Last Login</MudTableSortLabel></MudTh>
         </HeaderContent>
         <RowTemplate>
-            <MudTd DataLabel="Date">@context.Id</MudTd>
-            <MudTd DataLabel="Temp. (C)">@context.Name</MudTd>
-            <MudTd DataLabel="Temp. (F)">@context.Email</MudTd>
+            <MudTd DataLabel="First Name">@context.FirstName</MudTd>
+            <MudTd DataLabel="Last Name">@context.LastName</MudTd>
+            <MudTd DataLabel="Username">@context.Name</MudTd>
+            <MudTd DataLabel="Email Address">@context.Email</MudTd>
+            <MudTd DataLabel="Last Login">@context.LastLoginUtc?.ToLocalTime()</MudTd>
         </RowTemplate>
         <PagerContent>
             <MudTablePager PageSizeOptions="new int[]{50, 100}" />
@@ -37,7 +40,7 @@ else
     protected override async Task OnInitializedAsync()
     {
 
-        var response = await mediator.Send(new GetUsersQuery());
+        var response = await Mediator.Send(new GetUsersQuery());
         if (response.Success)
         {
             Model = response.Users;

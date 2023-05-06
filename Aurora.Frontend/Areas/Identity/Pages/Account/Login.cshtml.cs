@@ -2,31 +2,29 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 #nullable disable
 
-using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
+using Aurora.Interfaces;
 using Aurora.Interfaces.Models;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.Extensions.Logging;
 
 namespace Aurora.Frontend.Areas.Identity.Pages.Account
 {
     public class LoginModel : PageModel
     {
         private readonly SignInManager<AuroraUser> _signInManager;
+        private readonly UserManager<AuroraUser> _userManager;
         private readonly ILogger<LoginModel> _logger;
+        private readonly IClusterClient _clusterClient;
 
-        public LoginModel(SignInManager<AuroraUser> signInManager, ILogger<LoginModel> logger)
+        public LoginModel(SignInManager<AuroraUser> signInManager, UserManager<AuroraUser> userManager, ILogger<LoginModel> logger, IClusterClient clusterClient)
         {
             _signInManager = signInManager;
+            _userManager = userManager;
             _logger = logger;
+            _clusterClient = clusterClient;
         }
 
         /// <summary>
@@ -116,6 +114,7 @@ namespace Aurora.Frontend.Areas.Identity.Pages.Account
                 if (result.Succeeded)
                 {
                     _logger.LogInformation("User logged in.");
+                    await this.SetLastUserLogin(Input.Email);
                     return LocalRedirect(returnUrl);
                 }
                 if (result.RequiresTwoFactor)
@@ -136,6 +135,16 @@ namespace Aurora.Frontend.Areas.Identity.Pages.Account
 
             // If we got this far, something failed, redisplay form
             return Page();
+        }
+
+        private async Task SetLastUserLogin(string userEmail)
+        {
+            var user = await _userManager.FindByEmailAsync(userEmail);
+            if (user != null)
+            {
+                var userGrain = _clusterClient.GetGrain<IUserGrain>(user.Id);
+                await userGrain.SetLastLoginAsync(DateTime.UtcNow);
+            }
         }
     }
 }

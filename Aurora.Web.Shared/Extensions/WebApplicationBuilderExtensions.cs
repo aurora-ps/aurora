@@ -123,7 +123,7 @@ public static class WebApplicationBuilderExtensions
         builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(GetUserQueryHandler).Assembly));
 
         builder.Services.AddScoped<IOrganizationDataService, OrganizationDataService>();
-        builder.Services.AddScoped<IUserDataService, UserDataDataService>();
+        builder.Services.AddScoped<IUserDataService, UserDataService>();
         builder.Services.AddScoped<IReportDataService, ReportDataService>();
 
         builder.Services.AddValidatorsFromAssemblyContaining<AuthenticateUserCommandValidator>();

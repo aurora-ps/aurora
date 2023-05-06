@@ -17,16 +17,20 @@ public class ReportDataService : IReportDataService
         throw new NotImplementedException();
     }
 
-    public async Task<IList<Report>> GetAllAsync(bool includeDeleted = false)
-    {
-        var listAsync = await _reportContext.Reports
+    private IQueryable<Report> GetBaseReportQuery(bool includeDeleted = false) =>
+        _reportContext.Reports
             .Where(_ => (includeDeleted) || (_.DeletedOnUtc == null))
-            .AsNoTracking().Include(r => r.Agency)
+            .AsNoTracking()
+            .Include(r => r.Agency)
             .Include(r => r.IncidentType)
             .Include(r => r.Location)
             .Include(r => r.MinistryOpportunity)
             .Include(r => r.People).ThenInclude(p => p.Location)
-            .Include(r => r.People).ThenInclude(p => p.PhoneNumber)
+            .Include(r => r.People).ThenInclude(p => p.PhoneNumber);
+
+    public async Task<IList<Report>> GetAllAsync(bool includeDeleted)
+    {
+        var listAsync = await this.GetBaseReportQuery(includeDeleted)
             .ToListAsync();
 
         return listAsync;
@@ -34,15 +38,8 @@ public class ReportDataService : IReportDataService
 
     public async Task<IList<Report>> GetForUserAsync(string? requestUserId, bool includeDeleted)
     {
-        return await _reportContext.Reports
-            .Where(_ => (includeDeleted) || (_.DeletedOnUtc == null))
+        return await this.GetBaseReportQuery(includeDeleted)
             .Where(_ => _.AuroraUserId == requestUserId)
-            .AsNoTracking().Include(r => r.Agency)
-            .Include(r => r.IncidentType)
-            .Include(r => r.Location)
-            .Include(r => r.MinistryOpportunity)
-            .Include(r => r.People).ThenInclude(p => p.Location)
-            .Include(r => r.People).ThenInclude(p => p.PhoneNumber)
             .ToListAsync();
     }
 
@@ -50,13 +47,7 @@ public class ReportDataService : IReportDataService
 
     public Task<Report?> GetAsync(string key)
     {
-        return _reportContext.Reports
-            .Include(r => r.Agency)
-            .Include(r => r.IncidentType)
-            .Include(r => r.Location)
-            .Include(r => r.MinistryOpportunity)
-            .Include(r => r.People).ThenInclude(p => p.Location)
-            .Include(r => r.People).ThenInclude(p => p.PhoneNumber)
+        return this.GetBaseReportQuery(true)
             .SingleOrDefaultAsync(r => r.Id == key);
     }
 

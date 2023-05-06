@@ -46,6 +46,13 @@ public class UserGrain : Grain, IUserGrain
         return false;
     }
 
+    public async Task SetLastLoginAsync(DateTime utcNow)
+    {
+        
+        await _userDataDataService.SetLastLoginAsync(this.GetPrimaryKeyString(), utcNow);
+        _state = await _userDataDataService.GetAsync(this.GetPrimaryKeyString());
+    }
+
     public override async Task OnActivateAsync(CancellationToken cancellationToken)
     {
         // Check to see if there's a Data record for this.

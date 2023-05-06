@@ -13,4 +13,5 @@ public sealed record UserRecord
     [Id(3)] public string FirstName { get; set; } = string.Empty;
 
     [Id(4)] public string LastName { get; set; } = string.Empty;
+    [Id(5)] public DateTime? LastLoginUtc { get; set; }
 }

@@ -7,4 +7,5 @@ public interface IUserGrain : IGrainWithStringKey
     Task<UserRecord?> GetDetailsAsync();
 
     Task<bool> DeleteAsync();
+    Task SetLastLoginAsync(DateTime utcNow);
 }

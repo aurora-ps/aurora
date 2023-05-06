@@ -20,14 +20,14 @@
             <MudItem xs="3" Class="d-flex justify-end">
                 @if (_isAdmin)
                 {
-                    <MudCheckBox T="bool" Checked="@_showAll" Label="Show Hidden" CheckedChanged="@(OnShowAllClicked)"/>
+                    <MudCheckBox T="bool" Checked="@_showAll" Label="Show All Users" CheckedChanged="@(OnShowAllClicked)"/>
                 }
                 <MudCheckBox T="bool" Checked="@_showHidden" Label="Show Hidden" CheckedChanged="@(OnShowHiddenClicked)" />
             </MudItem>
         </MudGrid>
     </MudCardHeader>
     <MudCardContent>
-        <MudDataGrid @ref="@_reportGrid" Items="@_reports" Filterable="true" SortMode="SortMode.Multiple" Groupable="false" Dense="true">
+        <MudDataGrid @ref="@_reportGrid" Items="@_reports" Filterable="true" SortMode="SortMode.Multiple" Groupable="true" Dense="true">
             <Columns>
                 <PropertyColumn Property="x => x.Date" Format="MM/dd/yyyy"></PropertyColumn>
                 <PropertyColumn Property="x => x.TimeDisplay" Title="Time"></PropertyColumn>
