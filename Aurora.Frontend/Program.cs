@@ -1,6 +1,7 @@
 using Aurora.Frontend.Data;
 using Aurora.Frontend.Services;
 using Aurora.Infrastructure.Data;
+using Aurora.Interfaces.Mapping;
 using Aurora.Interfaces.Models;
 using Aurora.Web.Shared.Extensions;
 using BlazorApp2.Areas.Identity;
@@ -27,6 +28,7 @@ builder.Services.AddServerSideBlazor();
 builder.Services.AddMudServices();
 
 builder.SetupDependencies();
+builder.Services.AddAutoMapper(typeof(MappingProfile));
 
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<DataSeeding>();
