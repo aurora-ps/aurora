@@ -27,8 +27,8 @@ builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 builder.Services.AddMudServices();
 
-builder.SetupDependencies();
 builder.Services.AddAutoMapper(typeof(MappingProfile));
+builder.SetupDependencies();
 
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<DataSeeding>();

@@ -19,6 +19,11 @@ namespace Aurora.Interfaces.Mapping
             CreateMap<Agency, AgencyRecord>()
                 .ReverseMap();
 
+            CreateMap<AgencyIncidentType,  AgencyIncidentType>();
+            CreateMap<IncidentTypeRecord, IncidentTypeRecord>();
+            CreateMap<AgencyIncidentType, IncidentTypeRecord>()
+                .ReverseMap();
+
             CreateMap<IncidentType, IncidentType>();
             CreateMap<IncidentTypeRecord, IncidentTypeRecord>();
             CreateMap<IncidentType, IncidentTypeRecord>()

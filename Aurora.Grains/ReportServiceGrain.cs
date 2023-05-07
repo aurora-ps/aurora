@@ -1,7 +1,10 @@
 ﻿using Aurora.Grains.Services;
+using Aurora.Infrastructure.Data;
 using Aurora.Interfaces;
 using Aurora.Interfaces.Models.Reporting;
 using AutoMapper;
+using AutoMapper.QueryableExtensions;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
 namespace Aurora.Grains;
@@ -9,12 +12,12 @@ namespace Aurora.Grains;
 public class ReportServiceGrain : Grain, IReportServiceGrain
 {
     private readonly ILogger<ReportServiceGrain> _logger;
-    private readonly IReportDataService _reportDataService;
     private readonly IMapper _mapper;
+    private readonly ReportDbContext _reportContext;
 
-    public ReportServiceGrain(IReportDataService reportDataService, IMapper mapper, ILogger<ReportServiceGrain> logger)
+    public ReportServiceGrain(ReportDbContext reportContext, IMapper mapper, ILogger<ReportServiceGrain> logger)
     {
-        _reportDataService = reportDataService;
+        _reportContext = reportContext;
         _mapper = mapper;
         _logger = logger;
     }
@@ -23,14 +26,11 @@ public class ReportServiceGrain : Grain, IReportServiceGrain
     {
         try
         {
-            var reports = await _reportDataService.GetAllAsync(includeDeleted);
-            List<ReportRecord> records = new List<ReportRecord>();
-            foreach (var report in reports)
-            {
-                records.Add(_mapper.Map<ReportRecord>(report));
-            }
-
-            return records;
+            var reports = await GetReportQueryable(includeDeleted)
+                .ProjectTo<ReportRecord>(_mapper.ConfigurationProvider)
+                .ToListAsync();
+           
+            return reports;
         }
         catch (Exception ex)
         {
@@ -41,20 +41,30 @@ public class ReportServiceGrain : Grain, IReportServiceGrain
 
     public async Task<bool> ReportExistsAsync(string reportId)
     {
-        return await _reportDataService.ExistsAsync(reportId);
+        return await _reportContext.Reports.AnyAsync(_ => _.Id == reportId);
     }
 
     public async Task<IList<ReportRecord>> GetUserReportsAsync(string? requestUserId, bool requestShowHidden)
     {
         try
         {
-            var reports = await _reportDataService.GetForUserAsync(requestUserId, requestShowHidden);
-            return _mapper.Map<IList<ReportRecord>>(reports);
+            var reports = await this.GetReportQueryable(requestShowHidden)
+                .Where(_ => requestUserId == null || _.CreatedByUserId == requestUserId)
+                .ProjectTo<ReportRecord>(_mapper.ConfigurationProvider)
+                .ToListAsync();
+
+            return reports;
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, ex.Message);
             throw;
         }
+    }
+
+    private IQueryable<Report> GetReportQueryable(bool includeDeleted)
+    {
+        return _reportContext.Reports
+            .Where(_ => includeDeleted || _.DeletedOnUtc == null);
     }
 }

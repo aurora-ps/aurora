@@ -1,5 +1,6 @@
 ﻿using Aurora.Infrastructure.Data;
 using Aurora.Interfaces.Models.Reporting;
+using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 
 namespace Aurora.Grains.Services;
@@ -7,10 +8,12 @@ namespace Aurora.Grains.Services;
 public class ReportDataService : IReportDataService
 {
     private readonly ReportDbContext _reportContext;
+    private readonly IMapper _mapper;
 
-    public ReportDataService(ReportDbContext reportContext)
+    public ReportDataService(ReportDbContext reportContext, IMapper mapper)
     {
         _reportContext = reportContext;
+        _mapper = mapper;
     }
     public Task<Report> AddAsync(Report data)
     {
@@ -65,25 +68,10 @@ public class ReportDataService : IReportDataService
         }
         else
         {
-            //_reportContext.Attach(existing);
-            existing.AgencyId = record.AgencyId;
-            existing.Date = record.Date;
-            existing.IncidentTypeId = record.IncidentTypeId;
-            existing.Location = record.Location;
-            existing.Miles = record.Miles;
-            existing.Narrative = record.Narrative;
-            existing.ClearedDate = record.ClearedDate;
-            existing.MinistryOpportunity = record.MinistryOpportunity;
-            existing.State = record.State;
-
-            UpdatePeople(existing, record.People.ToList());
-
-            //_reportContext.Entry(existing).State = EntityState.Modified;
+            _mapper.Map(record, existing);
         }
 
         await _reportContext.SaveChangesAsync();
-
-        // TODO Automapper and map values
         return record;
     }
 
@@ -111,38 +99,5 @@ public class ReportDataService : IReportDataService
         await _reportContext.SaveChangesAsync();
 
         return utcNow;
-    }
-
-    private void UpdatePeople(Report report, IList<ReportPerson> recordPeople)
-    {
-        var existingRecords = report.People.ToList();
-        foreach (var person in recordPeople)
-        {
-            // Add if new
-            if (existingRecords.All(p => p.Id != person.Id))
-            {
-                report.People.Add(person);
-            }
-
-            // Update if existing
-            if (existingRecords.Any(p => p.Id == person.Id))
-            {
-                var existingRecord = report.People.Single(p => p.Id == person.Id);
-                existingRecord.FirstName = person.FirstName;
-                existingRecord.LastName = person.LastName;
-                existingRecord.Location = person.Location;
-                existingRecord.PhoneNumber = person.PhoneNumber;
-                existingRecord.Type = person.Type;
-                existingRecord.DateOfBirth = person.DateOfBirth;
-                existingRecord.RequestFollowup = person.RequestFollowup;
-            }
-        }
-
-        var toRemove = existingRecords.Where(p => recordPeople.All(rp => rp.Id != p.Id)).ToList();
-        foreach (var person in toRemove)
-        {
-            report.People.Remove(person);
-        }
-
     }
 }
