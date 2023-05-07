@@ -39,7 +39,7 @@ public class ReportDataService : IReportDataService
     public async Task<IList<Report>> GetForUserAsync(string? requestUserId, bool includeDeleted)
     {
         return await this.GetBaseReportQuery(includeDeleted)
-            .Where(_ => _.AuroraUserId == requestUserId)
+            .Where(_ => _.CreatedByUserId == requestUserId)
             .ToListAsync();
     }
 

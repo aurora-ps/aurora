@@ -32,9 +32,9 @@ public class Report : IReport
 
     public virtual ICollection<ReportPerson> People { get; set; } = new List<ReportPerson>();
 
-    public string AuroraUserId { get; set; }
+    public string CreatedByUserId { get; set; }
 
-    public AuroraUser User { get; set; }
+    public AuroraUser CreatedBy { get; set; }
 
     public string AgencyId { get; set; }
 

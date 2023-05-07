@@ -41,6 +41,8 @@ namespace Aurora.Interfaces.Mapping
             CreateMap<Report, Report>();
             CreateMap<ReportRecord, ReportRecord>();
             CreateMap<Report, ReportRecord>()
+                .ForMember(d => d.CreatedByUserId, opt => opt.MapFrom(src => src.CreatedByUserId))
+                .ForMember(d => d.CreatedBy, opt =>  opt.MapFrom(s => s.CreatedBy))
                 .ReverseMap();
 
             CreateMap<ReportPerson, ReportPerson>();

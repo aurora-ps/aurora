@@ -6,7 +6,7 @@ public sealed record ReportRecord : IReportRecord
 {
     [Id(0)] public string Id { get; set; } = Guid.NewGuid().ToString();
 
-    [Id(1)] public string UserId { get; set; }
+    [Id(1)] public string CreatedByUserId { get; set; }
 
     [Id(2)] public DateTime? Date { get; set; }
 
@@ -33,6 +33,8 @@ public sealed record ReportRecord : IReportRecord
     [Id(13)] public ReportStateEnum State { get; set; } = ReportStateEnum.Draft;
 
     [Id(14)] public int ReportId { get; set; }
+
+    [Id(15)] public UserRecord CreatedBy { get; set; }
 
     public string TimeDisplay => Date == null ? string.Empty : $"{Date.Value.Hour:00}:{Date.Value.Minute:00}";
 

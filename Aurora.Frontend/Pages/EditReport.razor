@@ -332,7 +332,7 @@
 
             var command = SaveReportCommand.Create(new ReportRecord
             {
-                UserId = userId,
+                CreatedByUserId = userId,
                 Id = recordId ?? Guid.NewGuid().ToString(),
                 Agency = new AgencyRecord() { Id = _report.Agency.Id },
                 IncidentType = new IncidentTypeRecord() { Id = _report.IncidentType.Id },

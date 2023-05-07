@@ -8,7 +8,7 @@ public interface IReportRecord
 
     ReportStateEnum State { get; set; }
 
-    string UserId { get; set; }
+    string CreatedByUserId { get; set; }
 
     DateTime? Date { get; set; }
 
