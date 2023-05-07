@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Aurora.Interfaces.Models.Reporting;
@@ -32,13 +33,18 @@ public class Report : IReport
 
     public virtual ICollection<ReportPerson> People { get; set; } = new List<ReportPerson>();
 
-    public string CreatedByUserId { get; set; }
+    public string ReportUserId { get; set; }
 
-    public AuroraUser CreatedBy { get; set; }
+    public AuroraUser ReportUser { get; set; }
 
     public string AgencyId { get; set; }
 
     public string IncidentTypeId { get; set; }
+
+    [Required]
+    public string CreatedByUserId { get; set; }
+
+    public AuroraUser CreatedByUser { get; set; }
 
     public DateTime CreatedOnUtc { get; set; } = DateTime.Now;
 

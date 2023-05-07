@@ -35,9 +35,9 @@ public class ReportDbContext : DbContext, IReportDbContext
             .HasForeignKey(r => r.IncidentTypeId);
 
         modelBuilder.Entity<Report>()
-            .HasOne(r => r.CreatedBy)
+            .HasOne(r => r.ReportUser)
             .WithMany()
-            .HasForeignKey(r => r.CreatedByUserId);
+            .HasForeignKey(r => r.ReportUserId);
 
         modelBuilder.Entity<Report>()
             .OwnsOne(r => r.Location);

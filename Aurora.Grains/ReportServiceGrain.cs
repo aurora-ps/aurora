@@ -49,7 +49,7 @@ public class ReportServiceGrain : Grain, IReportServiceGrain
         try
         {
             var reports = await this.GetReportQueryable(requestShowHidden)
-                .Where(_ => requestUserId == null || _.CreatedByUserId == requestUserId)
+                .Where(_ => requestUserId == null || _.ReportUserId == requestUserId)
                 .ProjectTo<ReportRecord>(_mapper.ConfigurationProvider)
                 .ToListAsync();
 

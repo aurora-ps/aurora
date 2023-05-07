@@ -18,8 +18,8 @@ public interface IReport
     Location? Location { get; set; }
     string Narrative { get; set; }
     ICollection<ReportPerson> People { get; set; }
-    string CreatedByUserId { get; set; }
-    AuroraUser CreatedBy { get; set; }
+    string ReportUserId { get; set; }
+    AuroraUser ReportUser { get; set; }
     string AgencyId { get; set; }
     string IncidentTypeId { get; set; }
 

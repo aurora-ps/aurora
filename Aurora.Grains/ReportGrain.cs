@@ -1,108 +1,130 @@
-﻿using Aurora.Grains.Services;
+﻿using Aurora.Infrastructure.Data;
 using Aurora.Interfaces;
 using Aurora.Interfaces.Models.Reporting;
 using AutoMapper;
+using AutoMapper.QueryableExtensions;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
 namespace Aurora.Grains;
 
 public class ReportGrain : Grain, IReportGrain
 {
+    private readonly ReportDbContext _context;
     private readonly ILogger<ReportGrain> _logger;
-    private readonly IReportDataService _reportDataService;
     private readonly IMapper _mapper;
     private ReportRecord? _state;
 
-    public ReportGrain(IReportDataService reportDataService, IMapper mapper, ILogger<ReportGrain> logger)
+    public ReportGrain(ReportDbContext context, IMapper mapper, ILogger<ReportGrain> logger)
     {
-        _reportDataService = reportDataService;
+        _context = context;
         _mapper = mapper;
         _logger = logger;
     }
 
-    public override async Task OnActivateAsync(CancellationToken cancellationToken)
-    {
-        if (this._state == null)
-        {
-            var record = await this.GetAsync(this.GetPrimaryKeyString());
-            if (record != null)
-            {
-                this._state = record;
-            }
-        }
-
-        await base.OnActivateAsync(cancellationToken);
-    }
-
     public async Task<ReportRecord?> GetAsync()
     {
-        if (!await IsPersistedAsync())
-        {
-            _state = await this.GetAsync(this.GetPrimaryKeyString());
-        }
-
-        return this._state;
+        return await Task.FromResult(_state);
     }
 
-    private async Task<ReportRecord?> GetAsync(string reportId)
-    {
-        var report = await _reportDataService.GetAsync(reportId);
-
-        return _state = _mapper.Map<ReportRecord>(report);
-    }
-
-    public async Task<ReportRecord?> AddOrUpdateAsync(ReportRecord data)
+    public async Task<bool> AddOrUpdateAsync(ReportRecord record)
     {
         try
         {
-            if (data.Id != this.GetPrimaryKeyString())
-            {
+            if (record.Id != this.GetPrimaryKeyString())
                 throw new InvalidOperationException("Report ID does not match grain ID.");
-            }
 
-            //var record = data.ToReport();
-            var record = _mapper.Map<Report>(data);
+            var report = await GetRecordForUpdateAsync(record);
 
-            var results = await _reportDataService.AddOrUpdateAsync(record);
-
-            if (results != null)
+            if (report != null)
             {
-                this._state = await GetAsync(this.GetPrimaryKeyString());
-                return this._state;
+                _mapper.Map(record, report);
+            }
+            else
+            {
+                report = _mapper.Map<Report>(record);
+                await _context.AddAsync(report);
             }
 
-            return null;
+            var results = await _context.SaveChangesAsync();
+            await RefreshStateAsync();
+
+            return true;
         }
         catch (Exception ex)
         {
-            this._logger.LogError(ex, ex.Message);
+            _logger.LogError(ex, ex.Message);
             throw;
         }
     }
 
-    public Task<bool> IsPersistedAsync()
-    {
-        return Task.FromResult(this._state != null);
-    }
-
     public async Task<bool> UnDeleteAsync()
     {
-        if (await _reportDataService.UnDeleteAsync(this.GetPrimaryKeyString()))
-        {
-            this._state = await GetAsync(this.GetPrimaryKeyString());
-            return true;
-        }
-        return false;
+        var report = await _context.Reports.FirstOrDefaultAsync(r => r.Id == this.GetPrimaryKeyString());
+        if (report == null) return false;
+
+        report.DeletedOnUtc = null;
+        await _context.SaveChangesAsync();
+
+        await RefreshStateAsync();
+
+        return true;
     }
 
     public async Task<DateTime?> DeleteAsync()
     {
-        DateTime? deletedOnUtc = await _reportDataService.DeleteAsync(this.GetPrimaryKeyString());
-        if (deletedOnUtc.HasValue)
+        var report = await _context.Reports.FirstOrDefaultAsync(r => r.Id == this.GetPrimaryKeyString());
+        if (report == null)
+            return null;
+
+        if (!report.DeletedOnUtc.HasValue)
         {
-            this._state = await GetAsync(this.GetPrimaryKeyString());
+            report.DeletedOnUtc = DateTime.UtcNow;
+            await _context.SaveChangesAsync();
+
+            await RefreshStateAsync();
+
+            return report.DeletedOnUtc;
         }
 
-        return deletedOnUtc;
+        return report.DeletedOnUtc;
+    }
+
+    public override async Task OnActivateAsync(CancellationToken cancellationToken)
+    {
+        await RefreshStateAsync();
+
+        _state ??= new ReportRecord();
+
+        await base.OnActivateAsync(cancellationToken);
+    }
+
+    private async Task RefreshStateAsync()
+    {
+        var persistedRecord = await GetAsync(this.GetPrimaryKeyString());
+
+        // Only refresh the state if the persisted record is different than the current state.
+        if(persistedRecord != null)
+            _state = persistedRecord;
+
+    }
+
+    private async Task<ReportRecord?> GetAsync(string reportId)
+    {
+        var record = await _context.Reports.ProjectTo<ReportRecord>(_mapper.ConfigurationProvider)
+            .FirstOrDefaultAsync(r => r.Id == reportId);
+        return record;
+    }
+
+    private async Task<Report?> GetRecordForUpdateAsync(ReportRecord record)
+    {
+        return await _context.Reports
+            .Include(r => r.Agency)
+            .Include(r => r.IncidentType)
+            .Include(r => r.Location)
+            .Include(r => r.MinistryOpportunity)
+            .Include(r => r.People).ThenInclude(p => p.Location)
+            .Include(r => r.People).ThenInclude(p => p.PhoneNumber)
+            .FirstOrDefaultAsync(_ => _.Id == record.Id);
     }
 }

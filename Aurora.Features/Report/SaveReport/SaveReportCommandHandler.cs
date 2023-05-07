@@ -41,11 +41,9 @@ namespace Aurora.Features.Report.SaveReport
         private async Task<SaveReportCommandResult> UpdateReport(ReportRecord command)
         {
             var reportGrain = _clusterClient.GetGrain<IReportGrain>(command.Id);
-            if (await reportGrain.IsPersistedAsync())
-            {
-                await reportGrain.AddOrUpdateAsync(command);
+            var results = await reportGrain.AddOrUpdateAsync(command);
+            if (results)
                 return SaveReportCommandResult.Success(command);
-            }
 
             return new SaveReportCommandResult(false);
         }
