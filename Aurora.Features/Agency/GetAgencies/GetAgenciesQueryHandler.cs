@@ -26,11 +26,15 @@ namespace Aurora.Features.Agency.GetAgencies
                         {
                             Id = it.IncidentType.Id,
                             Name = it.IncidentType.Name,
-                            CollectLocation = it.IncidentType.CollectLocation,
-                            CollectPerson = it.IncidentType.CollectPerson,
-                            CollectTime = it.IncidentType.CollectTime,
-                            RequiresTime = it.IncidentType.RequiresTime,
-
+                            CollectLocation = it.CollectLocation  ?? it.IncidentType.CollectLocation,
+                            CollectPerson = it.CollectPerson ?? it.IncidentType.CollectPerson,
+                            CollectTime = it.CollectTime ?? it.IncidentType.CollectTime,
+                            RequiresTime = it.RequiresTime ?? it.IncidentType.RequiresTime,
+                            ShowGospelPresentations = it.ShowGospelPresentations ?? it.IncidentType.ShowGospelPresentations,
+                            ShowProfessionsOfFaith = it.ShowProfessionsOfFaith ?? it.IncidentType.ShowProfessionsOfFaith,
+                            ShowBaptisms = it.ShowBaptisms ?? it.IncidentType.ShowBaptisms,
+                            ShowBibleStudies = it.ShowBibleStudies ?? it.IncidentType.ShowBibleStudies,
+                            ShowCounselingOpportunities = it.ShowCounselingOpportunities ?? it.IncidentType.ShowCounselingOpportunities
                         }).ToList()
                     })
                 .ToListAsync(cancellationToken);

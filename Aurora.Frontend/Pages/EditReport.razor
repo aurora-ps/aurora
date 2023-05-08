@@ -132,10 +132,10 @@
                                                     <MudItem xs="12">
                                                         <MudGrid>
                                                             <MudItem xs="6"><MudText Typo="Typo.h6" GutterBottom="false">Contact Information</MudText></MudItem>
-                                                            <MudItem xs="6"><MudCheckBox Label="Request Follow-up?" @bind-Checked="@person.RequestFollowup"></MudCheckBox></MudItem>        
+                                                            <MudItem xs="6"><MudCheckBox Label="Request Follow-up?" @bind-Checked="@person.RequestFollowup"></MudCheckBox></MudItem>
                                                         </MudGrid>
                                                     </MudItem>
-                                                    
+
                                                     <MudItem xs="12" md="6">
                                                         <MudTextField Label="Phone Number" @bind-Value="person.PhoneNumber.Number" Required="false" />
                                                     </MudItem>
@@ -169,27 +169,45 @@
                         </MudGrid>
                     </MudListItem>
                 }
-                <MudDivider />
-                <MudListItem>
-                    <MudGrid Spacing="1">
-                        <MudItem xs="12"><MudText Typo="Typo.h5" GutterBottom="false">Ministry</MudText></MudItem>
-                        <MudItem xs="12" sm="6" md="4" lg="3">
-                            <MudNumericField @bind-Value="@_report.MinistryOpportunity.CounselingOpportunities" Label="Counseling Opportunities"></MudNumericField>
-                        </MudItem>
-                        <MudItem xs="12" sm="6" md="4" lg="3">
-                            <MudNumericField @bind-Value="@_report.MinistryOpportunity.GospelPresentations" Label="Gospel Presentations"></MudNumericField>
-                        </MudItem>
-                        <MudItem xs="12" sm="6" md="4" lg="3">
-                            <MudNumericField @bind-Value="@_report.MinistryOpportunity.ProfessionsOfFaith" Label="Professions of Faith"></MudNumericField>
-                        </MudItem>
-                        <MudItem xs="12" sm="6" md="4" lg="3">
-                            <MudNumericField @bind-Value="@_report.MinistryOpportunity.BibleStudies" Label="Bible Studies"></MudNumericField>
-                        </MudItem>
-                        <MudItem xs="12" sm="6" md="4" lg="3">
-                            <MudNumericField @bind-Value="@_report.MinistryOpportunity.Baptisms" Label="Baptisims"></MudNumericField>
-                        </MudItem>
-                    </MudGrid>
-                </MudListItem>
+                @if (ShowMinistrySection())
+                {
+                    <MudDivider />
+                    <MudListItem>
+                        <MudGrid Spacing="1">
+                            <MudItem xs="12"><MudText Typo="Typo.h5" GutterBottom="false">Ministry</MudText></MudItem>
+                            @if (_report?.IncidentType?.ShowCounselingOpportunities ?? false)
+                            {
+                                <MudItem xs="12" sm="6" md="4" lg="3">
+                                    <MudNumericField @bind-Value="@_report.MinistryOpportunity.CounselingOpportunities" Label="Counseling Opportunities"></MudNumericField>
+                                </MudItem>
+                            }
+                            @if (_report?.IncidentType?.ShowGospelPresentations ?? false)
+                            {
+                                <MudItem xs="12" sm="6" md="4" lg="3">
+                                    <MudNumericField @bind-Value="@_report.MinistryOpportunity.GospelPresentations" Label="Gospel Presentations"></MudNumericField>
+                                </MudItem>
+                            }
+                            @if (_report?.IncidentType?.ShowProfessionsOfFaith ?? false)
+                            {
+                                <MudItem xs="12" sm="6" md="4" lg="3">
+                                    <MudNumericField @bind-Value="@_report.MinistryOpportunity.ProfessionsOfFaith" Label="Professions of Faith"></MudNumericField>
+                                </MudItem>
+                            }
+                            @if (_report?.IncidentType?.ShowBibleStudies ?? false)
+                            {
+                                <MudItem xs="12" sm="6" md="4" lg="3">
+                                    <MudNumericField @bind-Value="@_report.MinistryOpportunity.BibleStudies" Label="Bible Studies"></MudNumericField>
+                                </MudItem>
+                            }
+                            @if (_report?.IncidentType?.ShowBaptisms ?? false)
+                            {
+                                <MudItem xs="12" sm="6" md="4" lg="3">
+                                    <MudNumericField @bind-Value="@_report.MinistryOpportunity.Baptisms" Label="Baptisims"></MudNumericField>
+                                </MudItem>
+                            }
+                        </MudGrid>
+                    </MudListItem>
+                }
                 <MudDivider />
                 <MudListItem>
                     <MudItem xs="8"><MudText Typo="Typo.h5" GutterBottom="false">Narrative</MudText></MudItem>
@@ -316,7 +334,7 @@
         await _form.Validate();
         var user = AuthService.CurrentUser;
 
-        if(user == null)
+        if (user == null)
             throw new Exception("User not found");
 
         var userId = user.Claims.FirstOrDefault(_ => _.Type == ClaimTypes.NameIdentifier)?.Value;
@@ -389,6 +407,22 @@
         }
     }
 
+    private bool ShowMinistrySection()
+    {
+        if (_report?.IncidentType?.ShowCounselingOpportunities ?? false)
+            return true;
+        if (_report?.IncidentType?.ShowBaptisms ?? false)
+            return true;
+        if (_report?.IncidentType?.ShowBibleStudies ?? false)
+            return true;
+        if (_report?.IncidentType?.ShowGospelPresentations ?? false)
+            return true;
+        if (_report?.IncidentType?.ShowProfessionsOfFaith ?? false)
+            return true;
+
+        return false;
+    }
+
     private async Task<ReportRecord> GetReport(string reportId)
     {
         var report = await Mediator.Send(new GetReportQuery(reportId));
@@ -400,7 +434,6 @@
         {
             return new ReportRecord();
         }
-
     }
 
     private bool AllowPhoneNumber(ReportPersonRecord person)
@@ -419,7 +452,7 @@
 
             if (_report.Date.HasValue)
                 sb.AppendLine($"Date: {_report.Date.FormattedDateTime()}");
-            if (_report.ClearedDate.HasValue && _report.Date.HasValue)
+            if (_report is { ClearedDate: not null,Date: not null })
             {
                 AppendClearedTime(sb);
             }
@@ -444,7 +477,7 @@
                 {
                     sb.AppendLine($"Name: {_.FirstName} {_.LastName}");
                     sb.AppendLine($"Type: {_.Type}");
-                    if(!string.IsNullOrEmpty(_.PhoneNumber?.Number))
+                    if (!string.IsNullOrEmpty(_.PhoneNumber?.Number))
                         sb.AppendLine($"Phone Number: {_.PhoneNumber.Number} [{_.PhoneNumber.Type.ToString()}]");
 
                     AppendLocation(sb, _.Location);
@@ -457,9 +490,9 @@
         }
     }
 
-    private void AppendMinistry(StringBuilder sb, MinistryOpportunityRecord ministryOpportunity)
+    private void AppendMinistry(StringBuilder sb, MinistryOpportunityRecord? ministryOpportunity)
     {
-        if(ministryOpportunity == null)
+        if (ministryOpportunity == null)
         {
             return;
         }
@@ -481,7 +514,7 @@
         if (ministryOpportunity.Baptisms > 0)
             ministrySb.AppendLine($"Baptisms: {ministryOpportunity.Baptisms.Value}");
 
-        if(ministrySb.Length == 0)
+        if (ministrySb.Length == 0)
             return;
 
         sb.AppendLine();
@@ -592,8 +625,6 @@
     static List<ReportState> GetReportStates()
     {
         return Enum.GetValues(typeof(ReportStateEnum)).Cast<ReportStateEnum>().Select(_ => new ReportState((int)_, _.ToString())).ToList();
-
-        //    List<ReportStateEnum> _reportStates = Enum.GetValues(typeof(ReportStateEnum)).Cast<ReportStateEnum>().ToList();
     }
 
     private ReportState CurrentReportState
@@ -653,5 +684,4 @@
     private DateTime? _clearedDate;
     private TimeSpan? _incidentTime;
     private TimeSpan? _clearedTime;
-
 }

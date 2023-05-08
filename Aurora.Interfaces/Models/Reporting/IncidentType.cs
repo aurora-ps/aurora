@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.Security.Cryptography;
 using System.Text;
+using Microsoft.EntityFrameworkCore;
 
 namespace Aurora.Interfaces.Models.Reporting;
 
@@ -15,15 +16,29 @@ public class IncidentType
 
     public string Id { get; set; }
 
-    public bool CollectTime { get; set; } = false;
-
-    public bool RequiresTime { get; set; } = false;
-
-    public bool CollectLocation { get; set; } = false;
-
-    public bool CollectPerson { get; set; } = false;
-
     public virtual ICollection<AgencyIncidentType> AgencyIncidentTypes { get; set; }
+
+    #region Report Options
+
+    public bool CollectTime { get; set; }
+
+    public bool RequiresTime { get; set; }
+
+    public bool CollectLocation { get; set; }
+
+    public bool CollectPerson { get; set; }
+
+    public bool ShowGospelPresentations { get; set; }
+    
+    public bool ShowProfessionsOfFaith { get; set; }
+    
+    public bool ShowBaptisms { get; set; }
+    
+    public bool ShowBibleStudies { get; set; }
+    
+    public bool ShowCounselingOpportunities { get; set; }
+
+    #endregion
 
     public override int GetHashCode()
     {
