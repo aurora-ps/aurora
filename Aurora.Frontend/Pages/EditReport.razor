@@ -246,8 +246,6 @@
                 _report = record.Report;
                 _incidentTypes = _agencies.FirstOrDefault(_ => _.Id == _report.Agency.Id)?.IncidentTypes.Select(_ => _).OrderBy(_ => _.Name).ToList() ?? new List<IncidentTypeRecord>();
                 SetReportDates(_report.Date, _report.ClearedDate);
-                //_incidentDate = record.Report.Date;
-                //_clearedDate = record.Report.ClearedDate;
             }
         }
     }
@@ -262,7 +260,6 @@
         };
 
         this._report.People.Add(newPerson);
-        //StateHasChanged();
     }
 
     private void HandleAgencyValueChanged(IReportRecord report, AgencyRecord value)
