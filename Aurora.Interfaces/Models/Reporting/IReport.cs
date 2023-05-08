@@ -28,4 +28,8 @@ public interface IReport
     DateTime CreatedOnUtc { get; set; }
 
     DateTime? DeletedOnUtc { get; set; }
+
+    public string CreatedByUserId { get; set; }
+
+    public AuroraUser CreatedByUser { get; set; }
 }

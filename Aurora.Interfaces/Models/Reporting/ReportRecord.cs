@@ -36,6 +36,10 @@ public sealed record ReportRecord : IReportRecord
 
     [Id(15)] public UserRecord CreatedBy { get; set; }
 
+    [Id(16)] public string UserId { get; set; }
+
+    [Id(17)] public UserRecord User { get; set; }
+
     public string TimeDisplay => Date == null ? string.Empty : $"{Date.Value.Hour:00}:{Date.Value.Minute:00}";
 
     public TimeSpan? IncidentTime

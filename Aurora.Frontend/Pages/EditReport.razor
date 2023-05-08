@@ -298,7 +298,7 @@
                 case SaveStateEnum.Saving:
                     return "Saving...";
                 case SaveStateEnum.Saved:
-                    return "Saved";
+                    return "Save";
                 default:
                     return "Save";
             }
@@ -333,6 +333,7 @@
             var command = SaveReportCommand.Create(new ReportRecord
             {
                 CreatedByUserId = userId,
+                UserId = userId,
                 Id = recordId ?? Guid.NewGuid().ToString(),
                 Agency = new AgencyRecord() { Id = _report.Agency.Id },
                 IncidentType = new IncidentTypeRecord() { Id = _report.IncidentType.Id },

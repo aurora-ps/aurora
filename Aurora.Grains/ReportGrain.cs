@@ -1,4 +1,5 @@
 ﻿using Aurora.Infrastructure.Data;
+using Aurora.Infrastructure.Migrations;
 using Aurora.Interfaces;
 using Aurora.Interfaces.Models.Reporting;
 using AutoMapper;
@@ -39,10 +40,12 @@ public class ReportGrain : Grain, IReportGrain
             if (report != null)
             {
                 _mapper.Map(record, report);
+                UpdateReportPeople(record, report);
             }
             else
             {
                 report = _mapper.Map<Report>(record);
+                report.Id = this.GetPrimaryKeyString();
                 await _context.AddAsync(report);
             }
 
@@ -56,6 +59,28 @@ public class ReportGrain : Grain, IReportGrain
             _logger.LogError(ex, ex.Message);
             throw;
         }
+    }
+
+    private void UpdateReportPeople(ReportRecord record, Report report)
+    {
+        var people = record.People.ToList();
+        var peopleToDelete = report.People.Where(_ => people.All(p => p.Id != _.Id)).ToList();
+        var peopleToAdd = people.Where(_ => report.People.All(p => p.Id != _.Id)).ToList();
+        var peopleToUpdate = people.Where(_ => report.People.Any(p => p.Id == _.Id)).ToList();
+        
+        foreach(var person in peopleToDelete)
+            report.People.Remove(person);
+
+        foreach(var person in peopleToAdd)
+            report.People.Add(_mapper.Map<ReportPerson>(person));
+
+        foreach (var person in peopleToUpdate)
+        {
+            var reportPerson = report.People.FirstOrDefault(_ => _.Id == person.Id);
+            if (reportPerson != null)
+                _mapper.Map(person, reportPerson);
+        }
+
     }
 
     public async Task<bool> UnDeleteAsync()

@@ -10,4 +10,10 @@ public class ApplicationDbContext : IdentityDbContext<AuroraUser, AuroraIdentity
         : base(options)
     {
     }
+
+    protected override void OnModelCreating(ModelBuilder builder)
+    {
+        builder.Entity<AuroraUser>().Ignore(p => p.Reports);
+        base.OnModelCreating(builder);
+    }
 }

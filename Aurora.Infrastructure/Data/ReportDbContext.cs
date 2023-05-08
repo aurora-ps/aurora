@@ -89,6 +89,9 @@ public class ReportDbContext : DbContext, IReportDbContext
                 new() { AgencyId = "50978BC3-DC9B-496A-84BB-53071C081BFC", IncidentTypeId = "03A14A69-C6B7-4573-B95E-12574354C65B" },
             });
 
+        modelBuilder.Entity<Report>().HasOne(_ => _.CreatedByUser)
+            .WithMany(_ => _.Reports).HasForeignKey(_ => _.CreatedByUserId).OnDelete(DeleteBehavior.Restrict);
+
         base.OnModelCreating(modelBuilder);
     }
 
