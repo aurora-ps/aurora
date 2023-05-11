@@ -141,6 +141,17 @@ public class AgencyGrain : Grain, IAgencyGrain
         return false;
     }
 
+    public Task UpdateIncidentTypeAsync(IncidentTypeRecord requestIncidentType)
+    {
+        var agencyIncidentType = _state?.IncidentTypes?.FirstOrDefault(_ => _.Id == requestIncidentType.Id);
+        if (agencyIncidentType == null)
+            return Task.CompletedTask;
+
+        agencyIncidentType = requestIncidentType;
+
+        return Task.CompletedTask;
+    }
+
     private void UpdateIncidentTypes(Agency existingAgency)
     {
         var existingIncidentTypes = existingAgency.IncidentTypes.Select(_ => _.IncidentTypeId).ToList();

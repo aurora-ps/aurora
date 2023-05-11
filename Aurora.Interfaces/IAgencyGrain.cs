@@ -15,4 +15,5 @@ public interface IAgencyGrain : IGrainWithStringKey
     Task<string> SetAgencyName(string name);
 
     Task<bool> SaveChangesAsync();
+    Task UpdateIncidentTypeAsync(IncidentTypeRecord requestIncidentType);
 }

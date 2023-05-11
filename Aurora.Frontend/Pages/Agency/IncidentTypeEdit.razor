@@ -2,23 +2,24 @@
 @using AutoMapper
 @using MediatR
 @using Aurora.Features.Agency.RemoveIncidentType
+@using Aurora.Features.Agency.UpdateIncidentTypeOverrides
 @inject IDialogService DialogService
 @inject IMapper Mapper
 @inject IMediator Mediator
 
-<MudTable Items="IncidentTypes" EditTrigger="TableEditTrigger.EditButton" RowEditPreview="RowEditPreview" RowEditCancel="RowEditCancel" CanCancelEdit="true">
+<MudTable Items="IncidentTypes" EditTrigger="TableEditTrigger.EditButton" RowEditPreview="RowEditPreview" RowEditCancel="RowEditCancel" RowEditCommit="RowEditCommit" CanCancelEdit="true">
     <ColGroup>
-        <col/>
-        <col/>
-        <col/>
-        <col/>
-        <col/>
-        <col/>
-        <col/>
-        <col/>
-        <col/>
-        <col/>
-        <col/>
+        <col />
+        <col />
+        <col />
+        <col />
+        <col />
+        <col />
+        <col />
+        <col />
+        <col />
+        <col />
+        <col />
     </ColGroup>
     <HeaderContent>
         <MudTh>Incident Type</MudTh>
@@ -36,64 +37,64 @@
     <RowTemplate Context="incidentType">
         <MudTd DataLabel="Incident Type">@incidentType.Name</MudTd>
         <MudTd DataLabel="Location">
-            <MudCheckBox T="bool" ReadOnly="true" @bind-Checked="@incidentType.CollectLocation"/>
+            <MudCheckBox T="bool" ReadOnly="true" @bind-Checked="@incidentType.CollectLocation" />
         </MudTd>
         <MudTd DataLabel="Person">
-            <MudCheckBox T="bool" ReadOnly="true" @bind-Checked="@incidentType.CollectPerson"/>
+            <MudCheckBox T="bool" ReadOnly="true" @bind-Checked="@incidentType.CollectPerson" />
         </MudTd>
         <MudTd DataLabel="Time">
-            <MudCheckBox T="bool" ReadOnly="true" @bind-Checked="@incidentType.CollectTime"/>
+            <MudCheckBox T="bool" ReadOnly="true" @bind-Checked="@incidentType.CollectTime" />
         </MudTd>
         <MudTd DataLabel="Require Time">
-            <MudCheckBox T="bool" ReadOnly="true" @bind-Checked="@incidentType.RequiresTime"/>
+            <MudCheckBox T="bool" ReadOnly="true" @bind-Checked="@incidentType.RequiresTime" />
         </MudTd>
         <MudTd DataLabel="Counseling">
-            <MudCheckBox T="bool" ReadOnly="true" @bind-Checked="@incidentType.ShowCounselingOpportunities"/>
+            <MudCheckBox T="bool" ReadOnly="true" @bind-Checked="@incidentType.ShowCounselingOpportunities" />
         </MudTd>
         <MudTd DataLabel="Professions of Faith">
-            <MudCheckBox T="bool" ReadOnly="true" @bind-Checked="@incidentType.ShowProfessionsOfFaith"/>
+            <MudCheckBox T="bool" ReadOnly="true" @bind-Checked="@incidentType.ShowProfessionsOfFaith" />
         </MudTd>
         <MudTd DataLabel="Baptisms">
-            <MudCheckBox T="bool" ReadOnly="true" @bind-Checked="@incidentType.ShowBaptisms"/>
+            <MudCheckBox T="bool" ReadOnly="true" @bind-Checked="@incidentType.ShowBaptisms" />
         </MudTd>
         <MudTd DataLabel="Bible Stud">
-            <MudCheckBox T="bool" ReadOnly="true" @bind-Checked="@incidentType.ShowBibleStudies"/>
+            <MudCheckBox T="bool" ReadOnly="true" @bind-Checked="@incidentType.ShowBibleStudies" />
         </MudTd>
         <MudTd DataLabel="Gospel Presentations">
-            <MudCheckBox T="bool" ReadOnly="true" @bind-Checked="@incidentType.ShowGospelPresentations"/>
+            <MudCheckBox T="bool" ReadOnly="true" @bind-Checked="@incidentType.ShowGospelPresentations" />
         </MudTd>
         <MudTd>
-            <MudIconButton Size="@Size.Small" OnClick="@(() => DeleteItem(incidentType.Id))" Icon="@Icons.Material.Filled.Delete"/>
+            <MudIconButton Size="@Size.Small" OnClick="@(() => DeleteItem(incidentType.Id))" Icon="@Icons.Material.Filled.Delete" />
         </MudTd>
     </RowTemplate>
     <RowEditingTemplate Context="incidentType">
         <MudTd DataLabel="Incident Type">@incidentType.Name</MudTd>
         <MudTd DataLabel="Location">
-            <MudCheckBox T="bool" @bind-Checked="@incidentType.CollectLocation"/>
+            <MudCheckBox T="bool" @bind-Checked="@incidentType.CollectLocation" />
         </MudTd>
         <MudTd DataLabel="Person">
-            <MudCheckBox T="bool" @bind-Checked="@incidentType.CollectPerson"/>
+            <MudCheckBox T="bool" @bind-Checked="@incidentType.CollectPerson" />
         </MudTd>
         <MudTd DataLabel="Time">
-            <MudCheckBox T="bool" @bind-Checked="@incidentType.CollectTime"/>
+            <MudCheckBox T="bool" @bind-Checked="@incidentType.CollectTime" />
         </MudTd>
         <MudTd DataLabel="Require Time">
-            <MudCheckBox T="bool" @bind-Checked="@incidentType.RequiresTime"/>
+            <MudCheckBox T="bool" @bind-Checked="@incidentType.RequiresTime" />
         </MudTd>
         <MudTd DataLabel="Counseling">
-            <MudCheckBox T="bool" @bind-Checked="@incidentType.ShowCounselingOpportunities"/>
+            <MudCheckBox T="bool" @bind-Checked="@incidentType.ShowCounselingOpportunities" />
         </MudTd>
         <MudTd DataLabel="Professions of Faith">
-            <MudCheckBox T="bool" @bind-Checked="@incidentType.ShowProfessionsOfFaith"/>
+            <MudCheckBox T="bool" @bind-Checked="@incidentType.ShowProfessionsOfFaith" />
         </MudTd>
         <MudTd DataLabel="Baptisms">
-            <MudCheckBox T="bool" @bind-Checked="@incidentType.ShowBaptisms"/>
+            <MudCheckBox T="bool" @bind-Checked="@incidentType.ShowBaptisms" />
         </MudTd>
         <MudTd DataLabel="Bible Stud">
-            <MudCheckBox T="bool" @bind-Checked="@incidentType.ShowBibleStudies"/>
+            <MudCheckBox T="bool" @bind-Checked="@incidentType.ShowBibleStudies" />
         </MudTd>
         <MudTd DataLabel="Gospel Presentations">
-            <MudCheckBox T="bool" @bind-Checked="@incidentType.ShowGospelPresentations"/>
+            <MudCheckBox T="bool" @bind-Checked="@incidentType.ShowGospelPresentations" />
         </MudTd>
         <MudTd></MudTd>
     </RowEditingTemplate>
@@ -116,7 +117,7 @@
     {
         if (obj is IncidentTypeRecord record)
         {
-    // Need to create a copy of the record so that we can cancel the edit
+            // Need to create a copy of the record so that we can cancel the edit
             _editingIncidentType = Mapper.Map<IncidentTypeRecord>(record);
         }
     }
@@ -136,7 +137,7 @@
     async Task DeleteItem(string incidentTypeId)
     {
         var parameters = new DialogParameters
-        {
+{
             { "ContentText", "Do you want to Delete this Incident Type?" },
             { "ButtonText", "Yes" }
         };
@@ -158,4 +159,23 @@
             }
         }
     }
+
+    async void RowEditCommit(object obj)
+    {
+        if (obj is IncidentTypeRecord record)
+        {
+            // create update command
+            var updateCommand = new UpdateIncidentTypeOverridesCommand { AgencyId = AgencyId, IncidentType = record };
+            var results = await Mediator.Send(updateCommand);
+            if (results.Success)
+            {
+                if (OnRecordUpdated.HasDelegate)
+                {
+                    await OnRecordUpdated.InvokeAsync(record.Id);
+                }
+            }
+
+        }
+    }
+
 }

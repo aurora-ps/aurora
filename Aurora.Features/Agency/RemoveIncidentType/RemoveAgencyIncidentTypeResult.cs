@@ -7,7 +7,7 @@ public class RemoveAgencyIncidentTypeResult
         Found = found;
     }
 
-    public bool Found{ get; private set; }
+    public bool Found { get; private set; }
 
     public static RemoveAgencyIncidentTypeResult NotFound()
     {
