@@ -28,7 +28,7 @@
                         </MudGrid>
                     </MudCardHeader>
                     <MudCardContent>
-                        <IncidentTypeEdit IncidentTypes="@context.Item.IncidentTypes" />
+                        <IncidentTypeEdit AgencyId="@context.Item.Id" IncidentTypes="@context.Item.IncidentTypes" OnRecordUpdated="@(() => OnRecordUpdated(context.Item.Id))" />
                     </MudCardContent>
                 </MudCard>
             </ChildRowContent>
@@ -39,32 +39,12 @@
     private MudDataGrid<AgencyRecord> _reportGrid;
     IList<AgencyRecord>? _agencies;
 
-    bool _isEditing = false;
-    IncidentTypeRecord? _editingItem;
 
     protected override async Task OnInitializedAsync()
     {
         var getResponse = await Mediator.Send(new GetAgenciesQuery());
         _agencies = getResponse.Agencies;
     }
-
-
-    private void BackupItem(object element)
-    {
-        _editingItem = element as IncidentTypeRecord;
-    }
-
-    private void ResetRowToOriginalValues(object obj)
-    {
-        ((IncidentTypeRecord)obj).CollectLocation = _editingItem!.CollectLocation;
-    }
-
-    private void RowEditCommit(object obj)
-    {
-
-    }
-
-
 
     async Task AddIncidentType(string agencyId, IList<IncidentTypeRecord> incidentTypes)
     {
@@ -100,4 +80,20 @@
             }
         }
     }
+
+    async Task OnRecordUpdated(string agencyId)
+    {
+        var agency = _agencies?.FirstOrDefault(x => x.Id == agencyId);
+        if (agency != null)
+        {
+            var query = new GetAgencyQuery { AgencyId = agencyId };
+            var response = await Mediator.Send(query);
+
+            if (response.Agency != null)
+            {
+                agency = response.Agency;
+            }
+        }
+    }
+
 }
