@@ -20,7 +20,7 @@
             <MudItem xs="3" Class="d-flex justify-end">
                 @if (_isAdmin)
                 {
-                    <MudCheckBox T="bool" Checked="@_showAll" Label="Show All Users" CheckedChanged="@(OnShowAllClicked)"/>
+                    <MudCheckBox T="bool" Checked="@_showAll" Label="Show All Users" CheckedChanged="@(OnShowAllClicked)" />
                 }
                 <MudCheckBox T="bool" Checked="@_showHidden" Label="Show Hidden" CheckedChanged="@(OnShowHiddenClicked)" />
             </MudItem>
@@ -98,7 +98,7 @@
     async Task DeleteItem(string id)
     {
         var parameters = new DialogParameters
-    {
+        {
             { "ContentText", "Do you want to Delete this report?" },
             { "ButtonText", "Yes" }
         };
@@ -113,13 +113,12 @@
             if (results.Success)
                 await RefreshReports();
         }
-
     }
 
     async Task UnDeleteItem(string id)
     {
         var parameters = new DialogParameters
-    {
+{
             { "ContentText", "Do you want to Un-Delete this report?" },
             { "ButtonText", "Yes" }
         };

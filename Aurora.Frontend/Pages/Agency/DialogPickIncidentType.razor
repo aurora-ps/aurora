@@ -1,0 +1,62 @@
+﻿@using Aurora.Interfaces.Models.Reporting
+@using Aurora.Infrastructure.Data
+@using AutoMapper
+@using AutoMapper.QueryableExtensions
+@inject ReportDbContext Context
+@inject IMapper Mapper
+
+<MudDialog>
+    <DialogContent>
+        <MudText>@ContentText</MudText>
+        <MudSelect T="IncidentTypeRecord" Label="Incident Type" @bind-Value="_selectedIncidentTypeRecord" Variant="Variant.Filled" FullWidth="true">
+            @foreach (var incidentType in _availableIncidentTypes)
+            {
+                <MudSelectItem T="IncidentTypeRecord" Value="@(incidentType)" Text="@(incidentType.Name)" />
+            }
+        </MudSelect>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">Cancel</MudButton>
+        <MudButton Color="Color.Success" Variant="Variant.Filled" OnClick="Submit">@ButtonText</MudButton>
+    </DialogActions>
+</MudDialog>
+@code {
+    [CascadingParameter]
+    MudDialogInstance MudDialog
+    {
+        get;
+        set;
+    }
+    [Parameter]
+    public string ContentText
+    {
+        get;
+        set;
+    }
+    [Parameter]
+    public string ButtonText
+    {
+        get;
+        set;
+    }
+
+    [Parameter]
+    public IList<IncidentTypeRecord> CurrentIncidentTypes { get; set; }
+
+    private IList<IncidentTypeRecord> _availableIncidentTypes = new List<IncidentTypeRecord>();
+
+    private IncidentTypeRecord? _selectedIncidentTypeRecord;
+
+    protected override Task OnInitializedAsync()
+    {
+        _availableIncidentTypes = Context.IncidentTypes
+            .Where(x => !CurrentIncidentTypes.Select(_ => _.Id).Contains(x.Id))
+            .ProjectTo<IncidentTypeRecord>(Mapper.ConfigurationProvider)
+            .OrderBy(x => x.Name)
+            .ToList();
+        return base.OnInitializedAsync();
+    }
+
+    void Submit() => MudDialog.Close(DialogResult.Ok(_selectedIncidentTypeRecord));
+    void Cancel() => MudDialog.Cancel();
+}

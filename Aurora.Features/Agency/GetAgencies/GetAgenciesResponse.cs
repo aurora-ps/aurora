@@ -4,5 +4,5 @@ namespace Aurora.Features.Agency.GetAgencies;
 
 public class GetAgenciesResponse
 {
-    public List<AgencyRecord> Agencies { get; set; } = new ();
+    public IList<AgencyRecord> Agencies { get; set; } = new List<AgencyRecord>();
 }

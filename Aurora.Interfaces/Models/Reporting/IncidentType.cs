@@ -1,11 +1,10 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.Security.Cryptography;
 using System.Text;
-using Microsoft.EntityFrameworkCore;
 
 namespace Aurora.Interfaces.Models.Reporting;
 
-public class IncidentType
+public class IncidentType : IIncidentTypeOverrides
 {
     [Required]
     [StringLength(100)]

@@ -1,0 +1,103 @@
+﻿@page "/agencies"
+@using MediatR
+@using Aurora.Features.Agency.GetAgencies
+@using Aurora.Interfaces.Models.Reporting
+@using Aurora.Features.Agency.AddIncidentType
+@using Aurora.Features.Agency.GetAgency
+@inject IMediator Mediator
+@inject IDialogService DialogService
+
+<MudCard>
+    <MudCardHeader>
+        <MudGrid>
+            <MudItem xs="12"><MudText Typo="Typo.h5">Agencies</MudText></MudItem>
+        </MudGrid>
+    </MudCardHeader>
+    <MudCardContent>
+        <MudDataGrid @ref="_reportGrid" Items="@_agencies" ReadOnly="true">
+            <Columns>
+                <HierarchyColumn T="AgencyRecord" />
+                <PropertyColumn Property="x => x.Name" Title="Agency"></PropertyColumn>
+            </Columns>
+            <ChildRowContent>
+                <MudCard>
+                    <MudCardHeader>
+                        <MudGrid>
+                            <MudItem xs="8"><MudText Typo="Typo.h6"> Incident Types</MudText></MudItem>
+                            <MudItem xs="4" Class="d-flex justify-end"><MudButton Size="@Size.Small" Variant="@Variant.Text" Color="@Color.Primary" OnClick="@(() => AddIncidentType(context.Item.Id, context.Item.IncidentTypes))">Add Incident Type</MudButton></MudItem>
+                        </MudGrid>
+                    </MudCardHeader>
+                    <MudCardContent>
+                        <IncidentTypeEdit IncidentTypes="@context.Item.IncidentTypes" />
+                    </MudCardContent>
+                </MudCard>
+            </ChildRowContent>
+        </MudDataGrid>
+    </MudCardContent>
+</MudCard>
+@code {
+    private MudDataGrid<AgencyRecord> _reportGrid;
+    IList<AgencyRecord>? _agencies;
+
+    bool _isEditing = false;
+    IncidentTypeRecord? _editingItem;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var getResponse = await Mediator.Send(new GetAgenciesQuery());
+        _agencies = getResponse.Agencies;
+    }
+
+
+    private void BackupItem(object element)
+    {
+        _editingItem = element as IncidentTypeRecord;
+    }
+
+    private void ResetRowToOriginalValues(object obj)
+    {
+        ((IncidentTypeRecord)obj).CollectLocation = _editingItem!.CollectLocation;
+    }
+
+    private void RowEditCommit(object obj)
+    {
+
+    }
+
+
+
+    async Task AddIncidentType(string agencyId, IList<IncidentTypeRecord> incidentTypes)
+    {
+        var parameters = new DialogParameters
+    {
+            { "ContentText", "Add Incident Type" },
+            { "ButtonText", "Yes" },
+            { "CurrentIncidentTypes", incidentTypes}
+
+        };
+
+        var dialogResult = await DialogService.ShowAsync<DialogPickIncidentType>("Add Incident Type", parameters);
+        var result = await dialogResult.Result;
+
+        if (!result.Canceled && result.Data is IncidentTypeRecord incidentType)
+        {
+            var agency = _agencies?.FirstOrDefault(x => x.Id == agencyId);
+            if (agency != null)
+            {
+                var command = new AddAgencyIncidentTypeCommand(agency.Id, incidentType);
+                var results = await Mediator.Send(command);
+
+                if (results.Success)
+                {
+                    var query = new GetAgencyQuery { AgencyId = agencyId };
+                    var response = await Mediator.Send(query);
+
+                    if (response.Agency != null)
+                    {
+                        agency = response.Agency;
+                    }
+                }
+            }
+        }
+    }
+}
