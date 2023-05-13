@@ -1,4 +1,6 @@
 ﻿@page "/agencies"
+@attribute [Authorize(Roles = "Administrator")]
+
 @using MediatR
 @using Aurora.Features.Agency.GetAgencies
 @using Aurora.Interfaces.Models.Reporting
@@ -49,7 +51,7 @@
     async Task AddIncidentType(string agencyId, IList<IncidentTypeRecord> incidentTypes)
     {
         var parameters = new DialogParameters
-    {
+{
             { "ContentText", "Add Incident Type" },
             { "ButtonText", "Yes" },
             { "CurrentIncidentTypes", incidentTypes}

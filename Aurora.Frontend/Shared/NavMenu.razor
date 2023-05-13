@@ -2,12 +2,14 @@
 
 <MudNavMenu>
     <MudNavLink Href="" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Home">Home</MudNavLink>
+    <AuthorizeView Roles="Administrator">
+        <MudNavGroup Title="Administration" Expanded="true">
+            <MudNavLink Href="agencies" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Business">Agencies</MudNavLink>
+            <MudNavLink Href="users" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Person">Users</MudNavLink>
+        </MudNavGroup>
+    </AuthorizeView>
     <AuthorizeView>
         <Authorized>
-            <MudNavGroup Title="Administration" Expanded="true">
-                <MudNavLink Href="agencies" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Business">Agencies</MudNavLink>
-                <MudNavLink Href="users" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Person">Users</MudNavLink>
-            </MudNavGroup>
             <MudNavGroup Title="Reports" Expanded="true">
                 <MudNavLink Href="reports" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Note">Reports</MudNavLink>
                 <MudNavLink Href="createreport" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.EditNote">Create Report</MudNavLink>

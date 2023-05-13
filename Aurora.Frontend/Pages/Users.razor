@@ -1,4 +1,6 @@
 ﻿@page "/users"
+@attribute [Authorize(Roles = "Administrator")]
+
 @using Aurora.Features.User.GetUsers
 @using Aurora.Interfaces
 @using MediatR
@@ -6,7 +8,7 @@
 
 <PageTitle>Users</PageTitle>
 
-<MudText Typo="Typo.h3" GutterBottom="true">Users</MudText>
+<MudText Typo="Typo.h5" GutterBottom="true">Users</MudText>
 @if (!Model.Any())
 {
     <MudProgressCircular Color="Color.Default" Indeterminate="true" />
