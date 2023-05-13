@@ -5,6 +5,7 @@
 @using Aurora.Features.Agency.GetAgencies
 @using Aurora.Interfaces.Models.Reporting
 @using Aurora.Features.Agency.AddIncidentType
+@using Aurora.Features.Agency.DeleteAgency
 @using Aurora.Features.Agency.GetAgency
 @inject IMediator Mediator
 @inject IDialogService DialogService
@@ -13,7 +14,7 @@
     <MudCardHeader>
         <MudGrid>
             <MudItem xs="8" Class="d-flex"><MudText Typo="Typo.h5">Agencies</MudText></MudItem>
-            <MudItem xs="4" Class="d-flex justify-end"><MudButton Size="@Size.Small" Variant="@Variant.Text" Color="@Color.Primary" OnClick="@(() => AddAgency())">Add Agency</MudButton></MudItem>
+            <MudItem xs="4" Class="d-flex justify-end"><MudButton Size="@Size.Large" Variant="@Variant.Text" Color="@Color.Primary" OnClick="@(AddAgency)">Add Agency</MudButton></MudItem>
         </MudGrid>
     </MudCardHeader>
     <MudCardContent>
@@ -21,6 +22,20 @@
             <Columns>
                 <HierarchyColumn T="AgencyRecord" />
                 <PropertyColumn Property="x => x.Name" Title="Agency"></PropertyColumn>
+                <TemplateColumn CellClass="d-flex justify-end" Filterable="false" Sortable="false" ShowColumnOptions="false" ShowFilterIcon="false">
+                    <CellTemplate>
+                        <MudStack Row>
+                            @if (context.Item.DeletedOnUtc == null)
+                            {
+                                <MudButton Size="@Size.Small" Variant="@Variant.Text" Color="@Color.Primary" OnClick="@(() => DeleteItem(context.Item.Id))">Delete</MudButton>
+                            }
+                            else
+                            {
+                                <MudButton Size="@Size.Small" Variant="@Variant.Text" Color="@Color.Primary" OnClick="@(() => UnDeleteItem(context.Item.Id))">UnDelete</MudButton>
+                            }
+                        </MudStack>
+                    </CellTemplate>
+                </TemplateColumn>
             </Columns>
             <ChildRowContent>
                 <MudCard>
@@ -52,7 +67,7 @@
     async Task AddIncidentType(string agencyId, IList<IncidentTypeRecord> incidentTypes)
     {
         var parameters = new DialogParameters
-        {
+{
             { "ContentText", "Add Incident Type" },
             { "ButtonText", "Yes" },
             { "CurrentIncidentTypes", incidentTypes }
@@ -102,7 +117,7 @@
     private async Task AddAgency()
     {
         var parameters = new DialogParameters
-        {
+{
             { "ButtonText", "Add" }
 
         };
@@ -113,24 +128,45 @@
         if (!result.Canceled && result.Data is AgencyRecord agencyRecord)
         {
             _agencies?.Add(agencyRecord);
-            //var agency = _agencies?.FirstOrDefault(x => x.Id == agencyId);
-            //if (agency != null)
-            //{
-            //    var command = new AddAgencyIncidentTypeCommand(agency.Id, incidentType);
-            //    var results = await Mediator.Send(command);
-
-            //    if (results.Success)
-            //    {
-            //        var query = new GetAgencyQuery { AgencyId = agencyId };
-            //        var response = await Mediator.Send(query);
-
-            //        if (response.Agency != null)
-            //        {
-            //            agency = response.Agency;
-            //        }
-            //    }
-            //}
         }
+    }
+
+    private async Task DeleteItem(string id)
+    {
+        var agencyRecord = _agencies?.FirstOrDefault(_ => _.Id == id);
+        
+        if (agencyRecord == null)
+        {
+            return;
+        }
+        
+        var parameters = new DialogParameters
+        {
+            { "ContentText", $"Do you want to Delete this Agency: {agencyRecord.Name}?" },
+            { "ButtonText", "Yes" }
+        };
+
+        var dialogResult = await DialogService.ShowAsync<DialogConfirm>($"Delete {agencyRecord.Name}", parameters);
+        var result = await dialogResult.Result;
+        if (!result.Cancelled && bool.TryParse(result.Data.ToString(), out var resultBool))
+        {
+            var command = DeleteAgencyCommand.Create(id);
+            var results = await Mediator.Send(command);
+            if (results.Success)
+            {
+                var agency = _agencies?.FirstOrDefault(_ => _.Id == id);
+                if (agency != null)
+                {
+                    _agencies!.Remove(agency);
+                }
+            }   
+        }
+
+    }
+
+    private Task UnDeleteItem(string id)
+    {
+        throw new NotImplementedException();
     }
 
 }

@@ -33,6 +33,7 @@ public class AgencyGrain : Grain, IAgencyGrain
             {
                 Id = a.Id,
                 Name = a.Name,
+                DeletedOnUtc = a.DeletedOnUtc,
                 IncidentTypes = a.IncidentTypes.Select(it => new IncidentTypeRecord
                 {
                     Id = it.IncidentType.Id,
@@ -133,6 +134,7 @@ public class AgencyGrain : Grain, IAgencyGrain
         else
         {
             existingAgency.Name = _state!.Name;
+            existingAgency.DeletedOnUtc = _state!.DeletedOnUtc;
             UpdateIncidentTypes(existingAgency);
             await _reportContext.SaveChangesAsync();
             return true;
@@ -149,6 +151,20 @@ public class AgencyGrain : Grain, IAgencyGrain
 
         agencyIncidentType = requestIncidentType;
 
+        return Task.CompletedTask;
+    }
+
+    public Task DeleteAsync()
+    {
+        if(CanSave())
+            _state!.DeletedOnUtc = DateTime.UtcNow;
+        return Task.CompletedTask;
+    }
+
+    public Task UnDeleteAsync()
+    {
+        if(CanSave())
+            _state!.DeletedOnUtc = null;
         return Task.CompletedTask;
     }
 

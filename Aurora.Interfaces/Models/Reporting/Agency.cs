@@ -18,6 +18,8 @@ public class Agency
     [StringLength(50)]
     public string Id { get; set; }
 
+    public DateTime? DeletedOnUtc { get; set; }
+
     public override int GetHashCode()
     {
         using MD5 md5 = MD5.Create();

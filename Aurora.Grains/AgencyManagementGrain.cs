@@ -16,11 +16,12 @@ public class AgencyManagementGrain : Grain, IAgencyManagementGrain
         _clusterClient = clusterClient;
     }
 
-    public async Task<IList<AgencyRecord>?> GetAgenciesAsync(string? requestSearch)
+    public async Task<IList<AgencyRecord>?> GetAgenciesAsync(string? requestSearch, bool? includeDeleted)
     {
         // get a list of agency keys from the grain
         var agencyKeys = await _reportContext.Agencies
             .Where(a => a.Name.Contains(requestSearch ?? string.Empty))
+            .Where(a => includeDeleted == true || a.DeletedOnUtc == null)
             .Select(a => a.Id).ToListAsync();
 
         // get a list of agency grains from the cluster
