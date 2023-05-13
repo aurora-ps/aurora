@@ -4,5 +4,5 @@ namespace Aurora.Interfaces;
 
 public interface IAgencyManagementGrain : IGrainWithStringKey
 {
-    Task<IList<AgencyRecord>?> GetAgenciesAsync();
+    Task<IList<AgencyRecord>?> GetAgenciesAsync(string? requestSearch);
 }

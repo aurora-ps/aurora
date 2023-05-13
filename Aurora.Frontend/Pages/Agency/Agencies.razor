@@ -12,7 +12,8 @@
 <MudCard>
     <MudCardHeader>
         <MudGrid>
-            <MudItem xs="12"><MudText Typo="Typo.h5">Agencies</MudText></MudItem>
+            <MudItem xs="8" Class="d-flex"><MudText Typo="Typo.h5">Agencies</MudText></MudItem>
+            <MudItem xs="4" Class="d-flex justify-end"><MudButton Size="@Size.Small" Variant="@Variant.Text" Color="@Color.Primary" OnClick="@(() => AddAgency())">Add Agency</MudButton></MudItem>
         </MudGrid>
     </MudCardHeader>
     <MudCardContent>
@@ -51,10 +52,10 @@
     async Task AddIncidentType(string agencyId, IList<IncidentTypeRecord> incidentTypes)
     {
         var parameters = new DialogParameters
-{
+        {
             { "ContentText", "Add Incident Type" },
             { "ButtonText", "Yes" },
-            { "CurrentIncidentTypes", incidentTypes}
+            { "CurrentIncidentTypes", incidentTypes }
 
         };
 
@@ -95,6 +96,40 @@
             {
                 agency = response.Agency;
             }
+        }
+    }
+
+    private async Task AddAgency()
+    {
+        var parameters = new DialogParameters
+        {
+            { "ButtonText", "Add" }
+
+        };
+
+        var dialogResult = await DialogService.ShowAsync<DialogAddAgency>("Add Agency", parameters);
+        var result = await dialogResult.Result;
+
+        if (!result.Canceled && result.Data is AgencyRecord agencyRecord)
+        {
+            _agencies?.Add(agencyRecord);
+            //var agency = _agencies?.FirstOrDefault(x => x.Id == agencyId);
+            //if (agency != null)
+            //{
+            //    var command = new AddAgencyIncidentTypeCommand(agency.Id, incidentType);
+            //    var results = await Mediator.Send(command);
+
+            //    if (results.Success)
+            //    {
+            //        var query = new GetAgencyQuery { AgencyId = agencyId };
+            //        var response = await Mediator.Send(query);
+
+            //        if (response.Agency != null)
+            //        {
+            //            agency = response.Agency;
+            //        }
+            //    }
+            //}
         }
     }
 

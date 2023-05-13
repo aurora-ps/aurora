@@ -1,0 +1,85 @@
+﻿@using Aurora.Infrastructure.Data
+@using MediatR
+@using Aurora.Features.Agency.GetAgencies
+@using Aurora.Features.Agency.AddAgency
+@inject ReportDbContext Context
+@inject IMediator Mediator
+<MudDialog>
+    <DialogContent>
+        <MudGrid Style="min-width: 280px">
+            <MudItem xs="12" Style="min-width: 280px;"> 
+                <MudInput @bind-Value="_agencyName" Immediate="true" Label="Agency Name" AutoFocus="true" Style="Width: 100%" FullWidth="true"/>
+            </MudItem>
+            <MudItem xs="12">
+                @if (!string.IsNullOrEmpty(_errorMessage))
+                {
+                    <MudText Color="Color.Error">@_errorMessage</MudText>
+                }
+            </MudItem>
+        </MudGrid>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">Cancel</MudButton>
+        <MudButton Color="Color.Success" Variant="Variant.Filled" OnClick="Submit" Disabled="@_disableSubmit">@ButtonText</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+
+    [CascadingParameter]
+    MudDialogInstance MudDialog { get; set; }
+
+    [Parameter]
+    public string ButtonText { get; set; }
+
+    private string _agencyName;
+
+    private bool _disableSubmit => string.IsNullOrEmpty(_agencyName);
+
+    private string? _errorMessage;
+
+    async Task Submit()
+    {
+        if (!string.IsNullOrEmpty(_agencyName))
+        {
+            if (!await AgencyAlreadyExists(_agencyName))
+            {
+                var command = AddAgencyCommand.Create(_agencyName.Trim());
+                var response = await Mediator.Send(command);
+                
+                if (response.Success)
+                {
+                    MudDialog.Close(DialogResult.Ok(response.AgencyRecord));
+                }
+                else
+                {
+                    _errorMessage = response.ValidationResultErrors?.FirstOrDefault()?.ErrorMessage ?? "Unknown error occurred saving Agency";
+                }
+            }
+            else
+            {
+                _errorMessage = "Agency already exists";
+            }
+        }
+
+    //MudDialog.Close(DialogResult.Ok(_selectedIncidentTypeRecord));
+    }
+
+    private async Task<bool> AgencyAlreadyExists(string agencyName)
+    {
+        var agencyQuery = new GetAgenciesQuery { Search = agencyName.Trim() };
+        var agencies = await Mediator.Send(agencyQuery);
+        if (agencies.Agencies.Any(_ => _.Name.Trim() == agencyName.Trim()))
+        {
+            return true;
+        }
+
+        return false;
+    }
+
+    void Cancel()
+    {
+        MudDialog.Cancel();
+    }
+
+}

@@ -17,7 +17,7 @@ public class GetAgenciesQueryHandler : IRequestHandler<GetAgenciesQuery, GetAgen
     {
         var managementGrain = _clusterClient.GetGrain<IAgencyManagementGrain>("");
 
-        var agencies = await managementGrain.GetAgenciesAsync();
+        var agencies = await managementGrain.GetAgenciesAsync(request.Search);
 
         var response = new GetAgenciesResponse
         {
