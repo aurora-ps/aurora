@@ -1,51 +1,62 @@
 ﻿@page "/reports"
+@using Aurora.Interfaces.Models.Reporting
+@using MediatR
+@using Aurora.Frontend.Services
+@using System.Security.Claims
+@using Aurora.Features.Report.DeleteReport
+@using Aurora.Features.Report.GetReports
+@using Aurora.Features.Report.UnDeleteReport
 @attribute [Authorize]
 
-@inject MediatR.IMediator Mediator
+@inject IMediator Mediator
 @inject NavigationManager NavManager
 @inject IDialogService DialogService
 @inject AuthenticationService AuthState
 
-@using Aurora.Interfaces.Models.Reporting
-@using Aurora.Features.Report.GetReports
-@using Aurora.Features.Report.UnDeleteReport
-@using Aurora.Features.Report.DeleteReport
-@using Aurora.Frontend.Services
-@using System.Security.Claims
-
 <MudCard>
     <MudCardHeader>
         <MudGrid>
-            <MudItem xs="9"><MudText Typo="Typo.h5">Reports</MudText></MudItem>
-            <MudItem xs="3" Class="d-flex justify-end">
+            <MudItem xs="5" Class="d-flex flex-grow-1 gap-2">
+                <MudPaper Class="flex-none" Outlined="false" Elevation="0">
+                    <MudText Typo="Typo.h5">Reports</MudText>
+                </MudPaper>
+            </MudItem>
+            <MudItem xs="7" Class="d-flex flex-grow-1 gap-2 justify-end">
+                <MudPaper Class="flex-1 d-flex flex-grow-1 gap-2 justify-end" Outlined="false" Elevation="0">
+                    <MudInput T="string" @bind-Value="_filterText" Immediate="true"></MudInput>
+                </MudPaper>
                 @if (_isAdmin)
                 {
-                    <MudCheckBox T="bool" Checked="@_showAll" Label="Show All Users" CheckedChanged="@(OnShowAllClicked)" />
+                    <MudPaper Outlined="false" Elevation="0">
+                        <MudCheckBox T="bool" Checked="@_showAll" Label="Show All Users" CheckedChanged="@(OnShowAllClicked)"/>
+                    </MudPaper>
                 }
-                <MudCheckBox T="bool" Checked="@_showHidden" Label="Show Hidden" CheckedChanged="@(OnShowHiddenClicked)" />
+                <MudPaper Outlined="false" Elevation="0">
+                    <MudCheckBox T="bool" Checked="@_showHidden" Label="Show Hidden" CheckedChanged="@(OnShowHiddenClicked)"/>
+                </MudPaper>
             </MudItem>
         </MudGrid>
     </MudCardHeader>
     <MudCardContent>
-        <MudDataGrid @ref="@_reportGrid" Items="@_reports" Filterable="true" SortMode="SortMode.Multiple" Groupable="true" Dense="true">
+        <MudDataGrid @ref="@_reportGrid" Items="@FilteredReports" Dense="true" ShowMenuIcon="false">
             <Columns>
-                <PropertyColumn Property="x => x.Date" Format="MM/dd/yyyy"></PropertyColumn>
-                <PropertyColumn Property="x => x.TimeDisplay" Title="Time"></PropertyColumn>
-                <PropertyColumn Property="x => x.State" Title="State"></PropertyColumn>
+                <PropertyColumn HeaderStyle="width: 40px;" CellStyle="width: 40px;" Property="x => x.Date" Format="MM/dd/yyyy"></PropertyColumn>
+                <PropertyColumn HeaderStyle="width: 40px;" CellStyle="width: 40px;" Property="x => x.TimeDisplay" Title="Time"></PropertyColumn>
+                <PropertyColumn HeaderStyle="width: 40px;" CellStyle="width: 40px;" Property="x => x.State" Title="State"></PropertyColumn>
                 <PropertyColumn Property="x => x.Agency.Name" Title="Agency"></PropertyColumn>
                 <PropertyColumn Property="x => x.IncidentType.Name" Title="Incident Type"></PropertyColumn>
                 <PropertyColumn Property="x => x.Location.Address"></PropertyColumn>
                 <TemplateColumn CellClass="d-flex justify-end" Filterable="false">
                     <CellTemplate>
                         <MudStack Row>
-                            <MudButton Size="@Size.Small" Variant="@Variant.Text" Color="@Color.Primary" OnClick="@(()=>StartedEditingItem(context.Item.Id))">Edit</MudButton>
+                            <MudButton Size="@Size.Small" Variant="@Variant.Text" Color="@Color.Primary" OnClick="@(() => StartedEditingItem(context.Item.Id))">Edit</MudButton>
                             @if (context.Item.DeletedOnUtc == null)
                             {
-                                <MudButton Size="@Size.Small" Variant="@Variant.Text" Color="@Color.Primary" OnClick="@(()=>DeleteItem(context.Item.Id))">Delete</MudButton>
+                                <MudButton Size="@Size.Small" Variant="@Variant.Text" Color="@Color.Primary" OnClick="@(() => DeleteItem(context.Item.Id))">Delete</MudButton>
                             }
                             else
                             {
-                                <MudButton Size="@Size.Small" Variant="@Variant.Text" Color="@Color.Primary" OnClick="@(()=>UnDeleteItem(context.Item.Id))">UnDelete</MudButton>
+                                <MudButton Size="@Size.Small" Variant="@Variant.Text" Color="@Color.Primary" OnClick="@(() => UnDeleteItem(context.Item.Id))">UnDelete</MudButton>
                             }
                         </MudStack>
                     </CellTemplate>
@@ -62,18 +73,36 @@
     private bool _showAll;
     private bool _isAdmin;
 
+    private string? _filterText;
+
     protected override async Task OnInitializedAsync()
     {
         await RefreshReports();
-        SetDefaultSort();
         _isAdmin = AuthState.CurrentUser?.Claims.FirstOrDefault(_ => _.Type == ClaimTypes.Role)?.Value == "Administrator";
     }
 
-    private void SetDefaultSort()
+    private IList<ReportRecord> FilteredReports
     {
-        _reportGrid.SortDefinitions.Add(nameof(ReportRecord.Date), new SortDefinition<ReportRecord>(nameof(ReportRecord.Date), true, 0, x => x.Date, null));
-        _reportGrid.SortDefinitions.Add(nameof(ReportRecord.TimeDisplay), new SortDefinition<ReportRecord>(nameof(ReportRecord.TimeDisplay), true, 1, x => x.TimeDisplay, null));
+        get
+        {
+            var query =
+                _reports.Where(_ => _showHidden || _.DeletedOnUtc == null);
+            if (!string.IsNullOrEmpty(_filterText))
+            {
+                query = query.Where(_ =>
+                    _.Location.Address.Contains(_filterText, StringComparison.OrdinalIgnoreCase) ||
+                    _.Agency.Name.Contains(_filterText, StringComparison.OrdinalIgnoreCase) ||
+                    _.IncidentType.Name.Contains(_filterText, StringComparison.OrdinalIgnoreCase) ||
+                    _.Date == null || _.Date.Value.ToString("MM/dd/yyyy").Contains(_filterText, StringComparison.OrdinalIgnoreCase) ||
+                    _.TimeDisplay == null || _.TimeDisplay.Contains(_filterText, StringComparison.OrdinalIgnoreCase) ||
+                    _.State == null || _.State.ToString().Contains(_filterText, StringComparison.OrdinalIgnoreCase)
+                    );
+            }
+
+            return query.ToList();
+        }
     }
+
 
     private async Task RefreshReports()
     {
@@ -87,7 +116,6 @@
                 _reports = reports.Reports.OrderByDescending(_ => _.Date).ToList();
             }
         }
-
     }
 
     void StartedEditingItem(string id)
@@ -105,7 +133,7 @@
 
         var dialogResult = await DialogService.ShowAsync<DialogConfirm>("Confirm", parameters);
         var result = await dialogResult.Result;
-        if (!result.Cancelled && bool.TryParse(result.Data.ToString(), out bool resultBool))
+        if (!result.Cancelled && bool.TryParse(result.Data.ToString(), out var resultBool))
         {
             var command = new DeleteReportCommand(id);
             var results = await Mediator.Send(command);
@@ -118,14 +146,14 @@
     async Task UnDeleteItem(string id)
     {
         var parameters = new DialogParameters
-{
+        {
             { "ContentText", "Do you want to Un-Delete this report?" },
             { "ButtonText", "Yes" }
         };
 
         var dialogResult = await DialogService.ShowAsync<DialogConfirm>("Confirm", parameters);
         var result = await dialogResult.Result;
-        if (!result.Cancelled && bool.TryParse(result.Data.ToString(), out bool resultbool))
+        if (!result.Cancelled && bool.TryParse(result.Data.ToString(), out var resultbool))
         {
             var command = new UnDeleteReportCommand(id);
             var results = await Mediator.Send(command);
@@ -133,7 +161,6 @@
             if (results.Success)
                 await RefreshReports();
         }
-
     }
 
     private async Task OnShowHiddenClicked()

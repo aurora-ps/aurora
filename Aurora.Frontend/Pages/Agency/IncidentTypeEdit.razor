@@ -118,6 +118,7 @@
         if (obj is IncidentTypeRecord record)
         {
             // Need to create a copy of the record so that we can cancel the edit
+            // If you don't do this, then the _editingIncidentType is kept by reference and keeps getting changed with the latest.
             _editingIncidentType = Mapper.Map<IncidentTypeRecord>(record);
         }
     }

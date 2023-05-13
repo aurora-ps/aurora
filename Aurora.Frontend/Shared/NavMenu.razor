@@ -4,11 +4,9 @@
     <MudNavLink Href="" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Home">Home</MudNavLink>
     <AuthorizeView>
         <Authorized>
-            <MudNavGroup Title="Administration">
+            <MudNavGroup Title="Administration" Expanded="true">
                 <MudNavLink Href="agencies" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Business">Agencies</MudNavLink>
-                <MudNavGroup Title="Users">
-                    <MudNavLink Href="users" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Person">Users</MudNavLink>
-                </MudNavGroup>
+                <MudNavLink Href="users" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Person">Users</MudNavLink>
             </MudNavGroup>
             <MudNavGroup Title="Reports" Expanded="true">
                 <MudNavLink Href="reports" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Note">Reports</MudNavLink>
