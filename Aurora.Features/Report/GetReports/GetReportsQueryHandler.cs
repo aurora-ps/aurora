@@ -17,7 +17,7 @@ namespace Aurora.Features.Report.GetReports
         {
             var reportService = _clusterClient.GetGrain<IReportServiceGrain>("");
 
-            IList<ReportRecord> reports;
+            IList<ReportSummaryRecord> reports;
             if (!string.IsNullOrEmpty(request.UserId) && !request.ShowAll)
             {
                 reports = await reportService.GetUserReportsAsync(request.UserId, request.ShowHidden);

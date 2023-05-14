@@ -11,7 +11,7 @@ public class GetReportsQueryResult
 
     public bool Success { get; set; }
 
-    public static GetReportsQueryResult CreateSuccess(IList<ReportRecord> reports)
+    public static GetReportsQueryResult CreateSuccess(IList<ReportSummaryRecord> reports)
     {
         return new GetReportsQueryResult(true)
         {
@@ -19,5 +19,5 @@ public class GetReportsQueryResult
         };
     }
 
-    public IList<ReportRecord> Reports { get; set; }
+    public IList<ReportSummaryRecord> Reports { get; set; }
 }

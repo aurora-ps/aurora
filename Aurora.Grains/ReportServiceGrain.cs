@@ -22,12 +22,12 @@ public class ReportServiceGrain : Grain, IReportServiceGrain
         _logger = logger;
     }
 
-    public async Task<IList<ReportRecord>> GetAllAsync(bool includeDeleted = false)
+    public async Task<IList<ReportSummaryRecord>> GetAllAsync(bool includeDeleted = false)
     {
         try
         {
             var reports = await GetReportQueryable(includeDeleted)
-                .ProjectTo<ReportRecord>(_mapper.ConfigurationProvider)
+                .ProjectTo<ReportSummaryRecord>(_mapper.ConfigurationProvider)
                 .ToListAsync();
            
             return reports;
@@ -44,13 +44,13 @@ public class ReportServiceGrain : Grain, IReportServiceGrain
         return await _reportContext.Reports.AnyAsync(_ => _.Id == reportId);
     }
 
-    public async Task<IList<ReportRecord>> GetUserReportsAsync(string? requestUserId, bool requestShowHidden)
+    public async Task<IList<ReportSummaryRecord>> GetUserReportsAsync(string? requestUserId, bool requestShowHidden)
     {
         try
         {
             var reports = await this.GetReportQueryable(requestShowHidden)
                 .Where(_ => requestUserId == null || _.ReportUserId == requestUserId)
-                .ProjectTo<ReportRecord>(_mapper.ConfigurationProvider)
+                .ProjectTo<ReportSummaryRecord>(_mapper.ConfigurationProvider)
                 .ToListAsync();
 
             return reports;

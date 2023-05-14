@@ -43,9 +43,9 @@
                 <PropertyColumn HeaderStyle="width: 40px;" CellStyle="width: 40px;" Property="x => x.Date" Format="MM/dd/yyyy"></PropertyColumn>
                 <PropertyColumn HeaderStyle="width: 40px;" CellStyle="width: 40px;" Property="x => x.TimeDisplay" Title="Time"></PropertyColumn>
                 <PropertyColumn HeaderStyle="width: 40px;" CellStyle="width: 40px;" Property="x => x.State" Title="State"></PropertyColumn>
-                <PropertyColumn Property="x => x.Agency.Name" Title="Agency"></PropertyColumn>
-                <PropertyColumn Property="x => x.IncidentType.Name" Title="Incident Type"></PropertyColumn>
-                <PropertyColumn Property="x => x.Location.Address"></PropertyColumn>
+                <PropertyColumn Property="x => x.AgencyName" Title="Agency"></PropertyColumn>
+                <PropertyColumn Property="x => x.IncidentTypeName" Title="Incident Type"></PropertyColumn>
+                <PropertyColumn Property="x => x.AddressDisplay" Title="Address"></PropertyColumn>
                 <TemplateColumn CellClass="d-flex justify-end" Filterable="false">
                     <CellTemplate>
                         <MudStack Row>
@@ -67,8 +67,8 @@
 </MudCard>
 
 @code {
-    private MudDataGrid<ReportRecord> _reportGrid;
-    private IList<ReportRecord> _reports = new List<ReportRecord>();
+    private MudDataGrid<ReportSummaryRecord> _reportGrid;
+    private IList<ReportSummaryRecord> _reports = new List<ReportSummaryRecord>();
     private bool _showHidden;
     private bool _showAll;
     private bool _isAdmin;
@@ -81,7 +81,7 @@
         _isAdmin = AuthState.CurrentUser?.Claims.FirstOrDefault(_ => _.Type == ClaimTypes.Role)?.Value == "Administrator";
     }
 
-    private IList<ReportRecord> FilteredReports
+    private IList<ReportSummaryRecord> FilteredReports
     {
         get
         {
@@ -90,9 +90,9 @@
             if (!string.IsNullOrEmpty(_filterText))
             {
                 query = query.Where(_ =>
-                    _.Location.Address.Contains(_filterText, StringComparison.OrdinalIgnoreCase) ||
-                    _.Agency.Name.Contains(_filterText, StringComparison.OrdinalIgnoreCase) ||
-                    _.IncidentType.Name.Contains(_filterText, StringComparison.OrdinalIgnoreCase) ||
+                    _.LocationAddress.Contains(_filterText, StringComparison.OrdinalIgnoreCase) ||
+                    _.AgencyName.Contains(_filterText, StringComparison.OrdinalIgnoreCase) ||
+                    _.IncidentTypeName.Contains(_filterText, StringComparison.OrdinalIgnoreCase) ||
                     _.Date == null || _.Date.Value.ToString("MM/dd/yyyy").Contains(_filterText, StringComparison.OrdinalIgnoreCase) ||
                     _.TimeDisplay == null || _.TimeDisplay.Contains(_filterText, StringComparison.OrdinalIgnoreCase) ||
                     _.State == null || _.State.ToString().Contains(_filterText, StringComparison.OrdinalIgnoreCase)

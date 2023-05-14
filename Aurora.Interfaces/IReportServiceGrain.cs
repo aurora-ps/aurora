@@ -4,7 +4,7 @@ namespace Aurora.Interfaces;
 
 public interface IReportServiceGrain : IGrainWithStringKey
 {
-    Task<IList<ReportRecord>> GetAllAsync(bool includeDeleted = false);
+    Task<IList<ReportSummaryRecord>> GetAllAsync(bool includeDeleted = false);
     Task<bool> ReportExistsAsync(string reportId);
-    Task<IList<ReportRecord>> GetUserReportsAsync(string? requestUserId, bool requestShowHidden);
+    Task<IList<ReportSummaryRecord>> GetUserReportsAsync(string? requestUserId, bool requestShowHidden);
 }
