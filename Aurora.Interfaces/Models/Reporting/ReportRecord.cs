@@ -4,64 +4,57 @@ namespace Aurora.Interfaces.Models.Reporting;
 [Immutable]
 public sealed record ReportRecord : IReportRecord
 {
-    [Id(0)] public string Id { get; set; } = Guid.NewGuid().ToString();
+    public UserRecord CreatedBy { get; set; }
 
-    [Id(1)] public string CreatedByUserId { get; set; }
+    public string UserId { get; set; }
 
-    [Id(2)] public DateTime? Date { get; set; }
-
-    [Id(3)] public AgencyRecord Agency { get; set; } = new();
-
-    [Id(4)] public IncidentTypeRecord IncidentType { get; set; } = new();
-
-    [Id(5)] public double? Miles { get; set; }
-
-    [Id(6)] public LocationRecord Location { get; set; } = new();
-
-    [Id(7)] public string Narrative { get; set; } = string.Empty;
-
-    [Id(8)] public IList<ReportPersonRecord> People { get; set; } = new List<ReportPersonRecord>();
-
-    [Id(9)] public DateTime? DeletedOnUtc { get; set; }
-
-    [Id(10)] public DateTime CreatedOnUtc { get; set; }
-
-    [Id(11)] public DateTime? ClearedDate { get; set; }
-
-    [Id(12)] public MinistryOpportunityRecord MinistryOpportunity { get; set; } = new();
-
-    [Id(13)] public ReportStateEnum State { get; set; } = ReportStateEnum.Draft;
-
-    [Id(14)] public int ReportId { get; set; }
-
-    [Id(15)] public UserRecord CreatedBy { get; set; }
-
-    [Id(16)] public string UserId { get; set; }
-
-    [Id(17)] public UserRecord User { get; set; }
+    public UserRecord User { get; set; }
 
     public string TimeDisplay => Date == null ? string.Empty : $"{Date.Value.Hour:00}:{Date.Value.Minute:00}";
+    [Id(0)] public string Id { get; set; } = Guid.NewGuid().ToString();
+
+    public string CreatedByUserId { get; set; }
+
+    public DateTime? Date { get; set; }
+
+    public AgencyRecord Agency { get; set; } = new();
+
+    public IncidentTypeRecord IncidentType { get; set; } = new();
+
+    public double? Miles { get; set; }
+
+    public LocationRecord Location { get; set; } = new();
+
+    public string Narrative { get; set; } = string.Empty;
+
+    public IList<ReportPersonRecord> People { get; set; } = new List<ReportPersonRecord>();
+
+    public DateTime? DeletedOnUtc { get; set; }
+
+    public DateTime CreatedOnUtc { get; set; }
+
+    public DateTime? ClearedDate { get; set; }
+
+    public MinistryOpportunityRecord MinistryOpportunity { get; set; } = new();
+
+    public ReportStateEnum State { get; set; } = ReportStateEnum.Draft;
+
+    public int ReportId { get; set; }
 
     public TimeSpan? IncidentTime
     {
         get
         {
-            if (this.Date == null)
-            {
-                return null;
-            }
+            if (Date == null) return null;
 
-            var currentDate = this.Date.Value;
+            var currentDate = Date.Value;
             return new TimeSpan(0, currentDate.Hour, currentDate.Minute, currentDate.Second);
         }
         set
         {
-            if (this.Date == null || value == null)
-            {
-                return;
-            }
+            if (Date == null || value == null) return;
 
-            this.Date = new DateTime(this.Date.Value.Year, this.Date.Value.Month, this.Date.Value.Day,
+            Date = new DateTime(Date.Value.Year, Date.Value.Month, Date.Value.Day,
                 value.Value.Hours, value.Value.Minutes, value.Value.Seconds);
         }
     }
@@ -70,23 +63,17 @@ public sealed record ReportRecord : IReportRecord
     {
         get
         {
-            if (this.ClearedDate == null)
-            {
-                return null;
-            }
+            if (ClearedDate == null) return null;
 
-            var currentDate = this.ClearedDate.Value;
+            var currentDate = ClearedDate.Value;
             return new TimeSpan(0, currentDate.Hour, currentDate.Minute, currentDate.Second);
         }
         set
         {
-            if (this.ClearedDate == null || value == null)
-            {
-                return;
-            }
+            if (ClearedDate == null || value == null) return;
 
-            this.ClearedDate = new DateTime(this.ClearedDate.Value.Year, this.ClearedDate.Value.Month,
-                this.ClearedDate.Value.Day, value.Value.Hours, value.Value.Minutes, value.Value.Seconds);
+            ClearedDate = new DateTime(ClearedDate.Value.Year, ClearedDate.Value.Month,
+                ClearedDate.Value.Day, value.Value.Hours, value.Value.Minutes, value.Value.Seconds);
         }
     }
 }
