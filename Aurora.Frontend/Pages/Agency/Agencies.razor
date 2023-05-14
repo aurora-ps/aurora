@@ -1,26 +1,30 @@
 ﻿@page "/agencies"
-@attribute [Authorize(Roles = "Administrator")]
-
+@using Aurora.Interfaces.Models.Reporting
 @using MediatR
 @using Aurora.Features.Agency.GetAgencies
-@using Aurora.Interfaces.Models.Reporting
+@using Aurora.Features.Agency.GetAgency
 @using Aurora.Features.Agency.AddIncidentType
 @using Aurora.Features.Agency.DeleteAgency
-@using Aurora.Features.Agency.GetAgency
+@using Aurora.Features.Agency.UnDeleteAgency
+@attribute [Authorize(Roles = "Administrator")]
 @inject IMediator Mediator
 @inject IDialogService DialogService
 
 <MudCard>
     <MudCardHeader>
         <MudGrid>
-            <MudItem xs="8" Class="d-flex"><MudText Typo="Typo.h5">Agencies</MudText></MudItem>
-            <MudItem xs="4" Class="d-flex justify-end"><MudButton Size="@Size.Large" Variant="@Variant.Text" Color="@Color.Primary" OnClick="@(AddAgency)">Add Agency</MudButton></MudItem>
+            <MudItem xs="8" Class="d-flex">
+                <MudText Typo="Typo.h5">Agencies</MudText>
+            </MudItem>
+            <MudItem xs="4" Class="d-flex justify-end">
+                <MudCheckBox T="bool" Checked="@_showHidden" CheckedChanged="@(ShowAllAgenciesClicked)" Label="Show All Agencies" LabelPosition="LabelPosition.End" /> <MudButton Size="@Size.Large" Variant="@Variant.Text" Color="@Color.Primary" OnClick="@(AddAgency)">Add Agency</MudButton>
+            </MudItem>
         </MudGrid>
     </MudCardHeader>
     <MudCardContent>
         <MudDataGrid @ref="_reportGrid" Items="@_agencies" ReadOnly="true">
             <Columns>
-                <HierarchyColumn T="AgencyRecord" />
+                <HierarchyColumn T="AgencyRecord"/>
                 <PropertyColumn Property="x => x.Name" Title="Agency"></PropertyColumn>
                 <TemplateColumn CellClass="d-flex justify-end" Filterable="false" Sortable="false" ShowColumnOptions="false" ShowFilterIcon="false">
                     <CellTemplate>
@@ -41,37 +45,46 @@
                 <MudCard>
                     <MudCardHeader>
                         <MudGrid>
-                            <MudItem xs="8"><MudText Typo="Typo.h6"> Incident Types</MudText></MudItem>
-                            <MudItem xs="4" Class="d-flex justify-end"><MudButton Size="@Size.Small" Variant="@Variant.Text" Color="@Color.Primary" OnClick="@(() => AddIncidentType(context.Item.Id, context.Item.IncidentTypes))">Add Incident Type</MudButton></MudItem>
+                            <MudItem xs="8">
+                                <MudText Typo="Typo.h6"> Incident Types</MudText>
+                            </MudItem>
+                            <MudItem xs="4" Class="d-flex justify-end">
+                                <MudButton Size="@Size.Small" Variant="@Variant.Text" Color="@Color.Primary" OnClick="@(() => AddIncidentType(context.Item.Id, context.Item.IncidentTypes))">Add Incident Type</MudButton>
+                            </MudItem>
                         </MudGrid>
                     </MudCardHeader>
                     <MudCardContent>
-                        <IncidentTypeEdit AgencyId="@context.Item.Id" IncidentTypes="@context.Item.IncidentTypes" OnRecordUpdated="@(() => OnRecordUpdated(context.Item.Id))" />
+                        <IncidentTypeEdit AgencyId="@context.Item.Id" IncidentTypes="@context.Item.IncidentTypes" OnRecordUpdated="@(() => OnRecordUpdated(context.Item.Id))"/>
                     </MudCardContent>
                 </MudCard>
             </ChildRowContent>
         </MudDataGrid>
     </MudCardContent>
 </MudCard>
+
 @code {
     private MudDataGrid<AgencyRecord> _reportGrid;
-    IList<AgencyRecord>? _agencies;
-
+    static IList<AgencyRecord>? _agencies;
+    private static bool _showHidden = false;
 
     protected override async Task OnInitializedAsync()
     {
-        var getResponse = await Mediator.Send(new GetAgenciesQuery());
-        _agencies = getResponse.Agencies;
+        _agencies = await GetAgencies();
+    }
+
+    private async Task<IList<AgencyRecord>>  GetAgencies()
+    {
+        var getResponse = await Mediator.Send(new GetAgenciesQuery { IncludeDeleted = _showHidden });
+        return getResponse.Agencies;
     }
 
     async Task AddIncidentType(string agencyId, IList<IncidentTypeRecord> incidentTypes)
     {
         var parameters = new DialogParameters
-{
+        {
             { "ContentText", "Add Incident Type" },
             { "ButtonText", "Yes" },
             { "CurrentIncidentTypes", incidentTypes }
-
         };
 
         var dialogResult = await DialogService.ShowAsync<DialogPickIncidentType>("Add Incident Type", parameters);
@@ -117,9 +130,8 @@
     private async Task AddAgency()
     {
         var parameters = new DialogParameters
-{
+        {
             { "ButtonText", "Add" }
-
         };
 
         var dialogResult = await DialogService.ShowAsync<DialogAddAgency>("Add Agency", parameters);
@@ -134,12 +146,12 @@
     private async Task DeleteItem(string id)
     {
         var agencyRecord = _agencies?.FirstOrDefault(_ => _.Id == id);
-        
+
         if (agencyRecord == null)
         {
             return;
         }
-        
+
         var parameters = new DialogParameters
         {
             { "ContentText", $"Do you want to Delete this Agency: {agencyRecord.Name}?" },
@@ -159,14 +171,46 @@
                 {
                     _agencies!.Remove(agency);
                 }
-            }   
+            }
         }
-
     }
 
-    private Task UnDeleteItem(string id)
+    private async Task UnDeleteItem(string id)
     {
-        throw new NotImplementedException();
+        var agencyRecord = _agencies?.FirstOrDefault(_ => _.Id == id);
+
+        if (agencyRecord == null)
+        {
+            return;
+        }
+
+        var parameters = new DialogParameters
+        {
+            { "ContentText", $"Do you want to Un-Delete this Agency: {agencyRecord.Name}?" },
+            { "ButtonText", "Yes" }
+        };
+
+        var dialogResult = await DialogService.ShowAsync<DialogConfirm>($"Un-Delete {agencyRecord.Name}", parameters);
+        var result = await dialogResult.Result;
+        if (!result.Cancelled && bool.TryParse(result.Data.ToString(), out var resultBool))
+        {
+            var command = UnDeleteAgencyCommand.Create(id);
+            var results = await Mediator.Send(command);
+            if (results.Success)
+            {
+                var agency = _agencies?.FirstOrDefault(_ => _.Id == id);
+                if (agency != null)
+                {
+                    agency.DeletedOnUtc = null;
+                }
+            }
+        }
+    }
+
+    private async Task ShowAllAgenciesClicked()
+    {
+        _showHidden = !_showHidden;
+        _agencies = await GetAgencies();
     }
 
 }

@@ -41,12 +41,18 @@ builder.Services.AddScoped<AuthenticationService>();
 
 if (builder.Environment.IsDevelopment())
 {
-    builder.Host.UseOrleans((context, siloBuilder) => { siloBuilder.AddOrleansSilo(11111, 30000); });
+    builder.Host.UseOrleans((context, siloBuilder) =>
+    {
+        siloBuilder.AddOrleansSilo(11111, 30000);
+        siloBuilder.UseDashboard();
+    });
     builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 }
 else
     //TODO: Add production configuration
+{
     builder.Host.UseOrleans((context, siloBuilder) => { siloBuilder.AddOrleansSilo(11111, 30000); });
+}
 
 var app = builder.Build();
 
@@ -66,8 +72,8 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
-app.UseAuthentication(); 
-app.UseAuthorization();  
+app.UseAuthentication();
+app.UseAuthorization();
 
 app.MapBlazorHub();
 app.MapFallbackToPage("/_Host");
@@ -87,6 +93,6 @@ async Task SeedData(WebApplication webApplication)
     }
 
     var service = services.ServiceProvider.GetService<DataSeeding>();
-    if(service != null)
+    if (service != null)
         await service.SeedData();
 }

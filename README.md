@@ -13,6 +13,8 @@ This is an open source public safety project aimed at providing a platform for c
 
 The intention of this project is to initially be a place to learn some work on various .NET technologies.  In doing so it is to also bring value to those in public safety by adding features that will improve day to day activities.
 
+YES, the different areas of the code use different coding patterns and styles from the start.  The reason is part of this project is to play with Orleans, Blazor and other technologies and as each new set of code is laid down new ideas come to mind.   At some point there will be a time to land on a pattern that seems to work and tackle it.
+
 ## Features
 
 The Public Safety Project will include the following features:

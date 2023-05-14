@@ -21,6 +21,10 @@
 	  <PackageReference Include="MudBlazor" Version="6.2.2" />
 	</ItemGroup>
 
+	<!--Orleans Dashboard-->
+	<ItemGroup>
+		<PackageReference Include="OrleansDashboard" Version="7.2.0" />
+	</ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Aurora.Web.Shared\Aurora.Web.Shared.csproj" />
   </ItemGroup>
