@@ -45,26 +45,26 @@
                                 }
                             </MudSelect>
                         </MudItem>
-                        <MudItem xs="6" sm="3">
+                        <MudItem xs="12" sm="6" md="3">
                             <MudDatePicker Label="Date" @bind-Date="_incidentDate" Editable="true" Required="false" />
                         </MudItem>
                         @if ((_report?.IncidentType?.CollectTime ?? false) || (_report?.IncidentType?.RequiresTime ?? false))
                         {
 
-                            <MudItem xs="6" sm="3">
+                            <MudItem xs="12" sm="6" md="3">
                                 <MudTimePicker Label="Time" @bind-Time="_incidentTime" Editable="true" Required="_report?.IncidentType?.RequiresTime ?? false" />
                             </MudItem>
-                            <MudItem xs="6" sm="3">
+                            <MudItem xs="12" sm="6" md="3">
                                 <MudDatePicker Label="Cleared Date" @bind-Date="_clearedDate" MinDate="@_incidentDate" Editable="true" Required="_report?.IncidentType?.RequiresTime ?? false" />
                             </MudItem>
-                            <MudItem xs="6" sm="3">
+                            <MudItem xs="12" sm="6" md="3">
                                 <MudTimePicker Label="Cleared Time" @bind-Time="_clearedTime" Editable="true" Required="_report?.IncidentType?.RequiresTime ?? false" />
                             </MudItem>
                         }
 
-                        <MudItem xs="12" sm="3">
-                            <MudNumericField Immediate="false" Label="Miles Driven" Format="N1" T="double?" @bind-Value="_report.Miles" />
-                        </MudItem>
+                    <MudItem xs="12" sm="6" md="3">
+                        <MudNumericField Immediate="false" Label="Miles Driven" Format="N1" T="double?" @bind-Value="_report.Miles" />
+                    </MudItem>
                     </MudGrid>
                 </MudListItem>
                 @if (this._report?.IncidentType?.CollectLocation ?? false)
@@ -98,8 +98,8 @@
                     <MudListItem>
                         <MudGrid Spacing="1">
                             @* People Section *@
-                            <MudItem xs="8"><MudText Typo="Typo.h5" GutterBottom="false">People</MudText></MudItem>
-                            <MudItem xs="4" Class="d-flex justify-end"><MudButton Variant="Variant.Text" StartIcon="@Icons.Material.Filled.Person" Color="Color.Primary" @onclick="AddPerson">Add Person</MudButton></MudItem>
+                            <MudItem xs="6"><MudText Typo="Typo.h5" GutterBottom="false">People</MudText></MudItem>
+                            <MudItem xs="6" Class="d-flex justify-end"><MudButton Variant="Variant.Text" StartIcon="@Icons.Material.Filled.Person" Color="Color.Primary" @onclick="AddPerson">Add Person</MudButton></MudItem>
                             <MudItem xs="12">
                                 <MudExpansionPanels MultiExpansion="true">
                                     @foreach (ReportPersonRecord person in _report.People)
@@ -670,7 +670,7 @@
         if (_clearedDate.HasValue)
         {
             var incidentDateTime = _clearedDate.Value;
-            if (_incidentTime.HasValue)
+            if (_clearedTime.HasValue)
             {
                 incidentDateTime = incidentDateTime.Add(_clearedTime.Value);
             }

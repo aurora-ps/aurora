@@ -22,7 +22,7 @@
         </MudGrid>
     </MudCardHeader>
     <MudCardContent>
-        <MudDataGrid @ref="_reportGrid" Items="@_agencies" ReadOnly="true">
+        <MudDataGrid @ref="_reportGrid" Items="@_agencies" ReadOnly="true" Dense="true">
             <Columns>
                 <HierarchyColumn T="AgencyRecord"/>
                 <PropertyColumn Property="x => x.Name" Title="Agency"></PropertyColumn>

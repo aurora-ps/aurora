@@ -15,7 +15,7 @@
 }
 else
 {
-    <MudTable Items="Model" Hover="true" SortLabel="Sort By" Elevation="0">
+    <MudTable Items="Model" Hover="true" SortLabel="Sort By" Elevation="0" Dense="true">
         <HeaderContent>
             <MudTh><MudTableSortLabel SortBy="new Func<UserRecord, object>(x => x.FirstName)">First Name</MudTableSortLabel></MudTh>
             <MudTh><MudTableSortLabel SortBy="new Func<UserRecord, object>(x => x.LastName)">Last Name</MudTableSortLabel></MudTh>
