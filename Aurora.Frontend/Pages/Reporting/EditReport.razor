@@ -2,6 +2,7 @@
 @inject MediatR.IMediator Mediator
 @inject IDialogService DialogService
 @inject AuthenticationService AuthService
+@inject NavigationManager NavigationManager
 
 @using Aurora.Interfaces.Models.Reporting
 @using Aurora.Features.Agency.GetAgencies
@@ -392,6 +393,11 @@
 
             if (result.IsSuccess)
             {
+                if(string.IsNullOrEmpty(recordId))
+                {
+                    NavigationManager.NavigateTo($"/report/{result.ReportRecord.Id}");
+                }
+
                 _report = await GetReport(result.ReportRecord.Id);
                 _saveState = SaveStateEnum.Saved;
                 _success = true;
