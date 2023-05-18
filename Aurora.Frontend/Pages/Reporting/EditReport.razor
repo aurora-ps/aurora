@@ -2,6 +2,7 @@
 @inject MediatR.IMediator Mediator
 @inject IDialogService DialogService
 @inject AuthenticationService AuthService
+@inject NavigationManager NavigationManager
 
 @using Aurora.Interfaces.Models.Reporting
 @using Aurora.Features.Agency.GetAgencies
@@ -14,7 +15,7 @@
 
 <MudTabs>
     <MudTabPanel Text="Report">
-        <MudForm @ref="_form" @bind-IsValid="@_success" @bind-Errors="@_errors" ReadOnly="false">
+        <MudForm @ref="_form" @bind-IsValid="@_success" @bind-Errors="@_errors" FieldChanged="FormFieldChanged" ReadOnly="false">
             <MudList Clickable="false" Dense="true" DisableGutters="true">
                 <MudListItem>
                     <MudGrid Spacing="1">
@@ -216,7 +217,7 @@
                     </MudItem>
                 </MudListItem>
             </MudList>
-            <MudButton Variant="Variant.Filled" Color="Color.Primary" DisableElevation="true" OnClick="@(SaveForm)" Disabled="_saveState == SaveStateEnum.Saving">@SubmitButtonText</MudButton>
+            <MudButton Variant="Variant.Filled" Color="Color.Primary" DisableElevation="true" OnClick="@(SaveForm)" Disabled="_saveState == SaveStateEnum.Saving || _isDirty == false">@SubmitButtonText</MudButton>
         </MudForm>
     </MudTabPanel>
     <MudTabPanel Text="Report Summary">
@@ -241,6 +242,7 @@
     [Parameter]
     public string? recordId { get; set; }
 
+    bool _isDirty = false;
     bool _success;
     string[] _errors = { };
     MudForm _form;
@@ -392,6 +394,11 @@
 
             if (result.IsSuccess)
             {
+                if(string.IsNullOrEmpty(recordId))
+                {
+                    NavigationManager.NavigateTo($"/report/{result.ReportRecord.Id}");
+                }
+
                 _report = await GetReport(result.ReportRecord.Id);
                 _saveState = SaveStateEnum.Saved;
                 _success = true;
@@ -684,4 +691,10 @@
     private DateTime? _clearedDate;
     private TimeSpan? _incidentTime;
     private TimeSpan? _clearedTime;
+
+    private void FormFieldChanged()
+    {
+        _isDirty = true;
+    }
+
 }
