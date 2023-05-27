@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Aurora.Infrastructure.Data;
 
-public interface IApplicationDbContext
+public interface IApplicationDbContext : IUnitOfWork
 {
     DbSet<AuroraUser> Users { get; set; }
     DbSet<IdentityUserClaim<string>> UserClaims { get; set; }
