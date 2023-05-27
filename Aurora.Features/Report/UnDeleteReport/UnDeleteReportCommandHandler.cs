@@ -1,29 +1,39 @@
-﻿using Aurora.Interfaces;
+﻿using Aurora.Infrastructure.Data;
+using Aurora.Interfaces;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 
 namespace Aurora.Features.Report.UnDeleteReport;
 
 
 public class UnDeleteReportCommandHandler : IRequestHandler<UnDeleteReportCommand, UnDeleteReportCommandResult>
 {
-    private readonly IClusterClient _clusterClient;
+    private readonly IReportDbContext _context;
 
-    public UnDeleteReportCommandHandler(IClusterClient clusterClient)
+    public UnDeleteReportCommandHandler(IReportDbContext context)
     {
-        _clusterClient = clusterClient;
+        _context = context;
     }
 
     public async Task<UnDeleteReportCommandResult> Handle(UnDeleteReportCommand request, CancellationToken cancellationToken)
     {
-        var reportGrain = _clusterClient.GetGrain<IReportGrain>(request.ReportId);
-        var report = await reportGrain.UnDeleteAsync();
-
-        if (report)
+        try
         {
+            var report = await _context.Reports.FirstOrDefaultAsync(r => r.Id == request.ReportId, cancellationToken);
+            if (report == null)
+            {
+                return UnDeleteReportCommandResult.CreateFailure(request.ReportId, "Report Not Found");
+            }
+
+
+            report.DeletedOnUtc = null;
+            await _context.SaveChangesAsync(cancellationToken);
             return UnDeleteReportCommandResult.CreateSuccess(request.ReportId);
         }
-
-        return UnDeleteReportCommandResult.CreateFailure(request.ReportId, "Unable to Un-Delete");
+        catch (Exception)
+        {
+            return UnDeleteReportCommandResult.CreateFailure(request.ReportId, "Unable to Un-Delete");
+        }
     }
 }
 
