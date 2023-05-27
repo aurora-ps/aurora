@@ -36,6 +36,7 @@ builder.Services.AddScoped<AuthenticationStateProvider, RevalidatingIdentityAuth
 
 // Setup DI for Aurora.Infrastructure.Data
 builder.Services.AddScoped<IReportDbContext, ReportDbContext>();
+builder.Services.AddScoped<IApplicationDbContext, ApplicationDbContext>();
 
 builder.Services.AddScoped<HttpContextAccessor>();
 builder.Services.AddScoped<AuthenticationService>();

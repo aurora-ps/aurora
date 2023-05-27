@@ -88,7 +88,9 @@ public class MappingProfile : Profile
         CreateMap<AuroraUser, AuroraUser>();
         CreateMap<UserRecord, UserRecord>();
         CreateMap<AuroraUser, UserRecord>()
+            .ForMember(d => d.Name, opt => opt.MapFrom(s => s.UserName))
             .ReverseMap()
+            .ForMember(d => d.UserName, opt => opt.MapFrom(s => s.Name))
             .ForMember(d => d.Reports, opt => opt.Ignore());
     }
 }
