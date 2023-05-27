@@ -1,61 +1,30 @@
-﻿using Aurora.Grains;
-using Aurora.Interfaces;
+﻿using Aurora.Infrastructure.Data;
 using Aurora.Interfaces.Models.Reporting;
+using AutoMapper;
+using AutoMapper.QueryableExtensions;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 
-namespace Aurora.Features.Report.GetReport
+namespace Aurora.Features.Report.GetReport;
+
+public class GetReportQueryHandler : IRequestHandler<GetReportQuery, GetReportQueryResult>
 {
-    public class GetReportQueryHandler : IRequestHandler<GetReportQuery, GetReportQueryResult>
+    private readonly IReportDbContext _context;
+    private readonly IMapper _mapper;
+
+    public GetReportQueryHandler(IReportDbContext context, IMapper mapper)
     {
-        private readonly IClusterClient _clusterClient;
-
-        public GetReportQueryHandler(IClusterClient clusterClient)
-        {
-            _clusterClient = clusterClient;
-        }
-
-        public async Task<GetReportQueryResult> Handle(GetReportQuery request, CancellationToken cancellationToken)
-        {
-            var reportGrain = _clusterClient.GetGrain<IReportGrain>(request.ReportId);
-            var report = await reportGrain.GetAsync();
-            if (report == null)
-            {
-                return GetReportQueryResult.CreateNotFound();
-            }
-            return GetReportQueryResult.CreateSuccess(report);
-        }
+        _context = context;
+        _mapper = mapper;
     }
 
-    public class GetReportQueryResult
+    public async Task<GetReportQueryResult> Handle(GetReportQuery request, CancellationToken cancellationToken)
     {
-        public GetReportQueryResult(bool success, ReportRecord? record)
-        {
-            this.Success = success;
-            this.Report = record;
-        }
+        var report = await _context.Reports.ProjectTo<ReportRecord>(_mapper.ConfigurationProvider)
+            .Where(_ => _.Id.Equals(request.ReportId) && _.DeletedOnUtc == null)
+            .FirstOrDefaultAsync(cancellationToken);
 
-        public ReportRecord? Report { get; set; }
-
-        public bool Success { get; set; }
-
-        public static GetReportQueryResult CreateSuccess(ReportRecord report)
-        {
-            return new GetReportQueryResult(true, report);
-        }
-
-        public static GetReportQueryResult CreateNotFound()
-        {
-            return new GetReportQueryResult(false, null);
-        }
-    }
-
-    public class GetReportQuery : IRequest<GetReportQueryResult>
-    {
-        public GetReportQuery(string reportId)
-        {
-            this.ReportId = reportId;
-        }
-
-        public string ReportId { get; set; }
+        if (report == null) return GetReportQueryResult.CreateNotFound();
+        return GetReportQueryResult.CreateSuccess(report);
     }
 }

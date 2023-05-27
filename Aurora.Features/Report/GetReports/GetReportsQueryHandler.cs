@@ -1,34 +1,34 @@
-﻿using Aurora.Interfaces;
+﻿using Aurora.Infrastructure.Data;
 using Aurora.Interfaces.Models.Reporting;
+using AutoMapper;
+using AutoMapper.QueryableExtensions;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 
-namespace Aurora.Features.Report.GetReports
+namespace Aurora.Features.Report.GetReports;
+
+public class GetReportsQueryHandler : IRequestHandler<GetReportsQuery, GetReportsQueryResult>
 {
-    public class GetReportsQueryHandler : IRequestHandler<GetReportsQuery, GetReportsQueryResult>
+    private readonly IReportDbContext _context;
+    private readonly IMapper _mapper;
+
+    public GetReportsQueryHandler(IReportDbContext context, IMapper mapper)
     {
-        private readonly IClusterClient _clusterClient;
+        _context = context;
+        _mapper = mapper;
+    }
 
-        public GetReportsQueryHandler(IClusterClient clusterClient)
-        {
-            _clusterClient = clusterClient;
-        }
+    public async Task<GetReportsQueryResult> Handle(GetReportsQuery request, CancellationToken cancellationToken)
+    {
+        var query = _context.Reports
+            .Where(_ => request.ShowHidden || _.DeletedOnUtc == null);
 
-        public async Task<GetReportsQueryResult> Handle(GetReportsQuery request, CancellationToken cancellationToken)
-        {
-            var reportService = _clusterClient.GetGrain<IReportServiceGrain>("");
+        if (!string.IsNullOrEmpty(request.UserId) && !request.ShowAll)
+            query = query.Where(_ => _.ReportUserId.Equals(request.UserId));
 
-            IList<ReportSummaryRecord> reports;
-            if (!string.IsNullOrEmpty(request.UserId) && !request.ShowAll)
-            {
-                reports = await reportService.GetUserReportsAsync(request.UserId, request.ShowHidden);
-            }
-            else
-            {
-                reports = await reportService.GetAllAsync(request.ShowHidden);
-            }
-            
+        var reports = await query.ProjectTo<ReportSummaryRecord>(_mapper.ConfigurationProvider)
+            .ToListAsync(cancellationToken);
 
-            return GetReportsQueryResult.CreateSuccess(reports);
-        }
+        return GetReportsQueryResult.CreateSuccess(reports);
     }
 }

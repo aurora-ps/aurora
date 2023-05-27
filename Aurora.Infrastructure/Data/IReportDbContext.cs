@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Aurora.Infrastructure.Data;
 
-public interface IReportDbContext
+public interface IReportDbContext : IUnitOfWork
 {
     DbSet<Report> Reports { get; set; }
 

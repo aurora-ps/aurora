@@ -1,6 +1,4 @@
-﻿using Aurora.Interfaces.Models;
-
-namespace Aurora.Frontend.Services
+﻿namespace Aurora.Frontend.Services
 {
     using System.Security.Claims;
     using System.Threading.Tasks;
@@ -22,12 +20,6 @@ namespace Aurora.Frontend.Services
 
         public override Task<AuthenticationState> GetAuthenticationStateAsync()
         {
-            //var identity = new ClaimsIdentity(new[]
-            //{
-            //    new Claim(ClaimTypes.Name, "scott@wilkos.net"),
-            //    new Claim(ClaimTypes.NameIdentifier, "0317fa18-52f9-4334-8f11-de08edf63ae8"),
-            //}, "Custom Authentication");
-
             var identity = new ClaimsIdentity();
             var user = new ClaimsPrincipal(identity);
 

@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Aurora.Infrastructure.Data;
 
-public class ApplicationDbContext : IdentityDbContext<AuroraUser, AuroraIdentityRole, string>
+public class ApplicationDbContext : IdentityDbContext<AuroraUser, AuroraIdentityRole, string>, IApplicationDbContext
 {
     public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
         : base(options)

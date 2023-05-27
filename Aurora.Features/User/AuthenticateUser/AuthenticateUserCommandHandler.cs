@@ -1,16 +1,15 @@
-﻿using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.Configuration;
-using Microsoft.IdentityModel.Tokens;
-using System.IdentityModel.Tokens.Jwt;
+﻿using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-
-using JwtRegisteredClaimNames = Microsoft.IdentityModel.JsonWebTokens.JwtRegisteredClaimNames;
-
+using Aurora.Features.User.GetUser;
 using Aurora.Interfaces;
 using Aurora.Interfaces.Models;
 using FluentValidation;
 using MediatR;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Configuration;
+using Microsoft.IdentityModel.Tokens;
+using JwtRegisteredClaimNames = Microsoft.IdentityModel.JsonWebTokens.JwtRegisteredClaimNames;
 
 namespace Aurora.Features.User.AuthenticateUser;
 
@@ -19,16 +18,16 @@ public class AuthenticateUserCommandHandler : IRequestHandler<AuthenticateUserCo
 {
     private readonly IConfiguration _appConfig;
     private readonly IValidator<AuthenticateUserCommand> _authenticateUserValidator;
-    private readonly IClusterClient _clusterClient;
     private readonly UserManager<AuroraUser> _userManager;
+    private readonly ISender _request;
 
     public AuthenticateUserCommandHandler(UserManager<AuroraUser> userManager,
-        IClusterClient clusterClient,
+        ISender request,
         IConfiguration appConfig,
         IValidator<AuthenticateUserCommand> authenticateUserValidator)
     {
         _userManager = userManager;
-        _clusterClient = clusterClient;
+        _request = request;
         _appConfig = appConfig;
         _authenticateUserValidator = authenticateUserValidator;
     }
@@ -45,11 +44,8 @@ public class AuthenticateUserCommandHandler : IRequestHandler<AuthenticateUserCo
         if (user == null || !await _userManager.CheckPasswordAsync(user, command.Password!))
             return AuthenticateUserCommandResult.Unauthorized();
 
-        var userRecord = await GetUserDetails(user);
-        if (userRecord == null)
-        {
-            return AuthenticateUserCommandResult.Unauthorized();
-        }
+        var userRecord = await GetUserDetails(user.Id);
+        if (userRecord == null) return AuthenticateUserCommandResult.Unauthorized();
 
         var roles = await _userManager.GetRolesAsync(user);
 
@@ -67,11 +63,10 @@ public class AuthenticateUserCommandHandler : IRequestHandler<AuthenticateUserCo
         return AuthenticateUserCommandResult.CreateSuccess(userRecord, user, token);
     }
 
-    private async Task<UserRecord?> GetUserDetails(AuroraUser user)
+    private async Task<UserRecord?> GetUserDetails(string userId)
     {
-        var userGrain = _clusterClient.GetGrain<IUserGrain>(user.Id);
-
-        return await userGrain.GetDetailsAsync();
+        var user = await _request.Send(new GetUserQuery{UserId = userId});
+        return user.User;
     }
 
     private static JwtSecurityToken GetToken(IConfiguration appConfig, List<Claim> authClaims)

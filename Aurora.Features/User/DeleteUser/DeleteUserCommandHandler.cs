@@ -1,29 +1,27 @@
-﻿using Aurora.Interfaces;
+﻿using Aurora.Infrastructure.Data;
+using Aurora.Interfaces;
+using Aurora.Interfaces.Models;
 using MediatR;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace Aurora.Features.User.DeleteUser;
 
 public class DeleteUserCommandHandler : IRequestHandler<DeleteUserCommand, DeleteUserResponse>
 {
-    private readonly IClusterClient _clusterClient;
+    private readonly UserManager<AuroraUser> _userManager;
 
-    public DeleteUserCommandHandler(IClusterClient clusterClient)
+    public DeleteUserCommandHandler(UserManager<AuroraUser> userManager)
     {
-        _clusterClient = clusterClient;
+        _userManager = userManager;
     }
 
     public async Task<DeleteUserResponse> Handle(DeleteUserCommand command, CancellationToken cancellationToken)
     {
-        var grain = _clusterClient.GetGrain<IUserGrain>(command.UserId);
-        if (await grain.IsInitialized())
-        {
-            var results = await grain.DeleteAsync();
-            if (results)
-                return DeleteUserResponse.CreateSuccess();
+        var user = await _userManager.FindByIdAsync(command.UserId);
+        if (user == null) return DeleteUserResponse.CreateNotFound();
 
-            return DeleteUserResponse.CreateFailure();
-        }
-
-        return DeleteUserResponse.CreateNotFound();
+        var result = await _userManager.DeleteAsync(user);
+        return DeleteUserResponse.CreateSuccess();
     }
 }
