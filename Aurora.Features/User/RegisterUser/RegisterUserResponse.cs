@@ -25,7 +25,7 @@ public class RegisterUserResponse
     public bool IsSuccess { get; set; }
 
     public UserRecord User { get; set; }
-    
+
     public AuroraUser IdentityUser { get; set; }
 
     public string Token { get; set; }

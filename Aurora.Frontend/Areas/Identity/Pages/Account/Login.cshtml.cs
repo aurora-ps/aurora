@@ -3,8 +3,9 @@
 #nullable disable
 
 using System.ComponentModel.DataAnnotations;
-using Aurora.Interfaces;
+using Aurora.Features.User.SetLastLogin;
 using Aurora.Interfaces.Models;
+using MediatR;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -17,14 +18,14 @@ namespace Aurora.Frontend.Areas.Identity.Pages.Account
         private readonly SignInManager<AuroraUser> _signInManager;
         private readonly UserManager<AuroraUser> _userManager;
         private readonly ILogger<LoginModel> _logger;
-        private readonly IClusterClient _clusterClient;
+        private readonly ISender _sender;
 
-        public LoginModel(SignInManager<AuroraUser> signInManager, UserManager<AuroraUser> userManager, ILogger<LoginModel> logger, IClusterClient clusterClient)
+        public LoginModel(SignInManager<AuroraUser> signInManager, UserManager<AuroraUser> userManager, ILogger<LoginModel> logger, ISender sender)
         {
             _signInManager = signInManager;
             _userManager = userManager;
             _logger = logger;
-            _clusterClient = clusterClient;
+            _sender = sender;
         }
 
         /// <summary>
@@ -142,8 +143,21 @@ namespace Aurora.Frontend.Areas.Identity.Pages.Account
             var user = await _userManager.FindByEmailAsync(userEmail);
             if (user != null)
             {
-                var userGrain = _clusterClient.GetGrain<IUserGrain>(user.Id);
-                await userGrain.SetLastLoginAsync(DateTime.UtcNow);
+                try
+                {
+                    await _sender.Send(SetLastLoginCommand.Create(user.Id));
+                }
+                catch (Exception e)
+                {
+                    string str = e switch
+                    {
+                        ValidationException => e.Message,
+                        KeyNotFoundException => e.Message,
+                        _ => "Error setting the Last Login"
+                    };
+                    
+                    _logger.LogError(str);
+                }
             }
         }
     }

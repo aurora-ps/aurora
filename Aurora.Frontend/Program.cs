@@ -1,3 +1,4 @@
+using Aurora.Common;
 using Aurora.Frontend.Data;
 using Aurora.Frontend.Services;
 using Aurora.Infrastructure.Data;
@@ -33,25 +34,15 @@ builder.SetupDependencies();
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<DataSeeding>();
 builder.Services.AddScoped<AuthenticationStateProvider, RevalidatingIdentityAuthenticationStateProvider<AuroraUser>>();
-//builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthenticationStateProvider>();
-//builder.Services.AddScoped<CustomAuthenticationStateProvider>();
+
+builder.Services.BootstrapServices();
 
 builder.Services.AddScoped<HttpContextAccessor>();
 builder.Services.AddScoped<AuthenticationService>();
 
 if (builder.Environment.IsDevelopment())
 {
-    builder.Host.UseOrleans((context, siloBuilder) =>
-    {
-        siloBuilder.AddOrleansSilo(11111, 30000);
-        siloBuilder.UseDashboard();
-    });
     builder.Services.AddDatabaseDeveloperPageExceptionFilter();
-}
-else
-    //TODO: Add production configuration
-{
-    builder.Host.UseOrleans((context, siloBuilder) => { siloBuilder.AddOrleansSilo(11111, 30000); });
 }
 
 var app = builder.Build();

@@ -7,8 +7,8 @@
 <MudDialog>
     <DialogContent>
         <MudGrid Style="min-width: 280px">
-            <MudItem xs="12" Style="min-width: 280px;"> 
-                <MudInput @bind-Value="_agencyName" Immediate="true" Label="Agency Name" AutoFocus="true" Style="Width: 100%" FullWidth="true"/>
+            <MudItem xs="12" Style="min-width: 280px;">
+                <MudInput @bind-Value="_agencyName" Immediate="true" Label="Agency Name" AutoFocus="true" Style="Width: 100%" FullWidth="true" />
             </MudItem>
             <MudItem xs="12">
                 @if (!string.IsNullOrEmpty(_errorMessage))
@@ -40,29 +40,32 @@
 
     async Task Submit()
     {
-        if (!string.IsNullOrEmpty(_agencyName))
+        if (!await AgencyAlreadyExists(_agencyName))
         {
-            if (!await AgencyAlreadyExists(_agencyName))
+            try
             {
-                var command = AddAgencyCommand.Create(_agencyName.Trim());
-                var response = await Mediator.Send(command);
-                
-                if (response.Success)
-                {
-                    MudDialog.Close(DialogResult.Ok(response.AgencyRecord));
-                }
-                else
-                {
-                    _errorMessage = response.ValidationResultErrors?.FirstOrDefault()?.ErrorMessage ?? "Unknown error occurred saving Agency";
-                }
+                var id = Guid.NewGuid().ToString();
+                var command = AddAgencyCommand.Create(id, _agencyName.Trim());
+                await Mediator.Send(command);
+
+                MudDialog.Close(DialogResult.Ok(id));
             }
-            else
+            catch (Exception e)
             {
-                _errorMessage = "Agency already exists";
+                string message = e switch
+                {
+                    ArgumentException => e.Message,
+                    InvalidOperationException => e.Message,
+                    _ => "Unknown error occurred saving Agency"
+                };
+
+                _errorMessage = message;
             }
         }
-
-    //MudDialog.Close(DialogResult.Ok(_selectedIncidentTypeRecord));
+        else
+        {
+            _errorMessage = "Agency already exists";
+        }
     }
 
     private async Task<bool> AgencyAlreadyExists(string agencyName)

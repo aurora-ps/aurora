@@ -1,45 +1,53 @@
-﻿using Aurora.Interfaces;
-using FluentValidation.Results;
+﻿using Aurora.Infrastructure.Data;
+using Aurora.Interfaces.Models.Reporting;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 
 namespace Aurora.Features.Agency.AddAgency;
 
-public class AddAgencyCommandHandler : IRequestHandler<AddAgencyCommand, AddAgencyCommandResult>
+public class AddAgencyCommandHandler : IRequestHandler<AddAgencyCommand>
 {
-    private readonly IClusterClient _clusterClient;
+    private readonly ReportDbContext _context;
 
-    public AddAgencyCommandHandler(IClusterClient clusterClient)
+    public AddAgencyCommandHandler(ReportDbContext context)
     {
-        _clusterClient = clusterClient;
+        _context = context;
     }
 
-    public async Task<AddAgencyCommandResult> Handle(AddAgencyCommand command, CancellationToken cancellationToken)
+    public async Task Handle(AddAgencyCommand command, CancellationToken cancellationToken)
     {
         // Validate command
         var validator = new AddAgencyCommandValidator();
         var validationResult = await validator.ValidateAsync(command, cancellationToken);
 
-        if (!validationResult.IsValid) return AddAgencyCommandResult.Error(validationResult.Errors);
+        if (!validationResult.IsValid)
+        {
+            var exception = validationResult.Errors.FirstOrDefault();
+            throw new ArgumentException(exception!.ErrorMessage, nameof(command));
+        }
 
         if (await AgencyExists(command.Name))
-            return AddAgencyCommandResult.Error(new List<ValidationFailure> { new("Name", "Agency already exists") });
+            throw new InvalidOperationException("Agency already exists");
 
-        var agencyGrain = _clusterClient.GetGrain<IAgencyGrain>(Guid.NewGuid().ToString());
-        await agencyGrain.SetAgencyName(command.Name);
-        await agencyGrain.SaveChangesAsync();
 
-        var agencyRecord = await agencyGrain.GetDetailsAsync();
-        // Return error if agency record is null
-        return agencyRecord == null
-            ? AddAgencyCommandResult.Error(new List<ValidationFailure> { new("Name", "Agency could not be created") })
-            : AddAgencyCommandResult.Created(agencyRecord);
+        try
+        {
+            var newAgency = new Interfaces.Models.Reporting.Agency(command.Id, command.Name)
+            {
+                IncidentTypes = new List<AgencyIncidentType>()
+            };
+
+            await _context.Agencies.AddAsync(newAgency, cancellationToken);
+            await _context.SaveChangesAsync(cancellationToken);
+        }
+        catch (Exception ex)
+        {
+            throw new InvalidOperationException("Agency could not be created");
+        }
     }
 
     private async Task<bool> AgencyExists(string agencyName)
     {
-        var results = await _clusterClient.GetGrain<IAgencyManagementGrain>("").GetAgenciesAsync(agencyName, true);
-        if (results == null || results.Count == 0) return false;
-
-        return results.Any(_ => _.Name.Trim() == agencyName.Trim());
+        return await _context.Agencies.AnyAsync(_ => _.Name.Trim() == agencyName.Trim());
     }
 }

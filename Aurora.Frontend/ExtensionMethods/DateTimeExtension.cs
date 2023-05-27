@@ -1,4 +1,6 @@
-﻿namespace Aurora.Frontend.ExtensionMethods
+﻿using System.Reflection;
+
+namespace Aurora.Frontend.ExtensionMethods
 {
     public static class DateTimeExtension
     {
