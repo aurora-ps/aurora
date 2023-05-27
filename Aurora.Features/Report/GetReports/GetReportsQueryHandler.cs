@@ -1,32 +1,35 @@
-﻿using Aurora.Interfaces;
+﻿using Aurora.Infrastructure.Data;
+using Aurora.Interfaces;
 using Aurora.Interfaces.Models.Reporting;
+using AutoMapper;
+using AutoMapper.QueryableExtensions;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 
 namespace Aurora.Features.Report.GetReports
 {
     public class GetReportsQueryHandler : IRequestHandler<GetReportsQuery, GetReportsQueryResult>
     {
-        private readonly IClusterClient _clusterClient;
+        private readonly IReportDbContext _context;
+        private readonly IMapper _mapper;
 
-        public GetReportsQueryHandler(IClusterClient clusterClient)
+        public GetReportsQueryHandler(IReportDbContext context, IMapper mapper)
         {
-            _clusterClient = clusterClient;
+            _context = context;
+            _mapper = mapper;
         }
 
         public async Task<GetReportsQueryResult> Handle(GetReportsQuery request, CancellationToken cancellationToken)
         {
-            var reportService = _clusterClient.GetGrain<IReportServiceGrain>("");
+            var query = _context.Reports
+                .Where(_ => request.ShowHidden || _.DeletedOnUtc == null);
 
-            IList<ReportSummaryRecord> reports;
-            if (!string.IsNullOrEmpty(request.UserId) && !request.ShowAll)
-            {
-                reports = await reportService.GetUserReportsAsync(request.UserId, request.ShowHidden);
-            }
-            else
-            {
-                reports = await reportService.GetAllAsync(request.ShowHidden);
-            }
-            
+            if(!string.IsNullOrEmpty(request.UserId) && !request.ShowAll)
+                query = query.Where(_ => _.ReportUserId.Equals(request.UserId));
+
+
+
+            var reports = await query.ProjectTo<ReportSummaryRecord>(_mapper.ConfigurationProvider).ToListAsync(cancellationToken);
 
             return GetReportsQueryResult.CreateSuccess(reports);
         }
