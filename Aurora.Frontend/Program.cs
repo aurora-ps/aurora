@@ -1,3 +1,4 @@
+using Aurora.Common;
 using Aurora.Frontend.Data;
 using Aurora.Frontend.Services;
 using Aurora.Infrastructure.Data;
@@ -34,9 +35,7 @@ builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<DataSeeding>();
 builder.Services.AddScoped<AuthenticationStateProvider, RevalidatingIdentityAuthenticationStateProvider<AuroraUser>>();
 
-// Setup DI for Aurora.Infrastructure.Data
-builder.Services.AddScoped<IReportDbContext, ReportDbContext>();
-builder.Services.AddScoped<IApplicationDbContext, ApplicationDbContext>();
+builder.Services.BootstrapServices();
 
 builder.Services.AddScoped<HttpContextAccessor>();
 builder.Services.AddScoped<AuthenticationService>();

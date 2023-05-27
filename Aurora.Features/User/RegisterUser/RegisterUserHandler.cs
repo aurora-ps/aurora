@@ -1,23 +1,30 @@
-﻿using Aurora.Interfaces;
+﻿using Aurora.Infrastructure.Data;
+using Aurora.Interfaces;
 using Aurora.Interfaces.Models;
+using AutoMapper;
+using AutoMapper.QueryableExtensions;
 using FluentValidation;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 
 namespace Aurora.Features.User.RegisterUser;
 
 public class RegisterUserHandler : IRequestHandler<RegisterUserCommand, RegisterUserResponse>
 {
-    private readonly IClusterClient _clusterClient;
+    private readonly IApplicationDbContext _context;
+    private readonly IMapper _mapper;
     private readonly IValidator<RegisterUserCommand> _registerValidator;
     private readonly UserManager<AuroraUser> _userManager;
 
     public RegisterUserHandler(UserManager<AuroraUser> userManager,
-        IClusterClient clusterClient,
+        IApplicationDbContext context,
+        IMapper mapper,
         IValidator<RegisterUserCommand> registerValidator)
     {
         _userManager = userManager;
-        _clusterClient = clusterClient;
+        _context = context;
+        _mapper = mapper;
         _registerValidator = registerValidator;
     }
 
@@ -45,8 +52,9 @@ public class RegisterUserHandler : IRequestHandler<RegisterUserCommand, Register
 
         identityUser = await _userManager.FindByNameAsync(command.UserName);
 
-        var user = _clusterClient.GetGrain<IUserGrain>(identityUser.Id);
-        var userRecord = await user.GetDetailsAsync();
-        return RegisterUserResponse.Created(userRecord);
+        var user = await _context.Users.ProjectTo<UserRecord>(_mapper.ConfigurationProvider)
+            .FirstOrDefaultAsync(_ => _.Id.Equals(identityUser.Id), cancellationToken);
+
+        return RegisterUserResponse.Created(user);
     }
 }
