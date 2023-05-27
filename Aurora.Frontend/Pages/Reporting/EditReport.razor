@@ -49,7 +49,7 @@
                         <MudItem xs="12" sm="6" md="3">
                             <MudDatePicker Label="Date" @bind-Date="_incidentDate" Editable="true" Required="false" />
                         </MudItem>
-                        @if ((_report?.IncidentType?.CollectTime ?? false) || (_report?.IncidentType?.RequiresTime ?? false))
+                        @if ((this._selectedIncidentType?.CollectTime ?? false) || (this._selectedIncidentType?.RequiresTime ?? false))
                         {
 
                             <MudItem xs="12" sm="6" md="3">
@@ -68,7 +68,7 @@
                     </MudItem>
                     </MudGrid>
                 </MudListItem>
-                @if (this._report?.IncidentType?.CollectLocation ?? false)
+                @if (this._selectedIncidentType?.CollectLocation ?? false)
                 {
                     <MudDivider />
                     <MudListItem>
@@ -93,7 +93,7 @@
                         </MudGrid>
                     </MudListItem>
                 }
-                @if (this._report?.IncidentType?.CollectPerson ?? false)
+                @if (this._selectedIncidentType?.CollectPerson ?? false)
                 {
                     <MudDivider />
                     <MudListItem>
@@ -176,31 +176,31 @@
                     <MudListItem>
                         <MudGrid Spacing="1">
                             <MudItem xs="12"><MudText Typo="Typo.h5" GutterBottom="false">Ministry</MudText></MudItem>
-                            @if (_report?.IncidentType?.ShowCounselingOpportunities ?? false)
+                            @if (this._selectedIncidentType?.ShowCounselingOpportunities ?? false)
                             {
                                 <MudItem xs="12" sm="6" md="4" lg="3">
                                     <MudNumericField @bind-Value="@_report.MinistryOpportunity.CounselingOpportunities" Label="Counseling Opportunities"></MudNumericField>
                                 </MudItem>
                             }
-                            @if (_report?.IncidentType?.ShowGospelPresentations ?? false)
+                            @if (this._selectedIncidentType?.ShowGospelPresentations ?? false)
                             {
                                 <MudItem xs="12" sm="6" md="4" lg="3">
                                     <MudNumericField @bind-Value="@_report.MinistryOpportunity.GospelPresentations" Label="Gospel Presentations"></MudNumericField>
                                 </MudItem>
                             }
-                            @if (_report?.IncidentType?.ShowProfessionsOfFaith ?? false)
+                            @if (this._selectedIncidentType?.ShowProfessionsOfFaith ?? false)
                             {
                                 <MudItem xs="12" sm="6" md="4" lg="3">
                                     <MudNumericField @bind-Value="@_report.MinistryOpportunity.ProfessionsOfFaith" Label="Professions of Faith"></MudNumericField>
                                 </MudItem>
                             }
-                            @if (_report?.IncidentType?.ShowBibleStudies ?? false)
+                            @if (this._selectedIncidentType?.ShowBibleStudies ?? false)
                             {
                                 <MudItem xs="12" sm="6" md="4" lg="3">
                                     <MudNumericField @bind-Value="@_report.MinistryOpportunity.BibleStudies" Label="Bible Studies"></MudNumericField>
                                 </MudItem>
                             }
-                            @if (_report?.IncidentType?.ShowBaptisms ?? false)
+                            @if (this._selectedIncidentType?.ShowBaptisms ?? false)
                             {
                                 <MudItem xs="12" sm="6" md="4" lg="3">
                                     <MudNumericField @bind-Value="@_report.MinistryOpportunity.Baptisms" Label="Baptisims"></MudNumericField>
@@ -252,6 +252,8 @@
     List<AgencyRecord> _agencies = new();
     List<IncidentTypeRecord> _incidentTypes = new();
     List<ReportState> _reportStates = GetReportStates();
+
+    IncidentTypeRecord? _selectedIncidentType => _incidentTypes?.FirstOrDefault(_ => _.Id == _report.IncidentType?.Id);
 
     protected override async Task OnInitializedAsync()
     {
