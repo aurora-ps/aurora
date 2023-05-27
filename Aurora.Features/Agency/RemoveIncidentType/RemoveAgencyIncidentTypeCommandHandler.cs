@@ -1,5 +1,7 @@
-﻿using Aurora.Interfaces;
+﻿using Aurora.Infrastructure.Data;
+using Aurora.Interfaces;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 
 namespace Aurora.Features.Agency.RemoveIncidentType;
 
@@ -7,28 +9,24 @@ public class
     RemoveAgencyIncidentTypeCommandHandler : IRequestHandler<RemoveAgencyIncidentTypeCommand,
         RemoveAgencyIncidentTypeResult>
 {
-    private readonly IClusterClient _clusterClient;
+    private readonly IReportDbContext _context;
 
-    public RemoveAgencyIncidentTypeCommandHandler(IClusterClient clusterClient)
+    public RemoveAgencyIncidentTypeCommandHandler(IReportDbContext context)
     {
-        _clusterClient = clusterClient;
+        _context = context;
     }
 
     public async Task<RemoveAgencyIncidentTypeResult> Handle(RemoveAgencyIncidentTypeCommand command,
         CancellationToken cancellationToken)
     {
-        // get grain
-        var agencyGrain = _clusterClient.GetGrain<IAgencyGrain>(command.AgencyId);
-        // not found return Not found result
-        if (agencyGrain == null) return RemoveAgencyIncidentTypeResult.NotFound();
-
         // get agency
-        var agency = await agencyGrain.GetDetailsAsync();
-        // not found return Not found result
+        var agency = await _context.Agencies
+            .FirstOrDefaultAsync(_ => _.Id.Equals(command.AgencyId) && _.DeletedOnUtc == null, cancellationToken);
+
         if (agency == null) return RemoveAgencyIncidentTypeResult.NotFound();
 
-        var success = await agencyGrain.RemoveIncidentTypeAsync(command.IncidentTypeRecord);
-        await agencyGrain.SaveChangesAsync();
+        agency.DeletedOnUtc = DateTime.UtcNow;
+        await _context.SaveChangesAsync(cancellationToken);
 
         return RemoveAgencyIncidentTypeResult.Success();
     }

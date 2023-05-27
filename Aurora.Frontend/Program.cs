@@ -33,8 +33,9 @@ builder.SetupDependencies();
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<DataSeeding>();
 builder.Services.AddScoped<AuthenticationStateProvider, RevalidatingIdentityAuthenticationStateProvider<AuroraUser>>();
-//builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthenticationStateProvider>();
-//builder.Services.AddScoped<CustomAuthenticationStateProvider>();
+
+// Setup DI for Aurora.Infrastructure.Data
+builder.Services.AddScoped<IReportDbContext, ReportDbContext>();
 
 builder.Services.AddScoped<HttpContextAccessor>();
 builder.Services.AddScoped<AuthenticationService>();

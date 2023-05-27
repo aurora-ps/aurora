@@ -105,7 +105,7 @@
 
                     if (response.Agency != null)
                     {
-                        agency = response.Agency;
+                        agency.IncidentTypes.Add(response.Agency.IncidentTypes.FirstOrDefault(_ => _.Id == incidentType.Id));
                     }
                 }
             }

@@ -1,15 +1,18 @@
-﻿using Aurora.Interfaces;
+﻿using Aurora.Infrastructure.Data;
+using Aurora.Interfaces;
+using Aurora.Interfaces.Models.Reporting;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 
 namespace Aurora.Features.Agency.GetAgency;
 
 public class GetAgencyHandler : IRequestHandler<GetAgencyQuery, GetAgencyResult>
 {
-    private readonly IClusterClient _clusterClient;
+    private readonly IReportDbContext _context;
 
-    public GetAgencyHandler(IClusterClient clusterClient)
+    public GetAgencyHandler(IReportDbContext context)
     {
-        _clusterClient = clusterClient;
+        _context = context;
     }
 
     public async Task<GetAgencyResult> Handle(GetAgencyQuery request, CancellationToken cancellationToken)
@@ -21,9 +24,31 @@ public class GetAgencyHandler : IRequestHandler<GetAgencyQuery, GetAgencyResult>
         if (!validationResult.IsValid)
             return GetAgencyResult.NotFound();
 
+        // Get the agency
+        var agency = await _context.Agencies
+            .Select(a => new AgencyRecord
+            {
+                Id = a.Id,
+                Name = a.Name,
+                DeletedOnUtc = a.DeletedOnUtc,
+                IncidentTypes = a.IncidentTypes.Select(it => new IncidentTypeRecord
+                {
+                    Id = it.IncidentType.Id,
+                    Name = it.IncidentType.Name,
+                    CollectLocation = it.CollectLocation ?? it.IncidentType.CollectLocation,
+                    CollectPerson = it.CollectPerson ?? it.IncidentType.CollectPerson,
+                    CollectTime = it.CollectTime ?? it.IncidentType.CollectTime,
+                    RequiresTime = it.RequiresTime ?? it.IncidentType.RequiresTime,
+                    ShowGospelPresentations = it.ShowGospelPresentations ?? it.IncidentType.ShowGospelPresentations,
+                    ShowProfessionsOfFaith = it.ShowProfessionsOfFaith ?? it.IncidentType.ShowProfessionsOfFaith,
+                    ShowBaptisms = it.ShowBaptisms ?? it.IncidentType.ShowBaptisms,
+                    ShowBibleStudies = it.ShowBibleStudies ?? it.IncidentType.ShowBibleStudies,
+                    ShowCounselingOpportunities =
+                        it.ShowCounselingOpportunities ?? it.IncidentType.ShowCounselingOpportunities
+                }).OrderBy(_ => _.Name).ToList()
+            }).FirstOrDefaultAsync(_ => _.Id.Equals(request.AgencyId), cancellationToken);
+
         // get the agency grain
-        var agencyGrain = _clusterClient.GetGrain<IAgencyGrain>(request.AgencyId);
-        var agency = await agencyGrain.GetDetailsAsync();
         if (agency == null)
             return GetAgencyResult.NotFound();
 
