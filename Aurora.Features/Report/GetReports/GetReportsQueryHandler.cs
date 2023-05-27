@@ -27,8 +27,6 @@ namespace Aurora.Features.Report.GetReports
             if(!string.IsNullOrEmpty(request.UserId) && !request.ShowAll)
                 query = query.Where(_ => _.ReportUserId.Equals(request.UserId));
 
-
-
             var reports = await query.ProjectTo<ReportSummaryRecord>(_mapper.ConfigurationProvider).ToListAsync(cancellationToken);
 
             return GetReportsQueryResult.CreateSuccess(reports);
