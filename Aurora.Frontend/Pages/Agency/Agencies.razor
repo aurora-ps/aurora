@@ -169,7 +169,10 @@
                 var agency = _agencies?.FirstOrDefault(_ => _.Id == id);
                 if (agency != null)
                 {
-                    _agencies!.Remove(agency);
+                    if(_showHidden)
+                        agency.DeletedOnUtc = DateTime.UtcNow;
+                    else
+                        _agencies!.Remove(agency);
                 }
             }
         }

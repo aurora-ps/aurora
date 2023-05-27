@@ -1,4 +1,5 @@
-﻿using Aurora.Interfaces;
+﻿using Aurora.Infrastructure.Data;
+using Aurora.Interfaces;
 using FluentValidation.Results;
 using MediatR;
 
@@ -6,11 +7,11 @@ namespace Aurora.Features.Agency.DeleteAgency;
 
 public class DeleteAgencyCommandHandler : IRequestHandler<DeleteAgencyCommand, DeleteAgencyResponse>
 {
-    private readonly IClusterClient _clusterClient;
+    private readonly IReportDbContext _context;
 
-    public DeleteAgencyCommandHandler(IClusterClient clusterClient)
+    public DeleteAgencyCommandHandler(IReportDbContext context)
     {
-        _clusterClient = clusterClient;
+        _context = context;
     }
 
     public async Task<DeleteAgencyResponse> Handle(DeleteAgencyCommand request, CancellationToken cancellationToken)
@@ -21,21 +22,21 @@ public class DeleteAgencyCommandHandler : IRequestHandler<DeleteAgencyCommand, D
         if (!validationResult.IsValid) return DeleteAgencyResponse.ValidationFailure(validationResult.Errors);
 
         // get agency
-        var agencyGrain = _clusterClient.GetGrain<IAgencyGrain>(request.AgencyId);
-        var agency = await agencyGrain.GetDetailsAsync();
-        if (agency == null)
+        var agency = _context.Agencies.FirstOrDefault(_ => _.Id.Equals(request.AgencyId));
+        if (agency == null) return DeleteAgencyResponse.ValidationFailure(new List<ValidationFailure>
+        {
+            new(nameof(request.AgencyId), $"Agency with id {request.AgencyId} not found")
+        });
+
+        if(agency.DeletedOnUtc.HasValue)
             return DeleteAgencyResponse.ValidationFailure(new List<ValidationFailure>
             {
-                new(nameof(request.AgencyId), $"Agency with id {request.AgencyId} not found")
+                new(nameof(request.AgencyId), $"Agency with id {request.AgencyId} is already deleted")
             });
 
         // delete agency
-        await agencyGrain.DeleteAsync();
-        if (await agencyGrain.SaveChangesAsync()) return DeleteAgencyResponse.Deleted();
-
-        return DeleteAgencyResponse.ValidationFailure(new List<ValidationFailure>
-        {
-            new(nameof(request.AgencyId), $"Error deleting Agency with id {request.AgencyId}")
-        });
+        agency.DeletedOnUtc = DateTime.UtcNow;
+        await _context.SaveChangesAsync(cancellationToken);
+        return DeleteAgencyResponse.Deleted();
     }
 }
