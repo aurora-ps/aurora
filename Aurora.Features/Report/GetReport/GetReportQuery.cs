@@ -6,7 +6,7 @@ public class GetReportQuery : IRequest<GetReportQueryResult>
 {
     public GetReportQuery(string reportId)
     {
-        this.ReportId = reportId;
+        ReportId = reportId;
     }
 
     public string ReportId { get; set; }

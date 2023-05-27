@@ -1,5 +1,4 @@
 ﻿using Aurora.Infrastructure.Data;
-using Aurora.Interfaces;
 using Aurora.Interfaces.Models.Reporting;
 using MediatR;
 using Microsoft.EntityFrameworkCore;

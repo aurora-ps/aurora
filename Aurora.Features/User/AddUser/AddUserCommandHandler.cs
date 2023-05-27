@@ -22,7 +22,7 @@ public class AddUserCommandHandler : IRequestHandler<AddUserCommand, AddUserResp
             Email = command.UserName,
             Name = command.UserName,
             FirstName = command.FirstName,
-            LastName = command.LastName,
+            LastName = command.LastName
         };
 
         var userRecord = await grain.AddAsync(newUser);

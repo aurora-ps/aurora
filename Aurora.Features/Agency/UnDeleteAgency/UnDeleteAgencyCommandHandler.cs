@@ -1,6 +1,4 @@
-﻿using Aurora.Features.Agency.RemoveIncidentType;
-using Aurora.Infrastructure.Data;
-using Aurora.Interfaces;
+﻿using Aurora.Infrastructure.Data;
 using FluentValidation.Results;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -29,9 +27,9 @@ public class UnDeleteAgencyCommandHandler : IRequestHandler<UnDeleteAgencyComman
 
         if (agency == null)
             return UnDeleteAgencyResponse.ValidationFailure(new List<ValidationFailure>
-                {
-                    new(nameof(command.AgencyId), $"Agency with id {command.AgencyId} not found")
-                });
+            {
+                new(nameof(command.AgencyId), $"Agency with id {command.AgencyId} not found")
+            });
 
         if (agency.DeletedOnUtc == null)
             return UnDeleteAgencyResponse.ValidationFailure(new List<ValidationFailure>

@@ -20,7 +20,8 @@ public class GetUsersQueryHandler : IRequestHandler<GetUsersQuery, GetUsersRespo
 
     public async Task<GetUsersResponse> Handle(GetUsersQuery request, CancellationToken cancellationToken)
     {
-        var users = await _context.Users.ProjectTo<UserRecord>(_mapper.ConfigurationProvider).ToListAsync(cancellationToken);
+        var users = await _context.Users.ProjectTo<UserRecord>(_mapper.ConfigurationProvider)
+            .ToListAsync(cancellationToken);
 
         return GetUsersResponse.CreateSuccess(users);
     }

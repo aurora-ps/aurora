@@ -1,5 +1,4 @@
 ﻿using Aurora.Infrastructure.Data;
-using Aurora.Interfaces;
 using Aurora.Interfaces.Models.Reporting;
 using FluentValidation.Results;
 using MediatR;
@@ -28,24 +27,28 @@ public class AddAgencyIncidentTypeHandler : IRequestHandler<AddAgencyIncidentTyp
             return AddAgencyIncidentTypeResult.Create(validationResult.Errors);
 
         // get the agency
-        var agency = await _context.Agencies.Include(_ => _.IncidentTypes).FirstOrDefaultAsync(_ => _.Id == command.AgencyId, cancellationToken);
+        var agency = await _context.Agencies.Include(_ => _.IncidentTypes)
+            .FirstOrDefaultAsync(_ => _.Id == command.AgencyId, cancellationToken);
         if (agency == null)
             return AddAgencyIncidentTypeResult.Create(new List<ValidationFailure> { new("Id", "Agency not found") });
-        if(agency.DeletedOnUtc.HasValue)
+        if (agency.DeletedOnUtc.HasValue)
             return AddAgencyIncidentTypeResult.Create(new List<ValidationFailure> { new("Id", "Agency is deleted") });
-        
-        if(agency.IncidentTypes.Any(_ => _.IncidentTypeId == command.IncidentType.Id))
-            return AddAgencyIncidentTypeResult.Create(new List<ValidationFailure> { new("Id", "Incident type already exists") });
 
-        var agencyType = await _context.IncidentTypes.FirstOrDefaultAsync(_ => _.Id == command.IncidentType.Id, cancellationToken);
+        if (agency.IncidentTypes.Any(_ => _.IncidentTypeId == command.IncidentType.Id))
+            return AddAgencyIncidentTypeResult.Create(new List<ValidationFailure>
+                { new("Id", "Incident type already exists") });
+
+        var agencyType =
+            await _context.IncidentTypes.FirstOrDefaultAsync(_ => _.Id == command.IncidentType.Id, cancellationToken);
         if (agencyType == null)
-            return AddAgencyIncidentTypeResult.Create(new List<ValidationFailure> { new("Id", "Incident type not found") });
+            return AddAgencyIncidentTypeResult.Create(new List<ValidationFailure>
+                { new("Id", "Incident type not found") });
 
         agency.IncidentTypes.Add(new AgencyIncidentType
         {
             IncidentTypeId = agencyType.Id
         });
-        
+
         await _context.SaveChangesAsync(cancellationToken);
 
         return AddAgencyIncidentTypeResult.CreateSuccess();

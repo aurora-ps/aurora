@@ -6,10 +6,12 @@ public class GetReportsQueryResult
 {
     private GetReportsQueryResult(bool success)
     {
-        this.Success = success;
+        Success = success;
     }
 
     public bool Success { get; set; }
+
+    public IList<ReportSummaryRecord> Reports { get; set; }
 
     public static GetReportsQueryResult CreateSuccess(IList<ReportSummaryRecord> reports)
     {
@@ -18,6 +20,4 @@ public class GetReportsQueryResult
             Reports = reports
         };
     }
-
-    public IList<ReportSummaryRecord> Reports { get; set; }
 }

@@ -10,7 +10,7 @@ public class UnDeleteReportCommandResult
 
     private UnDeleteReportCommandResult(string reportId, bool success, string errorMessage) : this(reportId, success)
     {
-        this.ErrorMessage = errorMessage;
+        ErrorMessage = errorMessage;
     }
 
     public string ReportId { get; }

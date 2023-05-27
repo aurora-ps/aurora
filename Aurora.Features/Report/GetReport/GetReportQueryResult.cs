@@ -6,8 +6,8 @@ public class GetReportQueryResult
 {
     public GetReportQueryResult(bool success, ReportRecord? record)
     {
-        this.Success = success;
-        this.Report = record;
+        Success = success;
+        Report = record;
     }
 
     public ReportRecord? Report { get; set; }

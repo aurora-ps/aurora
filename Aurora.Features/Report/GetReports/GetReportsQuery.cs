@@ -6,9 +6,9 @@ public class GetReportsQuery : IRequest<GetReportsQueryResult>
 {
     private GetReportsQuery(string userId, bool showHidden = false, bool showAll = false)
     {
-        this.UserId = userId;
-        this.ShowHidden = showHidden;
-        this.ShowAll = showAll;
+        UserId = userId;
+        ShowHidden = showHidden;
+        ShowAll = showAll;
     }
 
     public string? UserId { get; }

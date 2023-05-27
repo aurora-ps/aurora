@@ -1,5 +1,4 @@
 ﻿using Aurora.Infrastructure.Data;
-using Aurora.Interfaces;
 using FluentValidation.Results;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -34,7 +33,7 @@ public class
 
         if (agency == null)
             return UpdateIncidentTypeOverridesResult.Create(new List<ValidationFailure>
-                               { new("Id", "Agency not found") });
+                { new("Id", "Agency not found") });
 
 
         var agencyIncidentType = agency.IncidentTypes.FirstOrDefault(_ => _.IncidentTypeId == command.IncidentType!.Id);
@@ -46,7 +45,7 @@ public class
         // get the agency incident type
         agencyIncidentType.CollectLocation = command.IncidentType!.CollectLocation;
         agencyIncidentType.CollectTime = command.IncidentType!.CollectTime;
-        agencyIncidentType.RequiresTime= command.IncidentType!.RequiresTime;
+        agencyIncidentType.RequiresTime = command.IncidentType!.RequiresTime;
         agencyIncidentType.CollectLocation = command.IncidentType!.CollectLocation;
         agencyIncidentType.CollectPerson = command.IncidentType!.CollectPerson;
         agencyIncidentType.ShowGospelPresentations = command.IncidentType!.ShowGospelPresentations;
@@ -54,7 +53,7 @@ public class
         agencyIncidentType.ShowBaptisms = command.IncidentType!.ShowBaptisms;
         agencyIncidentType.ShowBibleStudies = command.IncidentType!.ShowBibleStudies;
         agencyIncidentType.ShowCounselingOpportunities = command.IncidentType!.ShowCounselingOpportunities;
-        
+
         // save changes
         await _context.SaveChangesAsync(cancellationToken);
 

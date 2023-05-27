@@ -15,6 +15,8 @@ public class AuthenticateUserCommandResult
 
     public string Token { get; set; }
 
+    public AuroraUser IdentityUser { get; set; }
+
     public static AuthenticateUserCommandResult BadRequest(IList<ValidationFailure> validationResultErrors)
     {
         return new AuthenticateUserCommandResult
@@ -35,8 +37,6 @@ public class AuthenticateUserCommandResult
             IdentityUser = auroraUser
         };
     }
-
-    public AuroraUser IdentityUser { get; set; }
 
     public static AuthenticateUserCommandResult Unauthorized()
     {

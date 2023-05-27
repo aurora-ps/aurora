@@ -8,6 +8,6 @@ public class UnDeleteReportCommand : IRequest<UnDeleteReportCommandResult>
     {
         ReportId = reportId;
     }
-    
+
     public string ReportId { get; }
 }

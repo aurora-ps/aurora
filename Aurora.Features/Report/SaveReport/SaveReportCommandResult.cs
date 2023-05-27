@@ -9,12 +9,12 @@ public class SaveReportCommandResult
         IsSuccess = isSuccess;
     }
 
+    public bool IsSuccess { get; set; }
+
+    public IReportRecord ReportRecord { get; set; }
+
     public static SaveReportCommandResult Success(IReportRecord command)
     {
         return new SaveReportCommandResult(true) { ReportRecord = command };
     }
-
-    public bool IsSuccess { get; set; } = false;
-
-    public IReportRecord ReportRecord { get; set; }
 }

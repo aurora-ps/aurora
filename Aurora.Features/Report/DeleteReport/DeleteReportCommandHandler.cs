@@ -1,10 +1,8 @@
 ﻿using Aurora.Infrastructure.Data;
-using Aurora.Interfaces;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
 namespace Aurora.Features.Report.DeleteReport;
-
 
 public class DeleteReportCommandHandler : IRequestHandler<DeleteReportCommand, DeleteReportCommandResult>
 {
@@ -15,7 +13,8 @@ public class DeleteReportCommandHandler : IRequestHandler<DeleteReportCommand, D
         _context = context;
     }
 
-    public async Task<DeleteReportCommandResult> Handle(DeleteReportCommand request, CancellationToken cancellationToken)
+    public async Task<DeleteReportCommandResult> Handle(DeleteReportCommand request,
+        CancellationToken cancellationToken)
     {
         if (request?.ReportId == null)
             throw new ArgumentNullException(nameof(request.ReportId));
@@ -25,7 +24,7 @@ public class DeleteReportCommandHandler : IRequestHandler<DeleteReportCommand, D
         if (report == null)
             return DeleteReportCommandResult.CreateFailure(request.ReportId, "Report Not Found");
 
-        if(report.DeletedOnUtc.HasValue)
+        if (report.DeletedOnUtc.HasValue)
             return DeleteReportCommandResult.CreateFailure(request.ReportId, "Report Already Deleted");
 
         try

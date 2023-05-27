@@ -1,16 +1,14 @@
-﻿using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.Configuration;
-using Microsoft.IdentityModel.Tokens;
-using System.IdentityModel.Tokens.Jwt;
+﻿using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-
-using JwtRegisteredClaimNames = Microsoft.IdentityModel.JsonWebTokens.JwtRegisteredClaimNames;
-
 using Aurora.Interfaces;
 using Aurora.Interfaces.Models;
 using FluentValidation;
 using MediatR;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Configuration;
+using Microsoft.IdentityModel.Tokens;
+using JwtRegisteredClaimNames = Microsoft.IdentityModel.JsonWebTokens.JwtRegisteredClaimNames;
 
 namespace Aurora.Features.User.AuthenticateUser;
 
@@ -46,10 +44,7 @@ public class AuthenticateUserCommandHandler : IRequestHandler<AuthenticateUserCo
             return AuthenticateUserCommandResult.Unauthorized();
 
         var userRecord = await GetUserDetails(user);
-        if (userRecord == null)
-        {
-            return AuthenticateUserCommandResult.Unauthorized();
-        }
+        if (userRecord == null) return AuthenticateUserCommandResult.Unauthorized();
 
         var roles = await _userManager.GetRolesAsync(user);
 

@@ -46,5 +46,8 @@ public class AddAgencyCommandHandler : IRequestHandler<AddAgencyCommand>
         }
     }
 
-    private async Task<bool> AgencyExists(string agencyName) => await _context.Agencies.AnyAsync(_ => _.Name.Trim() == agencyName.Trim());
+    private async Task<bool> AgencyExists(string agencyName)
+    {
+        return await _context.Agencies.AnyAsync(_ => _.Name.Trim() == agencyName.Trim());
+    }
 }

@@ -1,5 +1,4 @@
 ﻿using Aurora.Infrastructure.Data;
-using Aurora.Interfaces;
 using FluentValidation.Results;
 using MediatR;
 
@@ -23,12 +22,13 @@ public class DeleteAgencyCommandHandler : IRequestHandler<DeleteAgencyCommand, D
 
         // get agency
         var agency = _context.Agencies.FirstOrDefault(_ => _.Id.Equals(request.AgencyId));
-        if (agency == null) return DeleteAgencyResponse.ValidationFailure(new List<ValidationFailure>
-        {
-            new(nameof(request.AgencyId), $"Agency with id {request.AgencyId} not found")
-        });
+        if (agency == null)
+            return DeleteAgencyResponse.ValidationFailure(new List<ValidationFailure>
+            {
+                new(nameof(request.AgencyId), $"Agency with id {request.AgencyId} not found")
+            });
 
-        if(agency.DeletedOnUtc.HasValue)
+        if (agency.DeletedOnUtc.HasValue)
             return DeleteAgencyResponse.ValidationFailure(new List<ValidationFailure>
             {
                 new(nameof(request.AgencyId), $"Agency with id {request.AgencyId} is already deleted")

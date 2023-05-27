@@ -11,9 +11,9 @@ public class DeleteReportCommandResult
 
     private DeleteReportCommandResult(string reportId, bool success, string errorMessage)
     {
-        this.ReportId = reportId;
-        this.Success = success;
-        this.ErrorMessage = errorMessage;
+        ReportId = reportId;
+        Success = success;
+        ErrorMessage = errorMessage;
     }
 
     public string ReportId { get; }
